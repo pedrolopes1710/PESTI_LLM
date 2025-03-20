@@ -1,0 +1,12 @@
+- O que é um indicador?
+- LDAP como auth0 ou como LDAP q se deu nas aulas?
+- bolsa = contrato?
+- possíveis status das tarefas
+- o q é uma rubrica (budget)?
+
+atributos em falta/a confirmar
+- dos investigadores/bolseiros
+- dos contratos (dos bolseiros)
+- das atividades/tarefas
+- das bolsas
+- dos entregaveis

@@ -1,0 +1,87 @@
+@startuml domain-model
+'https://plantuml.com/class-diagram
+skinparam classAttributeIconSize 0
+
+skinparam packageStyle rectangle
+
+package "<<Aggregate>> Atividade" #C2B078 {
+    entity Atividade <<entity>> <<root>>
+}
+
+package "<<Aggregate>> Bolseiro" #7F7679 {
+    entity Bolseiro <<entity>> <<root>>
+
+}
+
+package "<<Aggregate>> Contrato" #5D9B9B {
+    entity Contrato <<entity>> <<root>>
+    class DataInicio <<Value Object>>
+    class DataFim <<Value Object>>
+    '? valores monetários?
+}
+
+package "<<Aggregate>> Entregavel" #3E5F8A {
+    entity Entregavel <<entity>> <<root>>
+    class DataEntrega <<Value Object>>
+}
+
+package "<<Aggregate>> Investigador" #2271B3 {
+    entity Investigador <<entity>> <<root>>
+    'TODO dados pessoais
+    '? nome? numero?
+}
+
+package "<<Aggregate>> Projeto" #00BB2D {
+    entity Projeto <<entity>> <<root>>
+    class Nome <<Value Object>>
+    class Numero <<Value Object>>
+    class Indicador <<Value Object>>
+    '! verificar com o professor sobre o indicador
+}
+
+package "<<Aggregate>> Orcamento" #FF7514 {
+    entity Orcamento <<entity>> <<root>>
+    class Receita <<Value Object>>
+    '? talvez nao?
+    class Despesa <<Value Object>>
+
+}
+
+package "<<Aggregate>> Rubrica" #6C3B2A {
+    entity Rubrica <<entity>> <<root>>
+}
+
+package "<<Aggregate>> Tarefa" #EDFF21 {
+    entity Tarefa <<entity>> <<root>>
+    enum Status <<Value Object>> {
+        Abc
+        Def
+        Ghi
+    }
+    '? progresso?
+}
+
+Atividade "1" ---> "*" Tarefa
+
+Contrato --> DataInicio
+Contrato --> DataFim
+
+Contrato "*" ---> "1" Bolseiro
+
+Entregavel --> DataEntrega
+
+Projeto --> Nome
+Projeto --> Numero
+Projeto --> Indicador
+Projeto "1" ---> "*" Atividade
+Projeto "1" ---> "1" Orcamento
+Projeto "*" ---> "*" Investigador
+Projeto "1" ---> "*" Entregavel
+
+Orcamento --> Receita
+Orcamento --> Despesa
+
+Tarefa --> Status
+Orcamento "1" <--- "1" Tarefa
+
+@enduml
