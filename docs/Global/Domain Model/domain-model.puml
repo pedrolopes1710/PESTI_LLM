@@ -31,6 +31,11 @@ package "<<Aggregate>> Investigador" #2271B3 {
     '? nome? numero?
 }
 
+package "<<Aggregate>> Perfil" #78858B {
+    entity Perfil <<entity>> <<root>>
+    '? atributos?
+}  
+
 package "<<Aggregate>> Projeto" #00BB2D {
     entity Projeto <<entity>> <<root>>
     class Nome <<Value Object>>
@@ -62,6 +67,7 @@ package "<<Aggregate>> Tarefa" #EDFF21 {
 }
 
 Atividade "1" ---> "*" Tarefa
+Atividade "1" ---> "*" Perfil
 
 Contrato --> DataInicio
 Contrato --> DataFim
@@ -69,6 +75,8 @@ Contrato --> DataFim
 Contrato "*" ---> "1" Bolseiro
 
 Entregavel --> DataEntrega
+
+Perfil "1" ---> "1" Contrato
 
 Projeto --> Nome
 Projeto --> Numero
@@ -80,6 +88,7 @@ Projeto "1" ---> "*" Entregavel
 
 Orcamento --> Receita
 Orcamento --> Despesa
+Orcamento "1" ---> "1" Rubrica
 
 Tarefa --> Status
 Orcamento "1" <--- "1" Tarefa

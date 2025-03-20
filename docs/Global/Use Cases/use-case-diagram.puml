@@ -1,0 +1,72 @@
+@startuml Use Case Diagram
+
+skinparam packageStyle rectangle
+
+skinparam rectangle{
+    BorderColor yellow
+}
+
+title Use Case Diagram
+left to right direction
+
+actor "Admin" as Admin
+actor "Investigador" as Inv
+actor "Project Manager" as PM
+actor "???" as Unknown
+
+'* Gestão de Investigadores e Recursos Humanos
+usecase "Criar investigadores" as CreateInv
+usecase "Editar investigadores" as EditInv
+usecase "Excluir investigadores" as ExcInv
+usecase "Gerir permissões de acesso via integração LDAP" as GerAcesso
+usecase "Editar próprios dados pessoais" as EditDados
+usecase "Registar Bolseiros" as RegBol 
+usecase "Listar Bolseiros" as LisBol
+usecase "Listar Contratos" as LisCon
+usecase "Monitorizar tempo restante de bolsa por projeto" as MTRBP
+usecase "Monitorizar tempo restante de bolsa por investigador" as MTRBI
+usecase "Monitorizar tempo restante e evolução das bolsas" as MTREB
+
+
+Admin --> CreateInv
+Admin --> EditInv
+Admin --> ExcInv
+Admin --> GerAcesso
+Inv --> EditDados
+Unknown --> RegBol
+Unknown --> LisBol
+Unknown --> LisCon
+PM --> MTRBP
+Admin --> MTRBI 
+'TODO confirmar com o prof
+Unknown --> MTREB
+
+'* Gestão de Projetos
+usecase "Criar projetos" as CreateProj
+usecase "Editar projetos" as EditProj
+usecase "Excluir projetos" as ExcProj
+usecase "Visualisar projetos" as ListProj
+
+PM --> CreateProj
+PM --> EditProj
+PM --> ExcProj
+PM --> ListProj
+
+'* Gestão de Atividades e Tarefas
+usecase "Criar atividades" as CreateAct
+usecase "Editar atividades" as EditAct
+usecase "Excluir atividades" as ExcAct
+usecase "Atribuir afetações executivas" as AAE
+usecase "Gerir afetações executivas" as GAE
+usecase "Atribuir afetações orçamentais" as AAO
+usecase "Gerir agetações orçamentais" as GAO
+
+PM --> CreateAct
+PM --> EditAct
+PM --> ExcAct
+Unknown --> AAE
+Unknown --> GAE
+Unknown --> AAO
+Unknown --> GAO
+
+@enduml

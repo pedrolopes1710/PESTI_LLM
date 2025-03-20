@@ -3,6 +3,8 @@
 - bolsa = contrato?
 - possíveis status das tarefas
 - o q é uma rubrica (budget)?
+- verificar UCD para ver quem faz o que
+- o q é uma afetação orçamental/executiva?
 
 atributos em falta/a confirmar
 - dos investigadores/bolseiros
@@ -10,3 +12,4 @@ atributos em falta/a confirmar
 - das atividades/tarefas
 - das bolsas
 - dos entregaveis
+- perfil
