@@ -18,7 +18,7 @@ package "<<Aggregate>> Contrato" #5D9B9B {
     entity Contrato <<entity>> <<root>>
     class DataInicio <<Value Object>>
     class DataFim <<Value Object>>
-    enum TipoContrato <<Value Object {
+    enum TipoContrato <<Value Object>> {
         Normal
         Bolsa
     }
