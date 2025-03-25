@@ -42,7 +42,6 @@ package "<<Aggregate>> Projeto" #00BB2D {
     class Nome <<Value Object>>
     class Numero <<Value Object>>
     class Indicador <<Value Object>>
-    '! verificar com o professor sobre o indicador
 }
 
 package "<<Aggregate>> Orcamento" #FF7514 {

@@ -1,28 +1,28 @@
-- O que é um indicador?
-- LDAP como auth0 ou como LDAP q se deu nas aulas?
-- bolsa = contrato?
-- possíveis status das tarefas
-- o q é uma rubrica (budget)?
+- O que é um indicador? (R.: ex: nº contratações (podem variar entre projetos))
+- LDAP como auth0 ou como LDAP q se deu nas aulas? (R.: auth0)
+- bolsa = contrato? (R.: bolsa é sempre paga por 1 projeto, contrato pode ser paga por vários / aka bolsa = tipo de contrato)
+- possíveis status das tarefas (R.: Baseado no cronograma (a fazer/em execução/feito))
+- o q é uma rubrica (budget)? (R.: Um tipo (categoria) de despesa (ex.: HR, promoçoes/divulgação, publicações de artigos, aquisição de equipamento, etc...))
 - verificar UCD para ver quem faz o que
-- o q é uma afetação orçamental/executiva?
-- (confirmar) distribuição equilibrada das tarefas é automático?
+- o q é uma afetação orçamental/executiva? (R.: afetação = PM, orçamental = planeado, executiva = executavo)
+NOTA - fazer perfis para os bolseiros (1 perfil para 1 atividade e tem x PMs, pode ser consumido por mais q 1 pessoa (e vice versa)) (PMs só registar total, não interessa por ano)
 - quem vai usar o sistema? (Admin, PM, etc...)?
 
 atributos em falta/a confirmar
-- dos investigadores/bolseiros
-- dos contratos (dos bolseiros)
-- das atividades/tarefas
-- das bolsas
-- dos entregaveis
-- perfil
+- dos investigadores/bolseiros (nome/email/CienciaID)
+- dos contratos (dos bolseiros) (implementar renovações (max 6 meses por renovação))
+- das atividades/tarefas (nome + descrição)
+- dos entregaveis (nome + descrição + data + tipo (documento, software, etc (criado/remover (se possível) pelo administrador)), ASSOCIADOS A UMA ATIVIDADE)
+ (atividade tem conjunto de entregáveis)
+- perfil (atividade, PM, descrição, tipo de vínculo (tabela de sistema))
 
 - Qual o formato dos cronogramas, se existe um formato específico a utilizar e se só há um formato disponível (específico ou à escolha) ou um conjunto de formatos disponíveis para o utilizador escolher.
-- Esclarecer os elementos/parâmetros do cronograma (tarefas/atividades?, responsáveis, durações, prazos?)  
+(R.: mostrar no projeto, as atividades, aonde estou e até aonde posso ir (navegavel (há plugins segundo o prof)))
+- Esclarecer os elementos/parâmetros do cronograma (tarefas/atividades?, responsáveis, durações, prazos?) (R.: a timeline do projeto (ex.: % de cumprimento dos indicadores))
 
 Bolseiros
 
--Quem é responsável por adicionar os bolseiros?
--Existe um fluxo de aprovação para o registo de bolseiros? (quem adiciona?, dados?)
--Como deve ser feita a monitorização do tempo restante da bolsa? (Alertas, relatórios, notificações?)
--Existe um modelo padrão de contrato ou varia conforme o tipo de bolsa e projeto?
-
+-Quem é responsável por adicionar os bolseiros? (R.: investigadores)
+-Existe um fluxo de aprovação para o registo de bolseiros? (quem adiciona? - R.: investigador responsavel, dados?)
+-Como deve ser feita a monitorização do tempo restante da bolsa? (Alertas, relatórios, notificações?) (R.: x dias antes, por email)
+-Existe um modelo padrão de contrato ou varia conforme o tipo de bolsa e projeto? (R.: RH fazem o contrato)

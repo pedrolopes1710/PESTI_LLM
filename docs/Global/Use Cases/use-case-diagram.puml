@@ -30,9 +30,9 @@ Admin --> EditInv
 Admin --> ExcInv
 Admin --> GerAcesso
 Inv --> EditDados
-Unknown --> RegBol
-Unknown --> LisBol
-Unknown --> LisCon
+Inv --> RegBol
+Inv --> LisBol
+Inv --> LisCon
 PM --> MTRBP
 Admin --> MTRBI 
 'TODO confirmar com o prof
