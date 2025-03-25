@@ -16,3 +16,11 @@ atributos em falta/a confirmar
 
 - Qual o formato dos cronogramas, se existe um formato específico a utilizar e se só há um formato disponível (específico ou à escolha) ou um conjunto de formatos disponíveis para o utilizador escolher.
 - Esclarecer os elementos/parâmetros do cronograma (tarefas/atividades?, responsáveis, durações, prazos?)  
+
+Bolseiros
+
+-Quem é responsável por adicionar os bolseiros?
+-Existe um fluxo de aprovação para o registo de bolseiros? (quem adiciona?, dados?)
+-Como deve ser feita a monitorização do tempo restante da bolsa? (Alertas, relatórios, notificações?)
+-Existe um modelo padrão de contrato ou varia conforme o tipo de bolsa e projeto?
+
