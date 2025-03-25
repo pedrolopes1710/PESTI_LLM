@@ -13,3 +13,6 @@ atributos em falta/a confirmar
 - das bolsas
 - dos entregaveis
 - perfil
+
+- Qual o formato dos cronogramas, se existe um formato específico a utilizar e se só há um formato disponível (específico ou à escolha) ou um conjunto de formatos disponíveis para o utilizador escolher.
+- Esclarecer os elementos/parâmetros do cronograma (tarefas/atividades?, responsáveis, durações, prazos?)  
