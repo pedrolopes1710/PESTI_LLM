@@ -6,52 +6,40 @@ skinparam packageStyle rectangle
 
 package "<<Aggregate>> Atividade" #C2B078 {
     entity Atividade <<entity>> <<root>>
-    class NomeAtividade <<Value Object>>
-    class DescricaoAtividade <<Value Object>>
 }
 
 package "<<Aggregate>> Bolseiro" #7F7679 {
     entity Bolseiro <<entity>> <<root>>
+    class BolseiroNome <<Value Object>>
 }
 
 package "<<Aggregate>> Contrato" #5D9B9B {
     entity Contrato <<entity>> <<root>>
     class DataInicio <<Value Object>>
     class DataFim <<Value Object>>
-    enum TipoContrato <<Value Object {
-        Normal
-        Bolsa
-    }
-    'TODO verificar ligações
-}
-
-package "<<Aggregate>> DadosPessoais" #999950 {
-    entity DadosPessoais <<entity>> <<root>>
-    class Nome <<Value Object>>
-    class Email <<Value Object>>
-    class CienciaID <<Value Object>>
-    'TODO perguntar se os investigadores são funcionalmente iguais a bolseiros
+    '? valores monetários?
 }
 
 package "<<Aggregate>> Entregavel" #3E5F8A {
     entity Entregavel <<entity>> <<root>>
-    class NomeEntregavel <<Value Object>>
-    class DescricaoEntregavel <<Value Object>>
     class DataEntrega <<Value Object>>
 }
 
 package "<<Aggregate>> Investigador" #2271B3 {
     entity Investigador <<entity>> <<root>>
+    class InvestigadorNome <<Value Object>>
+    'TODO dados pessoais
+    '? nome? numero?
 }
 
 package "<<Aggregate>> Perfil" #78858B {
     entity Perfil <<entity>> <<root>>
-    'TODO verificar isto
+    '? atributos?
 }  
 
 package "<<Aggregate>> Projeto" #00BB2D {
     entity Projeto <<entity>> <<root>>
-    class Titulo <<Value Object>>
+    class Nome <<Value Object>>
     class Numero <<Value Object>>
     class Indicador <<Value Object>>
 }
@@ -59,77 +47,54 @@ package "<<Aggregate>> Projeto" #00BB2D {
 package "<<Aggregate>> Orcamento" #FF7514 {
     entity Orcamento <<entity>> <<root>>
     class Receita <<Value Object>>
+    '? talvez nao?
     class Despesa <<Value Object>>
-    'TODO verificar isto
+
 }
 
 package "<<Aggregate>> Rubrica" #6C3B2A {
     entity Rubrica <<entity>> <<root>>
-    class NomeRubrica <<Value Object>>
-    'TODO verificar isto
 }
 
 package "<<Aggregate>> Tarefa" #EDFF21 {
     entity Tarefa <<entity>> <<root>>
-    class NomeTarefa <<Value Object>>
-    class DescricaoTarefa <<Value Object>>
     enum Status <<Value Object>> {
-        Por_Comecar
-        A_Decorrer
-        Terminado
+        Abc
+        Def
+        Ghi
     }
     '? progresso?
 }
 
-package "<<Aggregate>> TipoEntregavel" #57A639 {
-    entity TipoEntregavel <<entity>> <<root>>
-    class NomeTipoEntregavel <<Value Object>>
-}
-
-Atividade --> NomeAtividade
-Atividade --> DescricaoAtividade
 Atividade "1" ---> "*" Tarefa
 Atividade "1" ---> "*" Perfil
-Atividade "1" ---> "*" Entregavel
 
-DadosPessoais "0..1" <--- "1" Bolseiro
+Bolseiro --> BolseiroNome
 
 Contrato --> DataInicio
 Contrato --> DataFim
-Contrato --> TipoContrato
-Contrato "*" ---> "1" Bolseiro 
 
-DadosPessoais --> Nome
-DadosPessoais --> Email
-DadosPessoais --> CienciaID 
+Contrato "*" ---> "1" Bolseiro
 
-Entregavel --> NomeEntregavel
-Entregavel --> DescricaoEntregavel
 Entregavel --> DataEntrega
-Entregavel "*" ---> "1" TipoEntregavel
 
-Investigador "1" ---> "0..1" DadosPessoais
+Investigador --> InvestigadorNome
 
 Perfil "1" ---> "1" Contrato
 
-Projeto --> Titulo
+Projeto --> Nome
 Projeto --> Numero
 Projeto --> Indicador
-Projeto "1" -> "*" Atividade
+Projeto "1" ---> "*" Atividade
 Projeto "1" ---> "1" Orcamento
 Projeto "*" ---> "*" Investigador
+Projeto "1" ---> "*" Entregavel
 
 Orcamento --> Receita
 Orcamento --> Despesa
 Orcamento "1" ---> "1" Rubrica
 
-Rubrica --> NomeRubrica
-
-Tarefa --> NomeTarefa
-Tarefa --> DescricaoTarefa
 Tarefa --> Status
 Orcamento "1" <--- "1" Tarefa
-
-TipoEntregavel --> NomeTipoEntregavel
 
 @enduml
