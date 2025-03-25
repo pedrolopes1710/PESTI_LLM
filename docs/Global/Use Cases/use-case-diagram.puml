@@ -2,9 +2,6 @@
 
 skinparam packageStyle rectangle
 
-skinparam rectangle{
-    BorderColor yellow
-}
 
 title Use Case Diagram
 left to right direction
@@ -60,6 +57,8 @@ usecase "Atribuir afetações executivas" as AAE
 usecase "Gerir afetações executivas" as GAE
 usecase "Atribuir afetações orçamentais" as AAO
 usecase "Gerir agetações orçamentais" as GAO
+usecase "Monitorizar o progresso e status das tarefas" as MPST
+usecase "Visualizar carga de trabalho" as VCT
 
 PM --> CreateAct
 PM --> EditAct
@@ -68,5 +67,49 @@ Unknown --> AAE
 Unknown --> GAE
 Unknown --> AAO
 Unknown --> GAO
+PM --> MPST
+PM --> VCT
+
+'* Gestão Orçamental e Financeira
+usecase "Registar despesas e receitas" as RDR
+usecase "Controlar despesas e receitas" as CDR
+usecase "Gerir rubricas orçamentais e despesas associadas" as GRODA
+usecase "Solicitar emição de relatórios financeiros detalhados" as SERFD
+usecase "Visualizar dados financeiros" as VDF
+
+'? quem faz isto?
+Unknown --> RDR
+Unknown --> CDR 
+Unknown --> GRODA
+Unknown --> SERFD
+Unknown --> VDF
+
+'* Gestão de Cronogramas
+usecase "Criar Cronogramas" as CC
+usecase "Gerir Cronogramas" as GC
+usecase "Monitorizar o progresso das atividades" as MPA
+usecase "Visualizar status das tarefas e cronograma geral" as VSTCG
+
+PM --> CC
+PM --> GC
+PM --> MPA
+PM --> VSTCG
+
+'* Gestão de Indicadores e Entregáveis
+usecase "Registar indicador de realização" as RIR
+usecase "Editar indicador de realização" as EdIR
+usecase "Excluir indicador de realização" as ExIR
+usecase "Registar entregável" as RE
+usecase "Editar entregável" as EdE
+usecase "Excluir entregável" as ExE
+usecase "Monitorizar prazos e responsáveis pelos entregáveis" as MPRPE
+
+PM --> RIR
+PM --> EdIR
+PM --> ExIR
+PM --> RE
+PM --> EdE
+PM --> ExE
+PM --> MPRPE
 
 @enduml

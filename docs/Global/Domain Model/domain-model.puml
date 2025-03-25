@@ -10,7 +10,7 @@ package "<<Aggregate>> Atividade" #C2B078 {
 
 package "<<Aggregate>> Bolseiro" #7F7679 {
     entity Bolseiro <<entity>> <<root>>
-
+    class BolseiroNome <<Value Object>>
 }
 
 package "<<Aggregate>> Contrato" #5D9B9B {
@@ -27,6 +27,7 @@ package "<<Aggregate>> Entregavel" #3E5F8A {
 
 package "<<Aggregate>> Investigador" #2271B3 {
     entity Investigador <<entity>> <<root>>
+    class InvestigadorNome <<Value Object>>
     'TODO dados pessoais
     '? nome? numero?
 }
@@ -69,12 +70,16 @@ package "<<Aggregate>> Tarefa" #EDFF21 {
 Atividade "1" ---> "*" Tarefa
 Atividade "1" ---> "*" Perfil
 
+Bolseiro --> BolseiroNome
+
 Contrato --> DataInicio
 Contrato --> DataFim
 
 Contrato "*" ---> "1" Bolseiro
 
 Entregavel --> DataEntrega
+
+Investigador --> InvestigadorNome
 
 Perfil "1" ---> "1" Contrato
 

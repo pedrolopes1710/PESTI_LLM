@@ -5,6 +5,8 @@
 - o q é uma rubrica (budget)?
 - verificar UCD para ver quem faz o que
 - o q é uma afetação orçamental/executiva?
+- (confirmar) distribuição equilibrada das tarefas é automático?
+- quem vai usar o sistema? (Admin, PM, etc...)?
 
 atributos em falta/a confirmar
 - dos investigadores/bolseiros
