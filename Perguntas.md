@@ -46,6 +46,16 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 ---
 # 📌 Perguntas novas
 
-- Base de dados, fazemos nós uma nossa ou vai ser disponibilizada alguma.
 
+## Respondidas
+- Base de dados, fazemos nós uma nossa ou vai ser disponibilizada alguma. - (SQLServer, criar uma local (para testes/desenvolvimento), dps vê-se)
+- 1 perfil irá contratar 1 pessoa ou 1 perfil pode ter varias pessoas? - par atividade/perfil (perfil nao é da atividade (nem vice versa))
+- Investigadores também têm contratos ou apenas os bolseiros? (inv = automaticamente contrato, bolseiro = automaticamente bolsa)
+    - Se sim, os bolseiros podem ter contratos que nao sejam bolsas? 
+- cadatarefa tem o seu proprio orçamento ou só as atividades? (só atividades) (tarefas têm inicio e fim e nome e deve tar bom)
+- orçamento do projeto é igual à soma das atividades ou pode haver extras em considerações de atividades que possam vir a existir? (apenas soma das atividades (pode alterar ao longo do projeto))
+
+equipa aprovada:
+- par atividade/perfil
+- faze de execução: 1 perfil pode ser consumido por varias pessoas
 📌
