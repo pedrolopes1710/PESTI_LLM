@@ -3,35 +3,39 @@
 skinparam classAttributeIconSize 0
 
 skinparam packageStyle rectangle
+'left to right direction
 
 package "<<Aggregate>> Atividade" #C2B078 {
     entity Atividade <<entity>> <<root>>
     class NomeAtividade <<Value Object>>
     class DescricaoAtividade <<Value Object>>
+    class DataInicioAtividade <<Value Object>>
+    class DataFimAtividade <<Value Object>>
 }
 
-package "<<Aggregate>> Bolseiro" #7F7679 {
-    entity Bolseiro <<entity>> <<root>>
+package "<<Aggregate>> ConsumoPerfil" #E63244 {
+    entity ConsumoPerfil <<entity>> <<root>>
+    class PMsConsumidos <<Value Object>>
 }
 
 package "<<Aggregate>> Contrato" #5D9B9B {
     entity Contrato <<entity>> <<root>>
-    class DataInicio <<Value Object>>
-    class DataFim <<Value Object>>
+    class DataInicioContrato <<Value Object>>
+    class DataFimContrato <<Value Object>>
     enum TipoContrato <<Value Object>> {
-        Normal
+        Investigador
         Bolsa
     }
-    'TODO verificar ligações
 }
 
-package "<<Aggregate>> DadosPessoais" #999950 {
-    entity DadosPessoais <<entity>> <<root>>
+
+package "<<Aggregate>> Pessoa" #999950 {
+    entity Pessoa <<entity>> <<root>>
     class Nome <<Value Object>>
     class Email <<Value Object>>
     class CienciaID <<Value Object>>
-    'TODO perguntar se os investigadores são funcionalmente iguais a bolseiros
 }
+
 
 package "<<Aggregate>> Entregavel" #3E5F8A {
     entity Entregavel <<entity>> <<root>>
@@ -40,33 +44,37 @@ package "<<Aggregate>> Entregavel" #3E5F8A {
     class DataEntrega <<Value Object>>
 }
 
-package "<<Aggregate>> Investigador" #2271B3 {
-    entity Investigador <<entity>> <<root>>
+
+package "<<Aggregate>> Indicador" #EAE6CA {
+    entity Indicador <<entity>> <<root>>
+    class NomeIndicador <<Value Object>>
+    class ValorAtual <<Value Object>>
+    class ValorMaximo <<Value Object>>
 }
 
 package "<<Aggregate>> Perfil" #78858B {
     entity Perfil <<entity>> <<root>>
-    'TODO verificar isto
+    class DescricaoPerfil <<Value Object>>
+    class PMsTotais <<Value Object>>
 }  
 
 package "<<Aggregate>> Projeto" #00BB2D {
     entity Projeto <<entity>> <<root>>
     class Titulo <<Value Object>>
     class Numero <<Value Object>>
-    class Indicador <<Value Object>>
 }
+
 
 package "<<Aggregate>> Orcamento" #FF7514 {
     entity Orcamento <<entity>> <<root>>
-    class Receita <<Value Object>>
-    class Despesa <<Value Object>>
-    'TODO verificar isto
+    class GastoPlaneado <<Value Object>>
+    class GastoExecutado <<Value Object>>
 }
+
 
 package "<<Aggregate>> Rubrica" #6C3B2A {
     entity Rubrica <<entity>> <<root>>
     class NomeRubrica <<Value Object>>
-    'TODO verificar isto
 }
 
 package "<<Aggregate>> Tarefa" #EDFF21 {
@@ -78,58 +86,73 @@ package "<<Aggregate>> Tarefa" #EDFF21 {
         A_Decorrer
         Terminado
     }
-    '? progresso?
 }
+
 
 package "<<Aggregate>> TipoEntregavel" #57A639 {
     entity TipoEntregavel <<entity>> <<root>>
     class NomeTipoEntregavel <<Value Object>>
 }
 
+
+package "<<Aggregate>> TipoVinculo" #CDA434 {
+    entity TipoVinculo <<entity>> <<root>>
+    class NomeVinculo <<Value Object>>
+}
+
 Atividade --> NomeAtividade
 Atividade --> DescricaoAtividade
+Atividade --> DataInicioAtividade
+Atividade --> DataFimAtividade
 Atividade "1" ---> "*" Tarefa
 Atividade "1" ---> "*" Perfil
 Atividade "1" ---> "*" Entregavel
+Atividade "1" ---> "1" Orcamento
 
-DadosPessoais "0..1" <--- "1" Bolseiro
+ConsumoPerfil --> PMsConsumidos
+Perfil "1" <--- "1" ConsumoPerfil
+ConsumoPerfil "1" ---> "1" Pessoa
 
-Contrato --> DataInicio
-Contrato --> DataFim
+Contrato --> DataInicioContrato
+Contrato --> DataFimContrato
 Contrato --> TipoContrato
-Contrato "*" ---> "1" Bolseiro 
-
-DadosPessoais --> Nome
-DadosPessoais --> Email
-DadosPessoais --> CienciaID 
 
 Entregavel --> NomeEntregavel
 Entregavel --> DescricaoEntregavel
 Entregavel --> DataEntrega
 Entregavel "*" ---> "1" TipoEntregavel
 
-Investigador "1" ---> "0..1" DadosPessoais
+Indicador --> NomeIndicador
+Indicador --> ValorAtual
+Indicador --> ValorMaximo
 
-Perfil "1" ---> "1" Contrato
+Perfil --> DescricaoPerfil
+Perfil --> PMsTotais
+Perfil "*" ---> "*" TipoVinculo
+
+Pessoa --> Nome
+Pessoa --> Email
+Pessoa --> CienciaID 
+Pessoa "1" -> "1" Contrato
 
 Projeto --> Titulo
 Projeto --> Numero
-Projeto --> Indicador
+Projeto "1" ---> "*" Indicador
 Projeto "1" -> "*" Atividade
-Projeto "1" ---> "1" Orcamento
-Projeto "*" ---> "*" Investigador
+Projeto "*" ---> "*" Pessoa
 
-Orcamento --> Receita
-Orcamento --> Despesa
-Orcamento "1" ---> "1" Rubrica
+Orcamento --> GastoPlaneado
+Orcamento --> GastoExecutado
+Orcamento "*" ---> "1" Rubrica
 
 Rubrica --> NomeRubrica
 
 Tarefa --> NomeTarefa
 Tarefa --> DescricaoTarefa
 Tarefa --> Status
-Orcamento "1" <--- "1" Tarefa
 
 TipoEntregavel --> NomeTipoEntregavel
+
+TipoVinculo --> NomeVinculo
 
 @enduml
