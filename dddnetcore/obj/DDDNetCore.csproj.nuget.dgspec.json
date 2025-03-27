@@ -1,0 +1,155 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\vasco\\OneDrive - Instituto Superior de Engenharia do Porto\\3ºano\\2semestre\\PESTI_PROJECT\\PESTI_LLM\\dddnetcore\\DDDNetCore.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\vasco\\OneDrive - Instituto Superior de Engenharia do Porto\\3ºano\\2semestre\\PESTI_PROJECT\\PESTI_LLM\\dddnetcore\\DDDNetCore.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\vasco\\OneDrive - Instituto Superior de Engenharia do Porto\\3ºano\\2semestre\\PESTI_PROJECT\\PESTI_LLM\\dddnetcore\\DDDNetCore.csproj",
+        "projectName": "DDDNetCore",
+        "projectPath": "C:\\Users\\vasco\\OneDrive - Instituto Superior de Engenharia do Porto\\3ºano\\2semestre\\PESTI_PROJECT\\PESTI_LLM\\dddnetcore\\DDDNetCore.csproj",
+        "packagesPath": "C:\\Users\\vasco\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\vasco\\OneDrive - Instituto Superior de Engenharia do Porto\\3ºano\\2semestre\\PESTI_PROJECT\\PESTI_LLM\\dddnetcore\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\vasco\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Auth0.AspNetCore.Authentication": {
+              "target": "Package",
+              "version": "[1.4.1, )"
+            },
+            "Auth0.AuthenticationApi": {
+              "target": "Package",
+              "version": "[7.27.0, )"
+            },
+            "Auth0.ManagementApi": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "DotNetEnv": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
+            "FluentAssertions": {
+              "target": "Package",
+              "version": "[6.12.1, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.8, )"
+            },
+            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.2, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "target": "Package",
+              "version": "[8.0.2, )"
+            },
+            "Microsoft.EntityFrameworkCore.InMemory": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational.Design": {
+              "target": "Package",
+              "version": "[1.1.6, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[7.0.0, )"
+            },
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.11.0, )"
+            },
+            "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
+              "target": "Package",
+              "version": "[1.18.1, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.72, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "Pomelo.EntityFrameworkCore.MySql": {
+              "target": "Package",
+              "version": "[8.0.2, )"
+            },
+            "RestSharp": {
+              "target": "Package",
+              "version": "[106.15.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.9.2, )"
+            },
+            "xunit.runner.visualstudio": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.8.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.401/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
