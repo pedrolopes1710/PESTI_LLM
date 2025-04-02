@@ -72,6 +72,9 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 
 ## 📌 Perguntas Futuras
 
-*Documentação, quais digramas fazemos?*
-- é para tratar de candidaturas tbm? se sim quais dados? 
+*Documentação, quais digramas fazemos?* .: ver outros relatórios
+- é para tratar de candidaturas tbm? se sim quais dados? R.: se n tivermos mais nd q fazer (concursos e coisa e tal)
+- app em PT ou em EN (e mensagens para a consola?) R.: Inglês
+- distribuição de requisitos R.: nós definimos, nós distribuimos, dps verifica-se
 
+- relatório: pode ter coisas iguais (ex.: estado da arte)?
