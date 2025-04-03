@@ -1,5 +1,12 @@
 ﻿# 📌 Sistema de Gestão de Projetos e Recursos
 
+## 💻 Estrutura do Sistema
+- **Base de Dados:** SQLServer, criar uma local (para testes/desenvolvimento), depois vê-se.
+- **Língua:** A app será desenvolvida em inglês.
+
+## 📄 Documentação
+- Documentação a fazer (diagramas): ver relatórios passados .
+
 ## 📊 O que é um Indicador?
 Métrica utilizada para avaliar o progresso de um projeto.  
 **Exemplo:** Número de contratações (podendo variar entre projetos).
@@ -13,12 +20,21 @@ O sistema utilizará **Auth0** para autenticação.
   💡 *Conclusão: Bolsa é um tipo específico de contrato.*
 
 ## ✅ Status das Tarefas
+As tafeas têm ínicio, final, nome e status.
 Os status das tarefas serão baseados no cronograma do projeto:
 - 🟡 **A fazer**
 - 🔵 **Em execução**
 - 🟢 **Feito**
 
-## 💰 O que é uma Rubrica (Budget)?
+## 💵 Gestão Orçamental e Financeira 
+
+### 🪙 Orçamento do Projeto
+O orçamento do projeto é igual à soma do orçamento das atividades (pode alterar ao longo do projeto).
+
+### 🗒 Orçamento da atividade
+As atividades têm o seu próprio orçamento. As tarefas não possuem um orçamento.
+
+### 💰 O que é uma Rubrica (Budget)?
 Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 - Recursos Humanos
 - Promoção e Divulgação
@@ -49,9 +65,6 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 # 📌 Perguntas e Respostas
 
 ## ✅ Perguntas Respondidas
-- **Base de dados, fazemos nós uma nossa ou vai ser disponibilizada alguma?**
-  - SQLServer, criar uma local (para testes/desenvolvimento), depois vê-se.
-
 - **1 perfil irá contratar 1 pessoa ou 1 perfil pode ter várias pessoas?**
   - Par atividade/perfil (perfil não é da atividade nem vice-versa).
 
@@ -60,21 +73,13 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
   - Bolseiros = automaticamente bolsa.
   - Os bolseiros podem ter contratos que não sejam bolsas?
 
-- **Cada tarefa tem o seu próprio orçamento ou só as atividades?**
-  - Apenas atividades (tarefas têm início, fim e nome).
-
-- **O orçamento do projeto é igual à soma das atividades ou pode haver extras em considerações de atividades que possam vir a existir?**
-  - Apenas soma das atividades (pode alterar ao longo do projeto).
-
 - **Equipa aprovada:**
   - Par atividade/perfil.
   - Fase de execução: 1 perfil pode ser consumido por várias pessoas.
 
-## 📌 Perguntas Futuras
+- **É para tratar de candidaturas**
+  - Numa parte final do projeto, no caso de existir tempo.    
 
-*Documentação, quais digramas fazemos?* .: ver outros relatórios
-- é para tratar de candidaturas tbm? se sim quais dados? R.: se n tivermos mais nd q fazer (concursos e coisa e tal)
-- app em PT ou em EN (e mensagens para a consola?) R.: Inglês
-- distribuição de requisitos R.: nós definimos, nós distribuimos, dps verifica-se
+## 📌 Perguntas Futuras
 
 - relatório: pode ter coisas iguais (ex.: estado da arte)?
