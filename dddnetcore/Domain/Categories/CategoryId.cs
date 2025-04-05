@@ -10,6 +10,8 @@ namespace DDDSample1.Domain.Categories
         public CategoryId(Guid value) : base(value)
         {
         }
+        private CategoryId() : base() { }
+
 
         public CategoryId(String value) : base(value)
         {

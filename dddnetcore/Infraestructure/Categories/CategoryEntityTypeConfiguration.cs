@@ -8,11 +8,15 @@ namespace DDDSample1.Infrastructure.Categories
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
-            // cf. https://www.entityframeworktutorial.net/efcore/fluent-api-in-entity-framework-core.aspx
-            
-            //builder.ToTable("Categories", SchemaNames.DDDSample1);
             builder.HasKey(b => b.Id);
-            //builder.Property<bool>("_active").HasColumnName("Active");
+
+            builder.Property(b => b.Id)
+                .HasConversion(
+                    id => id.AsGuid(),
+                    guid => new CategoryId(guid));
+
+            builder.Property(b => b.Description).IsRequired();
+            builder.Property(b => b.Active).IsRequired();
         }
     }
 }
