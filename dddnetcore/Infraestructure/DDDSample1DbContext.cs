@@ -6,6 +6,8 @@ using DDDSample1.Infrastructure.Categories;
 using DDDSample1.Infrastructure.Products;
 using dddnetcore.Domain.Rubricas;
 using dddnetcore.Infraestructure.Rubricas;
+using dddnetcore.Infraestructure.Orcamentos;
+using dddnetcore.Domain.Orcamentos;
 
 namespace DDDSample1.Infrastructure
 {
@@ -20,6 +22,7 @@ namespace DDDSample1.Infrastructure
         //uteis
 
         public DbSet<Rubrica> Rubricas {get; set;}
+        public DbSet<Orcamento> Orcamentos {get; set;}
 
         public DDDSample1DbContext(DbContextOptions options) : base(options)
         {
@@ -33,6 +36,7 @@ namespace DDDSample1.Infrastructure
             modelBuilder.ApplyConfiguration(new FamilyEntityTypeConfiguration());
             // uteis
             modelBuilder.ApplyConfiguration(new RubricaEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new OrcamentoEntityTypeConfiguration());
         }
     }
 }
