@@ -10,9 +10,20 @@ namespace dddnetcore.Infraestructure.Rubricas
 {
     public class RubricaEntityTypeConfiguration : IEntityTypeConfiguration<Rubrica>
     {
-        public void Configure(EntityTypeBuilder<Rubrica> builder) {
+        public void Configure(EntityTypeBuilder<Rubrica> builder) 
+        {
             builder.HasKey(b => b.Id);
-            builder.Property(b => b.Nome).HasConversion(b => b.Nome, b => new NomeRubrica(b)).IsRequired();
+
+            builder.Property(b => b.Id)
+                .HasConversion(
+                    id => id.AsGuid(), 
+                    guid => new RubricaId(guid)); 
+
+            builder.Property(b => b.Nome)
+                .HasConversion(
+                    b => b.Nome, 
+                    b => new NomeRubrica(b)) 
+                .IsRequired();
         }
     }
 }

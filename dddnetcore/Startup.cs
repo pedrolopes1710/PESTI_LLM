@@ -31,21 +31,13 @@ namespace DDDSample1
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // Acessa a variável de ambiente configurada no sistema
-            var connectionString = Environment.GetEnvironmentVariable("MY_APP_CONNECTION_STRING");
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                throw new InvalidOperationException("A variável de ambiente 'MY_APP_CONNECTION_STRING' não está configurada.");
-            }
-
-            // Configura o contexto do banco de dados com a variável de ambiente
             services.AddDbContext<DDDSample1DbContext>(opt =>
-                opt.UseSqlServer(connectionString)); // Removido o ReplaceService aqui
+                opt.UseSqlite(connectionString));
 
             ConfigureMyServices(services);
 
-            // Adiciona NewtonsoftJson
             services.AddControllers().AddNewtonsoftJson();
         }
 
@@ -73,7 +65,6 @@ namespace DDDSample1
 
         public void ConfigureMyServices(IServiceCollection services)
         {
-            // Registra seus serviços e repositórios
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             services.AddTransient<ICategoryRepository, CategoryRepository>();
@@ -85,13 +76,8 @@ namespace DDDSample1
             services.AddTransient<IFamilyRepository, FamilyRepository>();
             services.AddTransient<FamilyService>();
 
-            // Se necessário, adicione mais serviços aqui...
-
             services.AddTransient<IRubricaRepository, RubricaRepository>();
-            //TODO rubrica service
-
             services.AddTransient<IOrcamentoRepository, OrcamentoRepository>();
-            //TODO orcamento service
         }
     }
 }

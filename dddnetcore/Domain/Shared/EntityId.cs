@@ -8,7 +8,7 @@ namespace DDDSample1.Domain.Shared
     public abstract class EntityId: IEquatable<EntityId>, IComparable<EntityId>
     {
         protected Object ObjValue {get;}
-
+        
         public String Value { 
             get { 
                     if (this.ObjValue.GetType() == typeof(String))
@@ -16,6 +16,7 @@ namespace DDDSample1.Domain.Shared
                     return AsString();
                 } 
         }
+        protected EntityId() { }
 
         protected EntityId(Object value)
         {
