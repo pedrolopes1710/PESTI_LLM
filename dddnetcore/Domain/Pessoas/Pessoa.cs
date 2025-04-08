@@ -17,7 +17,7 @@ namespace dddnetcore.Domain.Pessoas
 
         public Pessoa(string nome, string email, string cienciaId,ContratoId contratoId) {
             if (contratoId == null)
-                throw new BusinessRuleValidationException("Every product requires a category.");
+                throw new BusinessRuleValidationException("Every person requires a contract.");
             this.ContratoId=contratoId;
             this.Id = new PessoaId(Guid.NewGuid());
             this.Nome = new NomePessoa(nome);
