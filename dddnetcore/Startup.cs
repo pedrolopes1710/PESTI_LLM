@@ -76,8 +76,13 @@ namespace DDDSample1
             services.AddTransient<IFamilyRepository, FamilyRepository>();
             services.AddTransient<FamilyService>();
 
+            //* uteis
+
             services.AddTransient<IRubricaRepository, RubricaRepository>();
+            services.AddTransient<RubricaService>();
+        
             services.AddTransient<IOrcamentoRepository, OrcamentoRepository>();
+            //TODO orcamentoservice
         }
     }
 }
