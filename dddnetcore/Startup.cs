@@ -4,16 +4,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using DDDSample1.Infrastructure;
 using DDDSample1.Infrastructure.Categories;
 using DDDSample1.Infrastructure.Products;
 using DDDSample1.Infrastructure.Families;
+using System;
 using DDDSample1.Domain.Shared;
 using DDDSample1.Domain.Categories;
 using DDDSample1.Domain.Products;
 using DDDSample1.Domain.Families;
-using System;
+using dddnetcore.Domain.Rubricas;
+using dddnetcore.Infraestructure.Rubricas;
+using dddnetcore.Domain.Orcamentos;
+using dddnetcore.Infraestructure.Orcamentos;
 
 namespace DDDSample1
 {
@@ -83,6 +86,12 @@ namespace DDDSample1
             services.AddTransient<FamilyService>();
 
             // Se necessário, adicione mais serviços aqui...
+
+            services.AddTransient<IRubricaRepository, RubricaRepository>();
+            //TODO rubrica service
+
+            services.AddTransient<IOrcamentoRepository, OrcamentoRepository>();
+            //TODO orcamento service
         }
     }
 }

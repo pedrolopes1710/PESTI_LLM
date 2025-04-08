@@ -6,10 +6,6 @@ using DDDSample1.Infrastructure.Categories;
 using DDDSample1.Infrastructure.Products;
 using dddnetcore.Domain.Rubricas;
 using dddnetcore.Infraestructure.Rubricas;
-using dddnetcore.Domain.Pessoas;
-using dddnetcore.Infraestructure.Pessoas;
-using dddnetcore.Infraestructure.Contratos;
-using dddnetcore.Domain.Contratos;
 
 namespace DDDSample1.Infrastructure
 {
@@ -25,9 +21,6 @@ namespace DDDSample1.Infrastructure
 
         public DbSet<Rubrica> Rubricas {get; set;}
 
-        public DbSet<Pessoa> Pessoas {get;set;}
-        public DbSet<Contrato> Contratos {get;set;}
-
         public DDDSample1DbContext(DbContextOptions options) : base(options)
         {
 
@@ -40,9 +33,6 @@ namespace DDDSample1.Infrastructure
             modelBuilder.ApplyConfiguration(new FamilyEntityTypeConfiguration());
             // uteis
             modelBuilder.ApplyConfiguration(new RubricaEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new PessoaEntityTypeConfiguration());
-            modelBuilder.ApplyConfiguration(new ContratoEntityTypeConfiguration());
-            
         }
     }
 }
