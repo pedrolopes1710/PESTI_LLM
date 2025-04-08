@@ -83,3 +83,4 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 ## 📌 Perguntas Futuras
 
 - relatório: pode ter coisas iguais (ex.: estado da arte)?
+- qual é a tradução de "rubrica"?

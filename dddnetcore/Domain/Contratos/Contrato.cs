@@ -22,7 +22,7 @@ namespace dddnetcore.Domain.Contratos
             this.DataInicioContrato = new DataInicioContrato(dataIniciocontrato);
             this.DataFimContrato = new DataFimContrato(dataFimcontrato);
             this.TipoContrato = tipoContrato;
-            this.PessoaId=pessoaId;
+           
         }
     }
 }

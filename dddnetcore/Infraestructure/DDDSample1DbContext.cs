@@ -6,9 +6,9 @@ using DDDSample1.Infrastructure.Categories;
 using DDDSample1.Infrastructure.Products;
 using dddnetcore.Domain.Rubricas;
 using dddnetcore.Infraestructure.Rubricas;
-using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Infraestructure.Orcamentos;
 using DDDSample1.Infrastructure.Families;
+using dddnetcore.Domain.Orcamentos;
 
 namespace DDDSample1.Infrastructure
 {
