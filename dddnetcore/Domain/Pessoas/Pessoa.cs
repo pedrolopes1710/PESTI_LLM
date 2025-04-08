@@ -1,4 +1,5 @@
 using System;
+using dddnetcore.Domain.Contratos;
 using DDDSample1.Domain.Shared;
 
 namespace dddnetcore.Domain.Pessoas
@@ -9,10 +10,15 @@ namespace dddnetcore.Domain.Pessoas
         public EmailPessoa Email {get; private set;}
         public CienciaId Ciencia{get;private set;}
 
+        public ContratoId ContratoId { get;  private set; }
+
         private Pessoa() {
         }
 
-        public Pessoa(string nome, string email, string cienciaId) {
+        public Pessoa(string nome, string email, string cienciaId,ContratoId contratoId) {
+            if (contratoId == null)
+                throw new BusinessRuleValidationException("Every product requires a category.");
+            this.ContratoId=contratoId;
             this.Id = new PessoaId(Guid.NewGuid());
             this.Nome = new NomePessoa(nome);
             this.Email = new EmailPessoa(email);
