@@ -85,3 +85,9 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 - relatório: pode ter coisas iguais (ex.: estado da arte)?
 - qual é a tradução de "rubrica"?
 - posso editar a rubrica do orçamento? posso editar o gasto planeado do orçamento?
+
+Diogo:
+- temos de fazer mais algum diagrama antes da implementação?
+- se o stor vai faltar na semana de 11 e se dá para eventualemnete em caso de termos duvidas, podermos falar com ele online (email ou ate uma pqeuena reunião)
+
+
