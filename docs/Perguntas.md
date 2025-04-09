@@ -83,11 +83,35 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 ## 📌 Perguntas Futuras
 
 - relatório: pode ter coisas iguais (ex.: estado da arte)?
-- qual é a tradução de "rubrica"?
-- posso editar a rubrica do orçamento? posso editar o gasto planeado do orçamento?
+- qual é a tradução de "rubrica"? - fica CostType pra ja
+- posso editar a rubrica do orçamento? sim.
+- posso editar o gasto planeado do orçamento? sim, mas tem q se meter a afetação
 
 Diogo:
-- temos de fazer mais algum diagrama antes da implementação?
-- se o stor vai faltar na semana de 11 e se dá para eventualemnete em caso de termos duvidas, podermos falar com ele online (email ou ate uma pqeuena reunião)
+- temos de fazer mais algum diagrama antes da implementação? - fisica e lógica
+- se o stor vai faltar na semana de 11 e se dá para eventualemnete em caso de termos duvidas, podermos falar com ele online (email ou ate uma pqeuena reunião) - sim
+
+- investigador pode ser contratado ou docente (esclarecer mais)
 
 
+- adicionar tempo previsto (consumo por mes) ao consumo do perfil
+- consumo perfil:
+  - inicio/fim (por atividade)
+  - dividir os PMs pelos meses
+  (avisar qtos pms sobram no menu dps na UI)
+
+- adicionar pedido de pagamento (afetação prevista > afetação lacrada (definitiva))
+
+- adicionar salário: **por contrato**, mas pode ser alterado
+
+- investigador já existe,
+  - agendar mudanças de salario q mude as afetações previstas
+
+BD (afetação):
+- projeto (dá jeito)
+- atividade
+- pessoa
+- (reproduzir tabela)
+
+TALVEZ as afetações têm uma data tudo antes é executado e tudo depois é previsto
+(testar isto)

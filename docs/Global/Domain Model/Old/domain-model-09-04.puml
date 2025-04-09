@@ -1,0 +1,158 @@
+@startuml domain-model
+'https://plantuml.com/class-diagram
+skinparam classAttributeIconSize 0
+
+skinparam packageStyle rectangle
+'left to right direction
+
+package "<<Aggregate>> Atividade" #C2B078 {
+    entity Atividade <<entity>> <<root>>
+    class NomeAtividade <<Value Object>>
+    class DescricaoAtividade <<Value Object>>
+    class DataInicioAtividade <<Value Object>>
+    class DataFimAtividade <<Value Object>>
+}
+
+package "<<Aggregate>> ConsumoPerfil" #E63244 {
+    entity ConsumoPerfil <<entity>> <<root>>
+    class PMsConsumidos <<Value Object>>
+}
+
+package "<<Aggregate>> Contrato" #5D9B9B {
+    entity Contrato <<entity>> <<root>>
+    class DataInicioContrato <<Value Object>>
+    class DataFimContrato <<Value Object>>
+    enum TipoContrato <<Value Object>> {
+        Investigador
+        Bolsa
+    }
+}
+
+
+package "<<Aggregate>> Pessoa" #999950 {
+    entity Pessoa <<entity>> <<root>>
+    class Nome <<Value Object>>
+    class Email <<Value Object>>
+    class CienciaID <<Value Object>>
+}
+
+
+package "<<Aggregate>> Entregavel" #3E5F8A {
+    entity Entregavel <<entity>> <<root>>
+    class NomeEntregavel <<Value Object>>
+    class DescricaoEntregavel <<Value Object>>
+    class DataEntrega <<Value Object>>
+}
+
+
+package "<<Aggregate>> Indicador" #EAE6CA {
+    entity Indicador <<entity>> <<root>>
+    class NomeIndicador <<Value Object>>
+    class ValorAtual <<Value Object>>
+    class ValorMaximo <<Value Object>>
+}
+
+package "<<Aggregate>> Perfil" #78858B {
+    entity Perfil <<entity>> <<root>>
+    class DescricaoPerfil <<Value Object>>
+    class PMsTotais <<Value Object>>
+}  
+
+package "<<Aggregate>> Projeto" #00BB2D {
+    entity Projeto <<entity>> <<root>>
+    class Titulo <<Value Object>>
+    class Numero <<Value Object>>
+}
+
+
+package "<<Aggregate>> Orcamento" #FF7514 {
+    entity Orcamento <<entity>> <<root>>
+    class GastoPlaneado <<Value Object>>
+    class GastoExecutado <<Value Object>>
+}
+
+
+package "<<Aggregate>> Rubrica" #6C3B2A {
+    entity Rubrica <<entity>> <<root>>
+    class NomeRubrica <<Value Object>>
+}
+
+package "<<Aggregate>> Tarefa" #EDFF21 {
+    entity Tarefa <<entity>> <<root>>
+    class NomeTarefa <<Value Object>>
+    class DescricaoTarefa <<Value Object>>
+    enum Status <<Value Object>> {
+        Por_Comecar
+        A_Decorrer
+        Terminado
+    }
+}
+
+
+package "<<Aggregate>> TipoEntregavel" #57A639 {
+    entity TipoEntregavel <<entity>> <<root>>
+    class NomeTipoEntregavel <<Value Object>>
+}
+
+
+package "<<Aggregate>> TipoVinculo" #CDA434 {
+    entity TipoVinculo <<entity>> <<root>>
+    class NomeVinculo <<Value Object>>
+}
+
+Atividade --> NomeAtividade
+Atividade --> DescricaoAtividade
+Atividade --> DataInicioAtividade
+Atividade --> DataFimAtividade
+Atividade "1" ---> "*" Tarefa
+Atividade "1" ---> "*" Perfil
+Atividade "1" ---> "*" Entregavel
+Atividade "1" ---> "1" Orcamento
+
+ConsumoPerfil --> PMsConsumidos
+Perfil "1" <--- "1" ConsumoPerfil
+ConsumoPerfil "1" ---> "1" Pessoa
+
+Contrato --> DataInicioContrato
+Contrato --> DataFimContrato
+Contrato --> TipoContrato
+
+Entregavel --> NomeEntregavel
+Entregavel --> DescricaoEntregavel
+Entregavel --> DataEntrega
+Entregavel "*" ---> "1" TipoEntregavel
+
+Indicador --> NomeIndicador
+Indicador --> ValorAtual
+Indicador --> ValorMaximo
+
+Perfil --> DescricaoPerfil
+Perfil --> PMsTotais
+Perfil "*" ---> "*" TipoVinculo
+
+Pessoa --> Nome
+Pessoa --> Email
+Pessoa --> CienciaID 
+Pessoa "1" -> "1" Contrato
+
+Projeto --> Titulo
+Projeto --> Numero
+Projeto "1" ---> "*" Indicador
+Projeto "1" -> "*" Atividade
+Projeto "*" ---> "*" Pessoa
+
+Orcamento --> GastoPlaneado
+Orcamento --> GastoExecutado
+Orcamento "*" ---> "1" Rubrica
+
+Rubrica --> NomeRubrica
+
+Tarefa --> NomeTarefa
+Tarefa --> DescricaoTarefa
+Tarefa --> Status
+
+TipoEntregavel --> NomeTipoEntregavel
+
+TipoVinculo --> NomeVinculo
+
+@enduml
