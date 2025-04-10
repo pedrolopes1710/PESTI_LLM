@@ -80,38 +80,57 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 - **É para tratar de candidaturas**
   - Numa parte final do projeto, no caso de existir tempo.    
 
+### Dia 09/04
+
+- **relatório: pode ter coisas iguais (ex.: estado da arte)?**
+  - Professor ainda vai analisar e disse que depois dava resposta.
+
+- **qual é a tradução de "rubrica"?**
+  - Fica CostType para já.
+
+- **Posso editar a rubrica do orçamento?**
+  - Sim.
+
+- **Posso editar o gasto planeado do orçamento?**
+  - Sim, mas tem que se meter a afetação.
+
+- **Temos de fazer mais algum diagrama antes da implementação?** 
+  - Não respondido a 100% mas apenas vista fisica e lógica.
+
+- **O professor vai faltar na semana de 11 e se dá para eventualmente em caso de termos duvidas, podermos falar com ele online (email ou ate uma pequena reunião)**   
+  - Sim
+
+- **Tipos de Contrato** 
+  - investigador pode ser contratado ou docente (esclarecer mais)
+
+- **Consumo Perfil**
+  - Adicionar tempo previsto (consumo por mes) ao consumo do perfil
+  - Consumo perfil:
+    - inicio/fim (por atividade)
+    - dividir os PMs pelos meses
+    (avisar qtos pms sobram no menu dps na UI)
+
+- **Pedidos de Pagamentos**
+  - Adicionar pedido de pagamento (afetação prevista > afetação aprovada)
+
+- **Contratos**
+  - Adicionar salário mensal: **por contrato**, mas pode ser alterado
+
+- **Salários (EXTRA)**
+  - Investigador já existe,
+    - agendar mudanças de salario que mude as afetações previstas
+
+- **Base de Dados (afetação)**
+  - Projeto (dá jeito)
+  - Atividade
+  - Pessoa
+  - (reproduzir tabela)
+
+- **Afetações**
+  - TALVEZ as afetações têm uma data tudo antes é executado e tudo depois é previsto
+(testar isto)
+
 ## 📌 Perguntas Futuras
 
-- relatório: pode ter coisas iguais (ex.: estado da arte)?
-- qual é a tradução de "rubrica"? - fica CostType pra ja
-- posso editar a rubrica do orçamento? sim.
-- posso editar o gasto planeado do orçamento? sim, mas tem q se meter a afetação
-
-Diogo:
-- temos de fazer mais algum diagrama antes da implementação? - fisica e lógica
-- se o stor vai faltar na semana de 11 e se dá para eventualemnete em caso de termos duvidas, podermos falar com ele online (email ou ate uma pqeuena reunião) - sim
-
-- investigador pode ser contratado ou docente (esclarecer mais)
-
-
-- adicionar tempo previsto (consumo por mes) ao consumo do perfil
-- consumo perfil:
-  - inicio/fim (por atividade)
-  - dividir os PMs pelos meses
-  (avisar qtos pms sobram no menu dps na UI)
-
-- adicionar pedido de pagamento (afetação prevista > afetação lacrada (definitiva))
-
-- adicionar salário: **por contrato**, mas pode ser alterado
-
-- investigador já existe,
-  - agendar mudanças de salario q mude as afetações previstas
-
-BD (afetação):
-- projeto (dá jeito)
-- atividade
-- pessoa
-- (reproduzir tabela)
-
-TALVEZ as afetações têm uma data tudo antes é executado e tudo depois é previsto
-(testar isto)
+- **relatório: pode ter coisas iguais (ex.: estado da arte)?**
+  - Professor ainda vai analisar e disse que depois dava resposta.
