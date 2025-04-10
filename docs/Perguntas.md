@@ -115,3 +115,5 @@ BD (afetação):
 
 TALVEZ as afetações têm uma data tudo antes é executado e tudo depois é previsto
 (testar isto)
+
+- o q é o TSU? (penúltima linha do excel)

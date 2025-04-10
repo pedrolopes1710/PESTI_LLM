@@ -3,7 +3,19 @@
 skinparam classAttributeIconSize 0
 
 skinparam packageStyle rectangle
-'left to right direction
+left to right direction
+
+package "<<Aggregate>> AfetacaoMensal" #C93C20 {
+    entity AfetacaoMensal <<entity>> <<root>>
+    class PMs <<Value Object>>
+}
+
+package "<<Aggregate>> AfetacaoPerfil" #E63244 {
+    entity AfetacaoPerfil <<entity>> <<root>>
+    class PMsAprovados <<Value Object>>
+    class DuracaoMes <<Value Object>>
+    '* PMs Previstos = soma dos PMs de todos os meses da afetacao mensal
+}
 
 package "<<Aggregate>> Atividade" #C2B078 {
     entity Atividade <<entity>> <<root>>
@@ -13,29 +25,17 @@ package "<<Aggregate>> Atividade" #C2B078 {
     class DataFimAtividade <<Value Object>>
 }
 
-package "<<Aggregate>> ConsumoPerfil" #E63244 {
-    entity ConsumoPerfil <<entity>> <<root>>
-    class PMsConsumidos <<Value Object>>
-}
-
 package "<<Aggregate>> Contrato" #5D9B9B {
     entity Contrato <<entity>> <<root>>
     class DataInicioContrato <<Value Object>>
     class DataFimContrato <<Value Object>>
     enum TipoContrato <<Value Object>> {
+        Docente
         Investigador
-        Bolsa
+        Bolseiro
     }
+    class SalarioMensal <<Value Object>>
 }
-
-
-package "<<Aggregate>> Pessoa" #999950 {
-    entity Pessoa <<entity>> <<root>>
-    class Nome <<Value Object>>
-    class Email <<Value Object>>
-    class CienciaID <<Value Object>>
-}
-
 
 package "<<Aggregate>> Entregavel" #3E5F8A {
     entity Entregavel <<entity>> <<root>>
@@ -44,6 +44,24 @@ package "<<Aggregate>> Entregavel" #3E5F8A {
     class DataEntrega <<Value Object>>
 }
 
+package "<<Aggregate>> CargaMensal" #6C6874 {
+    entity CargaMensal <<entity>> <<root>>
+    class JornadaDiaria <<Value Object>>
+    class DiasUteisTrabalhaveis <<Value Object>>
+    '* Horas potencias trabalháveis = jornada * dias
+    class DiasFeriasBaixasLiencasFaltas <<Value Object>>
+    class SalarioBase <<Value Object>>
+    '* horas de férias/baixas/etc é dias de férias/coiso * jornada
+    class Ano <<Value Object>>
+    enum Mes <<Value Object>> {
+        Janeiro, Fevereiro
+        Marco, Abril
+        Maio, Junho
+        Julho, Agosto
+        Setembro, Outubro
+        Novembro, Dezembro
+    }
+}
 
 package "<<Aggregate>> Indicador" #EAE6CA {
     entity Indicador <<entity>> <<root>>
@@ -57,6 +75,13 @@ package "<<Aggregate>> Perfil" #78858B {
     class DescricaoPerfil <<Value Object>>
     class PMsTotais <<Value Object>>
 }  
+
+package "<<Aggregate>> Pessoa" #999950 {
+    entity Pessoa <<entity>> <<root>>
+    class NomePessoa <<Value Object>>
+    class Email <<Value Object>>
+    class CienciaID <<Value Object>>
+}
 
 package "<<Aggregate>> Projeto" #00BB2D {
     entity Projeto <<entity>> <<root>>
@@ -100,22 +125,35 @@ package "<<Aggregate>> TipoVinculo" #CDA434 {
     class NomeVinculo <<Value Object>>
 }
 
+AfetacaoMensal --> PMs
+AfetacaoMensal "*" ---> "1" CargaMensal
+AfetacaoMensal "*" -> "1" AfetacaoPerfil
+
+AfetacaoPerfil --> PMsAprovados
+AfetacaoPerfil --> DuracaoMes
+AfetacaoPerfil "*" ---> "1" Perfil
+AfetacaoPerfil "*" ---> "1" Pessoa
+
 Atividade --> NomeAtividade
 Atividade --> DescricaoAtividade
 Atividade --> DataInicioAtividade
 Atividade --> DataFimAtividade
 Atividade "1" ---> "*" Tarefa
-Atividade "1" ---> "*" Perfil
+Atividade "*" ---> "*" Perfil
 Atividade "1" ---> "*" Entregavel
 Atividade "1" ---> "1" Orcamento
 
-ConsumoPerfil --> PMsConsumidos
-Perfil "1" <--- "1" ConsumoPerfil
-ConsumoPerfil "1" ---> "1" Pessoa
+CargaMensal --> JornadaDiaria
+CargaMensal --> DiasUteisTrabalhaveis
+CargaMensal --> DiasFeriasBaixasLiencasFaltas
+CargaMensal --> SalarioBase
+CargaMensal --> Ano
+CargaMensal --> Mes
 
 Contrato --> DataInicioContrato
 Contrato --> DataFimContrato
 Contrato --> TipoContrato
+Contrato --> SalarioMensal
 
 Entregavel --> NomeEntregavel
 Entregavel --> DescricaoEntregavel
@@ -130,15 +168,17 @@ Perfil --> DescricaoPerfil
 Perfil --> PMsTotais
 Perfil "*" ---> "*" TipoVinculo
 
-Pessoa --> Nome
+Pessoa --> NomePessoa
 Pessoa --> Email
 Pessoa --> CienciaID 
-Pessoa "1" -> "1" Contrato
+Pessoa "1" ---> "1" Contrato
+Pessoa "1" ---> "*" CargaMensal
 
 Projeto --> Titulo
 Projeto --> Numero
 Projeto "1" ---> "*" Indicador
 Projeto "1" -> "*" Atividade
+Projeto "1" ---> "*" Perfil
 Projeto "*" ---> "*" Pessoa
 
 Orcamento --> GastoPlaneado
