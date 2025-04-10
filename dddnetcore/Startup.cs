@@ -82,7 +82,7 @@ namespace DDDSample1
             services.AddTransient<RubricaService>();
         
             services.AddTransient<IOrcamentoRepository, OrcamentoRepository>();
-            //TODO orcamentoservice
+            services.AddTransient<OrcamentoService>();
         }
     }
 }
