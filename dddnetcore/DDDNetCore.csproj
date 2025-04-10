@@ -43,4 +43,36 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Domain\Contratos\**" />
+    <Compile Remove="Domain\Pessoas\**" />
+    <Compile Remove="Domain\TiposVinculo\**" />
+    <Compile Remove="Infraestructure\Contratos\**" />
+    <Compile Remove="Infraestructure\Pessoas\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Domain\Contratos\**" />
+    <EmbeddedResource Remove="Domain\Pessoas\**" />
+    <EmbeddedResource Remove="Domain\TiposVinculo\**" />
+    <EmbeddedResource Remove="Infraestructure\Contratos\**" />
+    <EmbeddedResource Remove="Infraestructure\Pessoas\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Domain\Contratos\**" />
+    <Content Remove="Domain\Pessoas\**" />
+    <Content Remove="Domain\TiposVinculo\**" />
+    <Content Remove="Infraestructure\Contratos\**" />
+    <Content Remove="Infraestructure\Pessoas\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Domain\Contratos\**" />
+    <None Remove="Domain\Pessoas\**" />
+    <None Remove="Domain\TiposVinculo\**" />
+    <None Remove="Infraestructure\Contratos\**" />
+    <None Remove="Infraestructure\Pessoas\**" />
+  </ItemGroup>
+
 </Project>
