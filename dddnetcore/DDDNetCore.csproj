@@ -49,6 +49,7 @@
     <Compile Remove="Domain\TiposVinculo\**" />
     <Compile Remove="Infraestructure\Contratos\**" />
     <Compile Remove="Infraestructure\Pessoas\**" />
+    <Compile Remove="Domain\Perfil\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,6 +58,7 @@
     <EmbeddedResource Remove="Domain\TiposVinculo\**" />
     <EmbeddedResource Remove="Infraestructure\Contratos\**" />
     <EmbeddedResource Remove="Infraestructure\Pessoas\**" />
+    <EmbeddedResource Remove="Domain\Perfil\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,6 +67,7 @@
     <Content Remove="Domain\TiposVinculo\**" />
     <Content Remove="Infraestructure\Contratos\**" />
     <Content Remove="Infraestructure\Pessoas\**" />
+    <Content Remove="Domain\Perfil\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,6 +76,7 @@
     <None Remove="Domain\TiposVinculo\**" />
     <None Remove="Infraestructure\Contratos\**" />
     <None Remove="Infraestructure\Pessoas\**" />
+    <None Remove="Domain\Perfil\**" />
   </ItemGroup>
 
 </Project>

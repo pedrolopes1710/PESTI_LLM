@@ -11,7 +11,9 @@ using DDDSample1.Infrastructure.Families;
 using dddnetcore.Domain.Orcamentos;
 
 using dddnetcore.Domain.Indicadores;
+using dddnetcore.Domain.Perfis;
 using dddnetcore.Infrastructure.Indicadores;
+using dddnetcore.Infrastructure.Perfis;
 
 namespace DDDSample1.Infrastructure
 {
@@ -29,6 +31,8 @@ namespace DDDSample1.Infrastructure
         public DbSet<Orcamento> Orcamentos {get; set;}
         public DbSet<Indicador> Indicadores {get; set;}
         
+        public DbSet<Perfil> Perfil {get; set;}
+        
         
         public DDDSample1DbContext(DbContextOptions options) : base(options)
         {
@@ -44,6 +48,7 @@ namespace DDDSample1.Infrastructure
             modelBuilder.ApplyConfiguration(new RubricaEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new OrcamentoEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new IndicadorEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new PerfilEntityTypeConfiguration());
         }
     }
 }
