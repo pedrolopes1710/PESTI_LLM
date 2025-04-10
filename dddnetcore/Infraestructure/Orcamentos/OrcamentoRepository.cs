@@ -28,5 +28,13 @@ namespace dddnetcore.Infraestructure.Orcamentos
 
             return await query.ToListAsync();
         }
+
+        public async Task<Orcamento> UpdateAsync(Orcamento orcamento) {
+            _context.Orcamentos.Update(orcamento);
+
+            await _context.SaveChangesAsync();
+
+            return orcamento;
+        }
     }
 }

@@ -8,5 +8,6 @@ namespace dddnetcore.Domain.Orcamentos
     public interface IOrcamentoRepository : IRepository<Orcamento, OrcamentoId>
     {
         public Task<List<Orcamento>> GetOrcamentosAsync(Guid? rubricaId = null);
+        public Task<Orcamento> UpdateAsync(Orcamento orcamento);
     }
 }

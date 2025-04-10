@@ -23,6 +23,6 @@ namespace dddnetcore.Domain.Orcamentos
 
         public override int GetHashCode(){
             return Quantidade.GetHashCode();
-        }
+        }        
     }
 }

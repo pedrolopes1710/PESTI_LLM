@@ -22,5 +22,17 @@ namespace dddnetcore.Domain.Orcamentos
             this.GastoExecutado = GastoExecutado;
             this.Rubrica = Rubrica;
         }
+
+        public void MudarGastoExecutado(GastoExecutado gasto) {
+            ArgumentNullException.ThrowIfNull(gasto);
+            this.GastoExecutado = gasto;
+        }
+
+        public void MudarGastoExecutado(GastoPlaneado gasto) {
+            ArgumentNullException.ThrowIfNull(gasto);
+            this.GastoPlaneado = gasto;
+        }
+
+        //TODO editar rubrica (ver TODO no serviço)
     }
 }

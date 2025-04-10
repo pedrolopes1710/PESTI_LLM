@@ -44,7 +44,7 @@ namespace dddnetcore.Domain.Rubricas
             if (rubrica == null) return null;
 
             if ((await this._orcamentoRepo.GetOrcamentosAsync(rubricaId: id)).Count != 0)
-                throw new BusinessRuleValidationException("Cannot remove used RUBRICA!"); //TODO traduzir rubrica para inglês
+                throw new BusinessRuleValidationException("Cannot remove used Rubric!");
 
             this._repo.Remove(rubrica);
             await this._unitOfWork.CommitAsync();
