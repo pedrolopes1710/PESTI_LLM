@@ -30,6 +30,11 @@ namespace dddnetcore.Domain.Rubricas
         }
 
         public async Task<RubricaDto> AddAsync(CreatingRubricaDto dto) {
+
+            if (dto.Nome == null) {
+                throw new ArgumentNullException("Missing data for Rubric creation!");
+            }
+
             Rubrica rubrica = new Rubrica(dto.Nome);
 
             await this._repo.AddAsync(rubrica);
@@ -39,9 +44,7 @@ namespace dddnetcore.Domain.Rubricas
         }
 
         public async Task<RubricaDto> DeleteAsync(Guid id) {
-            Rubrica rubrica = await this._repo.GetByIdAsync(new RubricaId(id));
-
-            if (rubrica == null) return null;
+            Rubrica rubrica = await this._repo.GetByIdAsync(new RubricaId(id)) ?? throw new NullReferenceException("Rubric not found!");
 
             if ((await this._orcamentoRepo.GetOrcamentosAsync(rubricaId: id)).Count != 0)
                 throw new BusinessRuleValidationException("Cannot remove used Rubric!");
