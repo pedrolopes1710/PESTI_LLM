@@ -9,7 +9,7 @@ namespace dddnetcore.Domain.Entregaveis
 
         public DescricaoEntregavel(String nome) {
             if(string.IsNullOrEmpty(nome))
-                throw new BusinessRuleValidationException("The name cannot be null or empty!");
+                throw new BusinessRuleValidationException("The description cannot be null or empty!");
             this.Descricao = nome;
         }
         

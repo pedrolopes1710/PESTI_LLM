@@ -8,8 +8,9 @@ namespace dddnetcore.Domain.Entregaveis
         public DateTime Data {get; private set;}
 
         public DataEntregavel(DateTime data) {
-            if(string.IsNullOrEmpty(data.ToString()))
-                throw new BusinessRuleValidationException("The date cannot be null or empty!");
+            if (data == DateTime.MinValue)
+                throw new BusinessRuleValidationException("The date cannot be empty or uninitialized.");
+    
             this.Data = data;
         }
         
