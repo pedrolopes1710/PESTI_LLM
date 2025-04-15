@@ -51,13 +51,13 @@ namespace dddnetcore.Domain.Contratos
             };
         }
 
-        public async Task<ContratoDto> AddAsync(ContratoDto dto)
+        public async Task<ContratoDto> AddAsync(CreatingContratoDto dto)
         {
             var contrato = new Contrato(
                 Enum.Parse<TipoContrato>(dto.Tipo),
                 new SalarioMensalContrato(dto.Salario),
                 new DataInicioContrato(dto.DataInicio),
-                dto.DataFim != null ? new DataFimContrato(dto.DataFim.Value) : null
+                new DataFimContrato(dto.DataFim)
             );
 
             await this._repo.AddAsync(contrato);
@@ -74,7 +74,7 @@ namespace dddnetcore.Domain.Contratos
             };
         }
 
-        public async Task<ContratoDto> UpdateAsync(ContratoDto dto)
+        public async Task<ContratoDto> UpdateAsync(EditingContratoDto dto)
         {
             var contrato = await this._repo.GetByIdAsync(new ContratoId(dto.Id));
 
@@ -84,7 +84,7 @@ namespace dddnetcore.Domain.Contratos
             contrato.AlterarTipo(Enum.Parse<TipoContrato>(dto.Tipo));
             contrato.AlterarSalario(new SalarioMensalContrato(dto.Salario));
             contrato.AlterarDataInicio(new DataInicioContrato(dto.DataInicio));
-            contrato.AlterarDataFim(dto.DataFim != null ? new DataFimContrato(dto.DataFim.Value) : null);
+            contrato.AlterarDataFim(new DataFimContrato(dto.DataFim));
 
             await this._unitOfWork.CommitAsync();
 
