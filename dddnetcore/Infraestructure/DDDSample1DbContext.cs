@@ -9,7 +9,6 @@ using dddnetcore.Infraestructure.Rubricas;
 using dddnetcore.Infraestructure.Orcamentos;
 using DDDSample1.Infrastructure.Families;
 using dddnetcore.Domain.Orcamentos;
-using dddnetcore.Domain.Pessoas;
 using dddnetcore.Domain.Contratos;
 using dddnetcore.Infraestructure.Contratos;
 
@@ -27,9 +26,6 @@ namespace DDDSample1.Infrastructure
 
         public DbSet<Rubrica> Rubricas {get; set;}
         public DbSet<Orcamento> Orcamentos {get; set;}
-
-        public DbSet<Pessoa> Pessoas {get; set;}
-
         public DbSet<Contrato> Contratos {get; set;}
         
         public DDDSample1DbContext(DbContextOptions options) : base(options)
