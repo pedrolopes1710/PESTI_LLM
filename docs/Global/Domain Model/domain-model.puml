@@ -52,6 +52,9 @@ package "<<Aggregate>> CargaMensal" #6C6874 {
     class DiasFeriasBaixasLiencasFaltas <<Value Object>>
     class SalarioBase <<Value Object>>
     '* horas de férias/baixas/etc é dias de férias/coiso * jornada
+    class MesAno <<Value Object>> {
+        DateTime
+    }
 }
 
 package "<<Aggregate>> Indicador" #EAE6CA {
@@ -59,19 +62,6 @@ package "<<Aggregate>> Indicador" #EAE6CA {
     class NomeIndicador <<Value Object>>
     class ValorAtual <<Value Object>>
     class ValorMaximo <<Value Object>>
-}
-
-package "<<Aggregate>> MesAno" #6D3F5B {
-    entity MesAno <<entity>> <<root>>
-    class Ano <<Value Object>>
-    enum Mes <<Value Object>> {
-        Janeiro, Fevereiro
-        Marco, Abril
-        Maio, Junho
-        Julho, Agosto
-        Setembro, Outubro
-        Novembro, Dezembro
-    }
 }
 
 package "<<Aggregate>> Perfil" #78858B {
@@ -85,6 +75,9 @@ package "<<Aggregate>> Pessoa" #999950 {
     class NomePessoa <<Value Object>>
     class Email <<Value Object>>
     class CienciaID <<Value Object>>
+    class UltimoPedidoPagamento <<Value Object>> {
+        DateTime
+    }
 }
 
 package "<<Aggregate>> Projeto" #00BB2D {
@@ -151,7 +144,7 @@ CargaMensal --> JornadaDiaria
 CargaMensal --> DiasUteisTrabalhaveis
 CargaMensal --> DiasFeriasBaixasLiencasFaltas
 CargaMensal --> SalarioBase
-CargaMensal "*" ---> "1" MesAno
+CargaMensal "*" --> MesAno
 
 Contrato --> DataInicioContrato
 Contrato --> DataFimContrato
@@ -167,9 +160,6 @@ Indicador --> NomeIndicador
 Indicador --> ValorAtual
 Indicador --> ValorMaximo
 
-MesAno --> Ano
-MesAno --> Mes
-
 Perfil --> DescricaoPerfil
 Perfil --> PMsTotais
 Perfil "*" ---> "*" TipoVinculo
@@ -179,7 +169,7 @@ Pessoa --> Email
 Pessoa --> CienciaID 
 Pessoa "1" ---> "1" Contrato
 Pessoa "1" ---> "*" CargaMensal
-Pessoa "*" ---> "1" MesAno : "ultimo mês com pedido de pagamento"
+Pessoa -->  UltimoPedidoPagamento
 
 Projeto --> Titulo
 Projeto --> Numero
