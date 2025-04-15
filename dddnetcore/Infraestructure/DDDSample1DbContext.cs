@@ -11,6 +11,10 @@ using DDDSample1.Infrastructure.Families;
 using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Domain.Contratos;
 using dddnetcore.Infraestructure.Contratos;
+using dddnetcore.Domain.Tarefas;
+using dddnetcore.Domain.Atividades;
+using dddnetcore.Infraestructure.Atividades;
+using dddnetcore.Infraestructure.Tarefas;
 
 namespace DDDSample1.Infrastructure
 {
@@ -27,6 +31,10 @@ namespace DDDSample1.Infrastructure
         public DbSet<Rubrica> Rubricas {get; set;}
         public DbSet<Orcamento> Orcamentos {get; set;}
         public DbSet<Contrato> Contratos {get; set;}
+        public DbSet<Tarefa> Tarefas {get; set;}
+
+        public DbSet<Atividade> Atividades {get; set;}
+
         
         public DDDSample1DbContext(DbContextOptions options) : base(options)
         {
@@ -42,6 +50,8 @@ namespace DDDSample1.Infrastructure
             modelBuilder.ApplyConfiguration(new RubricaEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new OrcamentoEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ContratoEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new AtividadeEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TarefaEntityTypeConfiguration());
 
         }
     }
