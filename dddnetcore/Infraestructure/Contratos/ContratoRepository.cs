@@ -10,8 +10,11 @@ namespace dddnetcore.Infraestructure.Contratos
 {
     public class ContratoRepository : BaseRepository<Contrato,ContratoId>,IContratoRepository
     {
+        private readonly DDDSample1DbContext _context;
+
         public ContratoRepository(DDDSample1DbContext context):base(context.Contratos)
         {
+            _context = context;
            
         }
     }

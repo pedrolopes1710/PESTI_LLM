@@ -17,6 +17,8 @@ using dddnetcore.Domain.Rubricas;
 using dddnetcore.Infraestructure.Rubricas;
 using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Infraestructure.Orcamentos;
+using dddnetcore.Domain.Contratos;
+using dddnetcore.Infraestructure.Contratos;
 
 namespace DDDSample1
 {
@@ -83,6 +85,9 @@ namespace DDDSample1
         
             services.AddTransient<IOrcamentoRepository, OrcamentoRepository>();
             services.AddTransient<OrcamentoService>();
+
+            services.AddTransient<IContratoRepository, ContratoRepository>();
+            services.AddTransient<ContratoService>();
         }
     }
 }

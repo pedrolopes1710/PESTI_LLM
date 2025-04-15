@@ -11,6 +11,7 @@ using DDDSample1.Infrastructure.Families;
 using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Domain.Pessoas;
 using dddnetcore.Domain.Contratos;
+using dddnetcore.Infraestructure.Contratos;
 
 namespace DDDSample1.Infrastructure
 {
@@ -44,6 +45,8 @@ namespace DDDSample1.Infrastructure
             // uteis
             modelBuilder.ApplyConfiguration(new RubricaEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new OrcamentoEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new ContratoEntityTypeConfiguration());
+
         }
     }
 }

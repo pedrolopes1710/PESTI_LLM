@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using dddnetcore.Domain.Contratos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -11,11 +8,39 @@ namespace dddnetcore.Infraestructure.Contratos
 {
     public class ContratoEntityTypeConfiguration : IEntityTypeConfiguration<Contrato>
     {
-        public void Configure(EntityTypeBuilder<Contrato> builder) {
-            builder.HasKey(b => b.Id);
-            builder.Property(b=>b.DataInicioContrato).HasConversion(b=>b.InicioContrato,b=>new DataInicioContrato(b)).IsRequired();
-            builder.Property(b => b.DataFimContrato).HasConversion(b => b.FimContrato, b => new DataFimContrato(b)).IsRequired();
-            builder.Property(b=>b.TipoContrato).HasConversion(new EnumToStringConverter<TipoContrato>()).IsRequired();
+        public void Configure(EntityTypeBuilder<Contrato> builder)
+        {
+            builder.HasKey(c => c.Id);
+            
+            builder.Property(b => b.Id)
+                .HasConversion(
+                    id => id.AsGuid(), 
+                    guid => new ContratoId(guid));
+
+            builder.Property(c => c.DataInicio)
+                .HasConversion(
+                    v => v.InicioContrato,
+                    v => new DataInicioContrato(v)
+                ).IsRequired();
+
+            builder.Property(c => c.DataFim)
+                .HasConversion(
+                    v => v.FimContrato,
+                    v => new DataFimContrato(v)
+                );
+
+            builder.Property(c => c.Salario)
+                .HasConversion(
+                    v => v.Valor,
+                    v => new SalarioMensalContrato(v)
+                ).IsRequired();
+
+            builder.Property(c => c.Tipo)
+                .HasConversion(new EnumToStringConverter<TipoContrato>())
+                .IsRequired();
+
+            builder.Property(c => c.Ativo)
+                .IsRequired();
         }
     }
 }
