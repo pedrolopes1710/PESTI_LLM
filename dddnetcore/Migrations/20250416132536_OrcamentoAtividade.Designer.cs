@@ -3,6 +3,7 @@ using System;
 using DDDSample1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DDDNetCore.Migrations
 {
     [DbContext(typeof(DDDSample1DbContext))]
-    partial class DDDSample1DbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416132536_OrcamentoAtividade")]
+    partial class OrcamentoAtividade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.3");
@@ -68,40 +71,6 @@ namespace DDDNetCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("dddnetcore.Domain.AfetacaoMensais.AfetacaoMensal", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<Guid?>("AfetacaoPerfilId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<double>("PMs")
-                        .HasColumnType("REAL");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AfetacaoPerfilId");
-
-                    b.ToTable("AfetacaoMensais");
-                });
-
-            modelBuilder.Entity("dddnetcore.Domain.AfetacaoPerfis.AfetacaoPerfil", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("DuracaoMes")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double>("PMsAprovados")
-                        .HasColumnType("REAL");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AfetacaoPerfis");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Atividades.Atividade", b =>
@@ -219,15 +188,6 @@ namespace DDDNetCore.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tarefas");
-                });
-
-            modelBuilder.Entity("dddnetcore.Domain.AfetacaoMensais.AfetacaoMensal", b =>
-                {
-                    b.HasOne("dddnetcore.Domain.AfetacaoPerfis.AfetacaoPerfil", "AfetacaoPerfil")
-                        .WithMany()
-                        .HasForeignKey("AfetacaoPerfilId");
-
-                    b.Navigation("AfetacaoPerfil");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Atividades.Atividade", b =>

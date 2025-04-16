@@ -1,5 +1,6 @@
 using System;
 using dddnetcore.Domain.Atividades;
+using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Domain.Tarefas;
 using DDDSample1.Domain.Shared;
 
@@ -13,6 +14,8 @@ namespace dddnetcore.Domain.Atividades
         public NomeAtividade NomeAtividade {get; private set;}
 
         public Tarefa Tarefa {get; private set;}
+
+        public Orcamento Orcamento {get;private set;}
         
         private Atividade() {}
 
@@ -21,7 +24,8 @@ namespace dddnetcore.Domain.Atividades
             DataInicioAtividade dataInicioAtividade,
             DescricaoAtividade descricaoAtividade,
             NomeAtividade nomeAtividade,
-            Tarefa tarefa)
+            Tarefa tarefa,
+            Orcamento orcamento)
         {
             this.Id = new AtividadeId(Guid.NewGuid());
             this.DataFimAtividade = dataFimAtividade;
@@ -29,6 +33,7 @@ namespace dddnetcore.Domain.Atividades
             this.DescricaoAtividade = descricaoAtividade;
             this.NomeAtividade = nomeAtividade;
             this.Tarefa = tarefa;
+            this.Orcamento = orcamento;
         }
 
     }

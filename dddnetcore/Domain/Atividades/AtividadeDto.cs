@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Domain.Tarefas;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
@@ -15,6 +16,7 @@ namespace dddnetcore.Domain.Atividades
         public string DescricaoAtividade {get;set;}
         public string NomeAtividade {get;set;}
         public TarefaDto Tarefa {get;set;}
+        public OrcamentoDto OrcamentoDto {get;set;}
 
         public AtividadeDto() {}
 
@@ -25,6 +27,7 @@ namespace dddnetcore.Domain.Atividades
             this.DescricaoAtividade = atividade.DescricaoAtividade.Descricao;
             this.NomeAtividade = atividade.NomeAtividade.Nome;
             this.Tarefa = new TarefaDto(atividade.Tarefa);
+            this.OrcamentoDto = new OrcamentoDto(atividade.Orcamento);
         }
     }
 }
