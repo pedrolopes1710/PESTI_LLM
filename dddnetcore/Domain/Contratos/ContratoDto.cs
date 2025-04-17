@@ -10,5 +10,17 @@ namespace dddnetcore.Domain.Contratos
         public DateTime DataInicio { get; set; }
         public DateTime? DataFim { get; set; } // Nullable para contratos sem fim definido
         public bool Ativo { get; set; }
+
+        public ContratoDto() {}
+
+        public ContratoDto(Contrato contrato)
+        {
+            Id = contrato.Id.AsString(); // Supondo que o ID é um VO com .AsString() ou semelhante
+            Tipo = contrato.Tipo.ToString();        //
+            Salario = contrato.Salario.Valor;
+            DataInicio = contrato.DataInicio.InicioContrato;
+            DataFim = contrato.DataFim.FimContrato;
+            Ativo = contrato.Ativo;
+        }
     }
 }

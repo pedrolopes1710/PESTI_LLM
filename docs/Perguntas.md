@@ -142,3 +142,5 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 
 - para mudar o orçamento precisamos de uma afetação
     - isso só se aplica ao orçamento salarial? (ex de outras rubricas de orçamento: viagens, material, etc)
+
+- ciencia id precisa de algum tipo de validação, tipo x numeros, x letras, etc?
