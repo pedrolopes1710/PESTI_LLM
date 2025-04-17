@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DDDNetCore.Migrations
 {
     [DbContext(typeof(DDDSample1DbContext))]
-    [Migration("20250415143412_Atividades_Tarefa")]
-    partial class Atividades_Tarefa
+    [Migration("20250417151246_Reposicao")]
+    partial class Reposicao
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -73,6 +73,40 @@ namespace DDDNetCore.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("dddnetcore.Domain.AfetacaoMensais.AfetacaoMensal", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("AfetacaoPerfilId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("PMs")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AfetacaoPerfilId");
+
+                    b.ToTable("AfetacaoMensais");
+                });
+
+            modelBuilder.Entity("dddnetcore.Domain.AfetacaoPerfis.AfetacaoPerfil", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DuracaoMes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("PMsAprovados")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AfetacaoPerfis");
+                });
+
             modelBuilder.Entity("dddnetcore.Domain.Atividades.Atividade", b =>
                 {
                     b.Property<Guid>("Id")
@@ -92,10 +126,15 @@ namespace DDDNetCore.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("OrcamentoId")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("TarefaId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrcamentoId");
 
                     b.HasIndex("TarefaId");
 
@@ -185,13 +224,28 @@ namespace DDDNetCore.Migrations
                     b.ToTable("Tarefas");
                 });
 
+            modelBuilder.Entity("dddnetcore.Domain.AfetacaoMensais.AfetacaoMensal", b =>
+                {
+                    b.HasOne("dddnetcore.Domain.AfetacaoPerfis.AfetacaoPerfil", "AfetacaoPerfil")
+                        .WithMany()
+                        .HasForeignKey("AfetacaoPerfilId");
+
+                    b.Navigation("AfetacaoPerfil");
+                });
+
             modelBuilder.Entity("dddnetcore.Domain.Atividades.Atividade", b =>
                 {
+                    b.HasOne("dddnetcore.Domain.Orcamentos.Orcamento", "Orcamento")
+                        .WithMany()
+                        .HasForeignKey("OrcamentoId");
+
                     b.HasOne("dddnetcore.Domain.Tarefas.Tarefa", "Tarefa")
                         .WithMany()
                         .HasForeignKey("TarefaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Orcamento");
 
                     b.Navigation("Tarefa");
                 });

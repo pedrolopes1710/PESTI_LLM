@@ -127,8 +127,6 @@ namespace dddnetcore.Domain.Contratos
             if (contrato == null)
                 return null;
 
-            if (contrato.Ativo)
-                throw new BusinessRuleValidationException("Não é possível remover um contrato ativo.");
 
             this._repo.Remove(contrato);
             await this._unitOfWork.CommitAsync();
