@@ -5,24 +5,25 @@ namespace dddnetcore.Domain.Perfis
 {
     public class DescricaoPerfil : IValueObject
     {
-        public String Descricao {get; private set;}
-
-        public DescricaoPerfil(String nome) {
-            if(string.IsNullOrEmpty(nome))
-                throw new BusinessRuleValidationException("The name cannot be null or empty!");
-            this.Descricao = nome;
-        }
+        public string Valor { get; private set; }
         
-        public override bool Equals(object obj) {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
+        private DescricaoPerfil() { }
 
+        public DescricaoPerfil(string descricao)
+        {
+            if (string.IsNullOrWhiteSpace(descricao))
+                throw new BusinessRuleValidationException("A descrição não pode ser vazia");
+
+            Valor = descricao;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType()) return false;
             var other = (DescricaoPerfil)obj;
-            return Descricao == other.Descricao;
+            return Valor == other.Valor;
         }
 
-        public override int GetHashCode(){
-            return Descricao.GetHashCode();
-        }
+        public override int GetHashCode() => Valor.GetHashCode();
     }
 }

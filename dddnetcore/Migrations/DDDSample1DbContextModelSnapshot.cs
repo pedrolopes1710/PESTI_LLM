@@ -164,6 +164,16 @@ namespace DDDNetCore.Migrations
                     b.ToTable("Contratos");
                 });
 
+            modelBuilder.Entity("dddnetcore.Domain.Indicadores.Indicador", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Indicadores");
+                });
+
             modelBuilder.Entity("dddnetcore.Domain.Orcamentos.Orcamento", b =>
                 {
                     b.Property<Guid>("Id")
@@ -183,6 +193,16 @@ namespace DDDNetCore.Migrations
                     b.HasIndex("RubricaId");
 
                     b.ToTable("Orcamentos");
+                });
+
+            modelBuilder.Entity("dddnetcore.Domain.Perfis.Perfil", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Perfil");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Rubricas.Rubrica", b =>
@@ -247,6 +267,67 @@ namespace DDDNetCore.Migrations
                     b.Navigation("Tarefa");
                 });
 
+            modelBuilder.Entity("dddnetcore.Domain.Indicadores.Indicador", b =>
+                {
+                    b.OwnsOne("dddnetcore.Domain.Indicadores.NomeIndicador", "Nome", b1 =>
+                        {
+                            b1.Property<Guid>("IndicadorId")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("Valor")
+                                .IsRequired()
+                                .HasColumnType("TEXT")
+                                .HasColumnName("NomeIndicador");
+
+                            b1.HasKey("IndicadorId");
+
+                            b1.ToTable("Indicadores");
+
+                            b1.WithOwner()
+                                .HasForeignKey("IndicadorId");
+                        });
+
+                    b.OwnsOne("dddnetcore.Domain.Indicadores.ValorAtual", "ValorAtual", b1 =>
+                        {
+                            b1.Property<Guid>("IndicadorId")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<double>("Valor")
+                                .HasColumnType("REAL")
+                                .HasColumnName("ValorAtual");
+
+                            b1.HasKey("IndicadorId");
+
+                            b1.ToTable("Indicadores");
+
+                            b1.WithOwner()
+                                .HasForeignKey("IndicadorId");
+                        });
+
+                    b.OwnsOne("dddnetcore.Domain.Indicadores.ValorMaximo", "ValorMaximo", b1 =>
+                        {
+                            b1.Property<Guid>("IndicadorId")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<double>("Valor")
+                                .HasColumnType("REAL")
+                                .HasColumnName("ValorMaximo");
+
+                            b1.HasKey("IndicadorId");
+
+                            b1.ToTable("Indicadores");
+
+                            b1.WithOwner()
+                                .HasForeignKey("IndicadorId");
+                        });
+
+                    b.Navigation("Nome");
+
+                    b.Navigation("ValorAtual");
+
+                    b.Navigation("ValorMaximo");
+                });
+
             modelBuilder.Entity("dddnetcore.Domain.Orcamentos.Orcamento", b =>
                 {
                     b.HasOne("dddnetcore.Domain.Rubricas.Rubrica", "Rubrica")
@@ -256,6 +337,50 @@ namespace DDDNetCore.Migrations
                         .IsRequired();
 
                     b.Navigation("Rubrica");
+                });
+
+            modelBuilder.Entity("dddnetcore.Domain.Perfis.Perfil", b =>
+                {
+                    b.OwnsOne("dddnetcore.Domain.Perfis.DescricaoPerfil", "DescricaoPerfil", b1 =>
+                        {
+                            b1.Property<Guid>("PerfilId")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("Valor")
+                                .IsRequired()
+                                .HasColumnType("TEXT")
+                                .HasColumnName("DescricaoPerfil");
+
+                            b1.HasKey("PerfilId");
+
+                            b1.ToTable("Perfil");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PerfilId");
+                        });
+
+                    b.OwnsOne("dddnetcore.Domain.Perfis.PMsTotais", "PMs", b1 =>
+                        {
+                            b1.Property<Guid>("PerfilId")
+                                .HasColumnType("TEXT");
+
+                            b1.Property<int>("Valor")
+                                .HasColumnType("INTEGER")
+                                .HasColumnName("PMsTotais");
+
+                            b1.HasKey("PerfilId");
+
+                            b1.ToTable("Perfil");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PerfilId");
+                        });
+
+                    b.Navigation("DescricaoPerfil")
+                        .IsRequired();
+
+                    b.Navigation("PMs")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

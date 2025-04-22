@@ -5,24 +5,25 @@ namespace dddnetcore.Domain.Perfis
 {
     public class PMsTotais : IValueObject
     {
-        public int PMs {get; private set;}
-
-        public PMsTotais(int pms) {
-            if(String.IsNullOrEmpty(pms.ToString()))
-                throw new BusinessRuleValidationException("The pms cannot be null or empty!");
-            this.PMs = pms;
-        }
+        public int Valor { get; private set; }
         
-        public override bool Equals(object obj) {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
+        private PMsTotais() { }
 
+        public PMsTotais(int pms)
+        {
+            if (pms < 0)
+                throw new BusinessRuleValidationException("Os PMs não podem ser negativos!");
+
+            Valor = pms;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType()) return false;
             var other = (PMsTotais)obj;
-            return PMs == other.PMs;
+            return Valor == other.Valor;
         }
 
-        public override int GetHashCode(){
-            return PMs.GetHashCode();
-        }
+        public override int GetHashCode() => Valor.GetHashCode();
     }
 }

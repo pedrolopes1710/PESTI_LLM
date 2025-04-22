@@ -5,31 +5,25 @@ using DDDSample1.Domain.Shared;
 namespace dddnetcore.Domain.Perfis
 {
     public class PerfilId : EntityId
-    
     {
-        
         [JsonConstructor]
-        public PerfilId(Guid value) : base(value)
-        {
-        }
-        
-        public PerfilId(String value):base(value)
-        {
-        }
+        public PerfilId(Guid value) : base(value) { }
 
-        override
-        protected  Object createFromString(String text){
+        public PerfilId(string value) : base(value) { }
+
+        protected override object createFromString(string text)
+        {
             return new Guid(text);
         }
-        
-        override
-        public String AsString(){
-            Guid obj = (Guid) base.ObjValue;
-            return obj.ToString();
+
+        public override string AsString()
+        {
+            return ((Guid)ObjValue).ToString();
         }
-        
-        public Guid AsGuid(){
-            return (Guid) base.ObjValue;
+
+        public Guid AsGuid()
+        {
+            return (Guid)ObjValue;
         }
     }
 }
