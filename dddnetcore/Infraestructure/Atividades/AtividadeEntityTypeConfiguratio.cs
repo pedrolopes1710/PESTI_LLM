@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Domain.Atividades;
+using dddnetcore.Domain.Projetos;
 
 namespace dddnetcore.Infraestructure.Atividades
 {
@@ -36,6 +37,10 @@ namespace dddnetcore.Infraestructure.Atividades
                     b => b.Descricao,
                     b => new DescricaoAtividade(b)).IsRequired();
             
+            builder.HasOne<Projeto>()
+                .WithMany(p => p.Atividades)
+                .HasForeignKey("ProjetoId")
+                .IsRequired();
 
             builder.HasOne(b => b.Tarefa)
                 .WithMany()

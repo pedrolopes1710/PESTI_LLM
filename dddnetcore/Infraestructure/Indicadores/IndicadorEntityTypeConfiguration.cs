@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using dddnetcore.Domain.Indicadores;
+using dddnetcore.Domain.Projetos;
 
 namespace dddnetcore.Infrastructure.Indicadores
 {
@@ -29,6 +30,12 @@ namespace dddnetcore.Infrastructure.Indicadores
                 .Property(p => p.Valor)
                 .HasColumnName("ValorMaximo")
                 .IsRequired();
+            
+            builder.HasOne<Projeto>()
+                .WithMany(p => p.Indicadores)
+                .HasForeignKey("ProjetoId")
+                .IsRequired();
+
         }
     }
 }

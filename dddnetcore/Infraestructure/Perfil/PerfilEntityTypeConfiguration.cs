@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using dddnetcore.Domain.Perfis;
+using dddnetcore.Domain.Projetos;
 
 namespace dddnetcore.Infrastructure.Perfis
 {
@@ -29,7 +30,12 @@ namespace dddnetcore.Infrastructure.Perfis
                     .HasColumnName("PMsTotais")
                     .IsRequired();
             });
-
+            
+            builder.HasOne<Projeto>()
+                .WithMany(p => p.Perfis)
+                .HasForeignKey("ProjetoId")
+                .IsRequired();
+            
             builder.Navigation(b => b.DescricaoPerfil).IsRequired();
             builder.Navigation(b => b.PMs).IsRequired();
         }
