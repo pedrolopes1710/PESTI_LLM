@@ -18,7 +18,9 @@ using dddnetcore.Infraestructure.Tarefas;
 using dddnetcore.Infraestructure.AfetacaoPerfis;
 using dddnetcore.Domain.AfetacaoPerfis;
 using dddnetcore.Domain.AfetacaoMensais;
+using dddnetcore.Domain.Indicadores;
 using dddnetcore.Infraestructure.AfetacaoMensais;
+using dddnetcore.Infrastructure.Indicadores;
 
 namespace DDDSample1.Infrastructure
 {
@@ -40,6 +42,8 @@ namespace DDDSample1.Infrastructure
         public DbSet<Atividade> Atividades {get; set;}
         public DbSet<AfetacaoPerfil> AfetacaoPerfis { get; set; }
         public DbSet<AfetacaoMensal> AfetacaoMensais { get; set; }
+        
+        public DbSet<Indicador> Indicadores {get; set;}
 
         
         public DDDSample1DbContext(DbContextOptions options) : base(options)
@@ -60,6 +64,7 @@ namespace DDDSample1.Infrastructure
             modelBuilder.ApplyConfiguration(new TarefaEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AfetacaoPerfilEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new AfetacaoMensalEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new IndicadorEntityTypeConfiguration());
 
         }
     }
