@@ -5,10 +5,10 @@ namespace dddnetcore.Domain.CargasMensais
     public class CargaMensalDto
     {
         public string Id { get; set; }
-        public double JornadaDiaria { get; set; } // Nome do enum como string (ex: "Investigador")
+        public double JornadaDiaria { get; set; } 
         public double DiasUteisTrabalhaveis { get; set; }
         public double FeriasBaixasLicencasFaltas { get; set; }
-        public DateTime? MesAno { get; set; } // Nullable para contratos sem fim definido
+        public DateTime? MesAno { get; set; } 
         public double SalarioBase { get; set; }
 
 
