@@ -41,10 +41,16 @@ namespace dddnetcore.Domain.Orcamentos
             *Meter para editar rubricas, pois se se mudar para rubrica salarial,
             *tem de se calcular automaticamente os gastos.
             */
+            
+
             if (dto.GastoPlaneado != null) {
+                if (orcamento.Rubrica.Nome.Nome.Equals(NomeRubrica.NomeSalarial)) 
+                    throw new BusinessRuleValidationException("Cannot change value of salarial budget.");
                 orcamento.MudarGastoExecutado(new GastoPlaneado(dto.GastoPlaneado.Value));
             }
             if (dto.GastoExecutado != null) {
+                if (orcamento.Rubrica.Nome.Nome.Equals(NomeRubrica.NomeSalarial)) 
+                    throw new BusinessRuleValidationException("Cannot change value of salarial budget.");
                 orcamento.MudarGastoExecutado(new GastoExecutado(dto.GastoExecutado.Value));
             }
 

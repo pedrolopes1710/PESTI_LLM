@@ -135,12 +135,13 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 - **relatório: pode ter coisas iguais (ex.: estado da arte)?**
   - Professor ainda vai analisar e disse que depois dava resposta.
 
-- o q é o TSU? (penúltima linha do excel)
-- temos de diferenciar entre pedido de pagamento q ainda nao foram pagos vs os que ja foram pagos?
+- o q é o TSU? (penúltima linha do excel) - Taxa social única 
+- temos de diferenciar entre pedido de pagamento q ainda nao foram pagos vs os que ja foram pagos? nao
 (se nao, 1 data é o limite) (DM atual)
 (se sim, temos de fazer uma tabela)
 
 - para mudar o orçamento precisamos de uma afetação
     - isso só se aplica ao orçamento salarial? (ex de outras rubricas de orçamento: viagens, material, etc)
+    resposta: tabela de despesas (i guess)
 
 - ciencia id precisa de algum tipo de validação, tipo x numeros, x letras, etc?

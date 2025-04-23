@@ -6,6 +6,7 @@ namespace dddnetcore.Domain.Rubricas
     public class NomeRubrica : IValueObject
     {
         public String Nome {get; private set;}
+        public static String NomeSalarial = "Salarial";
 
         public NomeRubrica(String nome) {
             if(string.IsNullOrEmpty(nome))
