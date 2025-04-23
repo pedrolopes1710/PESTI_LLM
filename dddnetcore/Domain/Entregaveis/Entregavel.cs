@@ -24,5 +24,12 @@ namespace dddnetcore.Domain.Entregaveis
             this.Data = new DataEntregavel(data);
             this.TipoEntregavel = tipo; 
         }
+
+        public void AlterarAtributos(string nome, string descricao, DateTime data, TipoEntregavel tipo){
+            this.Nome = new NomeEntegavel(nome);
+            this.Descricao = new DescricaoEntregavel(descricao);
+            this.Data = new DataEntregavel(data);
+            this.TipoEntregavel = tipo;
+        }
     }
 }

@@ -113,4 +113,25 @@ public class EntregavelTests
         entregavel.TipoEntregavel.Nome.Nome.Should().Be(tipo.Nome.Nome);
     }
 
+    [Fact]
+    public void ChangeAttributes_ShouldUpdateFields()
+    {
+        // Arrange
+        var entregavel = new Entregavel("Inicial", "Desc Inicial", DateTime.Today, new TipoEntregavel("InicialTipo"));
+
+        var novoNome = "Atualizado";
+        var novaDescricao = "Nova descrição";
+        var novaData = new DateTime(2025, 12, 25);
+        var novoTipo = new TipoEntregavel("NovoTipo");
+
+        // Act
+        entregavel.AlterarAtributos(novoNome, novaDescricao, novaData, novoTipo);
+
+        // Assert
+        entregavel.Nome.Nome.Should().Be(novoNome);
+        entregavel.Descricao.Descricao.Should().Be(novaDescricao);
+        entregavel.Data.Data.Should().Be(novaData);
+        entregavel.TipoEntregavel.Nome.Nome.Should().Be("NovoTipo");
+        }
+
 }
