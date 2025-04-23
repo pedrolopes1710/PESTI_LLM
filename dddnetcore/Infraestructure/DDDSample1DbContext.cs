@@ -27,6 +27,10 @@ using dddnetcore.Infrastructure.Perfis;
 using dddnetcore.Infrastructure.Projetos;
 using dddnetcore.Domain.CargasMensais;
 using dddnetcore.Infraestructure.CargasMensais;
+using dddnetcore.Domain.Entregaveis;
+using dddnetcore.Infraestructure.TiposEntregavel;
+using dddnetcore.Domain.TiposEntregavel;
+using dddnetcore.Infraestructure.Entregaveis;
 
 namespace DDDSample1.Infrastructure
 {
@@ -53,6 +57,8 @@ namespace DDDSample1.Infrastructure
         public DbSet<Perfil> Perfil {get; set;}
         public DbSet<Projeto> Projetos {get; set;}
         public DbSet<CargaMensal> CargasMensais {get; set;}
+        public DbSet<Entregavel> Entregaveis {get; set;}
+        public DbSet<TipoEntregavel> TiposEntregavel {get; set;}
         
         public DDDSample1DbContext(DbContextOptions options) : base(options)
         {
@@ -76,6 +82,10 @@ namespace DDDSample1.Infrastructure
             modelBuilder.ApplyConfiguration(new PerfilEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new ProjetoEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new CargaMensalEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new EntregavelEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TipoEntregavelEntityTypeConfiguration());
+
+
 
 
         }
