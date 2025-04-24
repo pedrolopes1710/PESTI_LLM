@@ -56,12 +56,28 @@ namespace dddnetcore.Domain.Tarefas
             tarefa.ChangeDescricao(new DescricaoTarefa(dto.DescricaoTarefa));
             tarefa.ChangeNome(new NomeTarefa(dto.Nome));
             tarefa.ChangeStatus(Enum.Parse<StatusTarefa>(dto.Status));
-
+            
             await this._unitOfWork.CommitAsync();
 
             return new TarefaDto (tarefa);
             
-    }
+        }
+
+        /*public async Task<TarefaDto> UpdateAtividadeAsync(TarefaId tarefaId, AtividadeId atividadeId)
+        {
+            Tarefa tarefa = await this._repo.GetByIdAsync(tarefaId); 
+            
+            if (tarefa == null)
+                return null;   
+
+            // change all field
+            tarefa.AddAtividade(await this._atividadeRepo.GetByIdAsync(atividadeId));
+            
+            await this._unitOfWork.CommitAsync();
+
+            return new TarefaDto (tarefa);
+            
+        }*/
 
 
          public async Task<TarefaDto> DeleteAsync(Guid id)

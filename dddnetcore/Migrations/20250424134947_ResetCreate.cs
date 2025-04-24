@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DDDNetCore.Migrations
 {
     /// <inheritdoc />
-    public partial class NewReposicao : Migration
+    public partial class ResetCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -122,17 +122,27 @@ namespace DDDNetCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tarefas",
+                name: "TiposEntregavel",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    NomeTarefa = table.Column<string>(type: "TEXT", nullable: false),
-                    DescricaoTarefa = table.Column<string>(type: "TEXT", nullable: false),
-                    StatusTarefa = table.Column<string>(type: "TEXT", nullable: false)
+                    Nome = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tarefas", x => x.Id);
+                    table.PrimaryKey("PK_TiposEntregavel", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TiposVinculo",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Nome = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TiposVinculo", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -215,6 +225,27 @@ namespace DDDNetCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Entregaveis",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Nome = table.Column<string>(type: "TEXT", nullable: false),
+                    Descricao = table.Column<string>(type: "TEXT", nullable: false),
+                    Data = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    TipoEntregavelId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Entregaveis", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Entregaveis_TiposEntregavel_TipoEntregavelId",
+                        column: x => x.TipoEntregavelId,
+                        principalTable: "TiposEntregavel",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Atividades",
                 columns: table => new
                 {
@@ -223,9 +254,8 @@ namespace DDDNetCore.Migrations
                     DataInicioAtividade = table.Column<DateTime>(type: "TEXT", nullable: false),
                     DescricaoAtividade = table.Column<string>(type: "TEXT", nullable: false),
                     NomeAtividade = table.Column<string>(type: "TEXT", nullable: false),
-                    TarefaId = table.Column<Guid>(type: "TEXT", nullable: false),
                     OrcamentoId = table.Column<Guid>(type: "TEXT", nullable: true),
-                    ProjetoId = table.Column<Guid>(type: "TEXT", nullable: false)
+                    ProjetoId = table.Column<Guid>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -239,14 +269,27 @@ namespace DDDNetCore.Migrations
                         name: "FK_Atividades_Projetos_ProjetoId",
                         column: x => x.ProjetoId,
                         principalTable: "Projetos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tarefas",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    NomeTarefa = table.Column<string>(type: "TEXT", nullable: false),
+                    DescricaoTarefa = table.Column<string>(type: "TEXT", nullable: false),
+                    StatusTarefa = table.Column<string>(type: "TEXT", nullable: false),
+                    AtividadeId = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tarefas", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Atividades_Tarefas_TarefaId",
-                        column: x => x.TarefaId,
-                        principalTable: "Tarefas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_Tarefas_Atividades_AtividadeId",
+                        column: x => x.AtividadeId,
+                        principalTable: "Atividades",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -265,9 +308,9 @@ namespace DDDNetCore.Migrations
                 column: "ProjetoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Atividades_TarefaId",
-                table: "Atividades",
-                column: "TarefaId");
+                name: "IX_Entregaveis_TipoEntregavelId",
+                table: "Entregaveis",
+                column: "TipoEntregavelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Indicadores_ProjetoId",
@@ -283,6 +326,11 @@ namespace DDDNetCore.Migrations
                 name: "IX_Perfil_ProjetoId",
                 table: "Perfil",
                 column: "ProjetoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tarefas_AtividadeId",
+                table: "Tarefas",
+                column: "AtividadeId");
         }
 
         /// <inheritdoc />
@@ -292,9 +340,6 @@ namespace DDDNetCore.Migrations
                 name: "AfetacaoMensais");
 
             migrationBuilder.DropTable(
-                name: "Atividades");
-
-            migrationBuilder.DropTable(
                 name: "CargasMensais");
 
             migrationBuilder.DropTable(
@@ -302,6 +347,9 @@ namespace DDDNetCore.Migrations
 
             migrationBuilder.DropTable(
                 name: "Contratos");
+
+            migrationBuilder.DropTable(
+                name: "Entregaveis");
 
             migrationBuilder.DropTable(
                 name: "Families");
@@ -316,13 +364,22 @@ namespace DDDNetCore.Migrations
                 name: "Products");
 
             migrationBuilder.DropTable(
+                name: "Tarefas");
+
+            migrationBuilder.DropTable(
+                name: "TiposVinculo");
+
+            migrationBuilder.DropTable(
                 name: "AfetacaoPerfis");
 
             migrationBuilder.DropTable(
-                name: "Orcamentos");
+                name: "TiposEntregavel");
 
             migrationBuilder.DropTable(
-                name: "Tarefas");
+                name: "Atividades");
+
+            migrationBuilder.DropTable(
+                name: "Orcamentos");
 
             migrationBuilder.DropTable(
                 name: "Projetos");

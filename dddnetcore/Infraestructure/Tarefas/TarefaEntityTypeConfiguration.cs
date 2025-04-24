@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Domain.Tarefas;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using dddnetcore.Domain.Atividades;
 
 
 namespace dddnetcore.Infraestructure.Tarefas
@@ -30,6 +31,10 @@ namespace dddnetcore.Infraestructure.Tarefas
 
             builder.Property(b=>b.StatusTarefa).HasConversion(new EnumToStringConverter<StatusTarefa>()).IsRequired();
             
+            builder.HasOne<Atividade>()
+                .WithMany(p => p.Tarefas)
+                .HasForeignKey("AtividadeId")
+                .IsRequired(false);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace dddnetcore.Domain.Orcamentos
         public DateTime DataFimAtividade {get;set;}
         public string DescricaoAtividade {get;set;}
         public string NomeAtividade {get;set;}
-        public Guid? TarefaId {get;set;}
         public Guid? OrcamentoId {get;set;}
+        public List<Guid> TarefasIds { get; set; }
     }
 }

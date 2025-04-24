@@ -16,5 +16,23 @@ namespace dddnetcore.Domain.Perfis
             PMs = new PMsTotais(pms);
             DescricaoPerfil = new DescricaoPerfil(descricao);
         }
+        public void ChangeDescricao(DescricaoPerfil descricaoPerfil)
+        {
+            if (descricaoPerfil == null)
+            {
+                throw new BusinessRuleValidationException("Descrição do perfil não pode ser nula.");
+            }
+            this.DescricaoPerfil = descricaoPerfil;
+        }
+        public void ChangePMs(PMsTotais pms)
+        {
+            if (pms == null)
+            {
+                throw new BusinessRuleValidationException("PMs não pode ser nulo.");
+            }
+            this.PMs = pms;
+        }
+        
+
     }
 }

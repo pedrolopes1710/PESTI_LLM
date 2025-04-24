@@ -1,4 +1,5 @@
 using System;
+using dddnetcore.Domain.Atividades;
 using dddnetcore.Domain.Rubricas;
 using DDDSample1.Domain.Shared;
 
@@ -9,7 +10,9 @@ namespace dddnetcore.Domain.Tarefas
         public NomeTarefa NomeTarefa {get; private set;}
         public DescricaoTarefa DescricaoTarefa {get; private set;}
         public StatusTarefa StatusTarefa {get; private set;}
-
+        
+        public AtividadeId AtividadeId { get; private set; } // já existe no DB
+        
         private Tarefa() {}
 
         public Tarefa(NomeTarefa nomeTarefa, DescricaoTarefa descricaoTarefa, StatusTarefa statusTarefa)
@@ -45,5 +48,13 @@ namespace dddnetcore.Domain.Tarefas
             }
             this.DescricaoTarefa = descricaoTarefa;
         }
+        public void SetAtividadeId(AtividadeId atividadeId)
+        {
+            if (atividadeId == null)
+                throw new BusinessRuleValidationException("AtividadeId não pode ser nulo.");
+            this.AtividadeId = atividadeId;
+        }
+
+               
     }
 }

@@ -27,6 +27,12 @@ using dddnetcore.Domain.Entregaveis;
 
 using dddnetcore.Domain.TiposVinculo;
 using dddnetcore.Infraestructure.TiposVinculo;
+using dddnetcore.Domain.Tarefas;
+using DDDSample1.Domain.Atividades;
+using dddnetcore.Infraestructure.Atividades;
+using dddnetcore.Domain.Atividades;
+using dddnetcore.Domain.Perfis;
+using dddnetcore.Infrastructure.Perfis;
 
 namespace DDDSample1
 {
@@ -107,6 +113,15 @@ namespace DDDSample1
 
             services.AddTransient<ITipoVinculoRepository, TipoVinculoRepository>();
             services.AddTransient<TipoVinculoService>();
+
+            services.AddTransient<ITarefaRepository, TarefaRepository>();
+            services.AddTransient<TarefaService>(); 
+
+            services.AddTransient<IAtividadeRepository, AtividadeRepository>();
+            services.AddTransient<AtividadeService>();      
+            
+            services.AddTransient<IPerfilRepository, PerfilRepository>();   
+            services.AddTransient<PerfilService>();
 
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using dddnetcore.Domain.Atividades;
 using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Domain.Projetos;
@@ -14,7 +15,7 @@ namespace dddnetcore.Domain.Atividades
         public DescricaoAtividade DescricaoAtividade {get; private set;}
         public NomeAtividade NomeAtividade {get; private set;}
 
-        public Tarefa? Tarefa {get; private set;}
+        public List<Tarefa> Tarefas {get; private set;}
 
         public Orcamento? Orcamento {get;private set;}
         
@@ -25,7 +26,6 @@ namespace dddnetcore.Domain.Atividades
             DataInicioAtividade dataInicioAtividade,
             DescricaoAtividade descricaoAtividade,
             NomeAtividade nomeAtividade,
-            Tarefa? tarefa,
             Orcamento? orcamento)
         {
             this.Id = new AtividadeId(Guid.NewGuid());
@@ -33,7 +33,7 @@ namespace dddnetcore.Domain.Atividades
             this.DataInicioAtividade = dataInicioAtividade;
             this.DescricaoAtividade = descricaoAtividade;
             this.NomeAtividade = nomeAtividade;
-            this.Tarefa = tarefa;
+            Tarefas = new List<Tarefa>();
             this.Orcamento = orcamento;
         }
         
