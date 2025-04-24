@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dddnetcore.Domain.CargasMensais;
 using dddnetcore.Domain.Despesas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -25,12 +26,15 @@ namespace dddnetcore.Infraestructure.Despesas
                     b => new ValorDespesa(b)) 
                 .IsRequired();
 
-            builder.Property(b => b.Valor)
+            builder.Property(b => b.Descricao)
+                .HasConversion(
+                    b => b.Descricao, 
+                    b => new DescricaoDespesa(b)) 
                 .IsRequired();
 
             builder.HasOne(b => b.CargaMensal)
                 .WithOne()
-                .HasForeignKey("CargaMensalId")
+                .HasForeignKey<Despesa>(b => b.CargaMensalId)
                 .IsRequired(false);
         }
     }

@@ -1,7 +1,6 @@
 using System;
 using dddnetcore.Domain.CargasMensais;
 
-#nullable enable
 using DDDSample1.Domain.Shared;
 
 namespace dddnetcore.Domain.Despesas
@@ -11,15 +10,13 @@ namespace dddnetcore.Domain.Despesas
 
         public DescricaoDespesa Descricao { get; private set; }
         public ValorDespesa Valor { get; private set; }
-        public CargaMensal? CargaMensal { get; private set; }
+        public CargaMensal CargaMensal { get; private set; }
+        public CargaMensalId CargaMensalId { get; private set; }
 
         private Despesa()
-        {
-            this.Descricao = default!;
-            this.Valor = default!;
-        }
+        {}
 
-        public Despesa(DescricaoDespesa descricao, ValorDespesa valor, CargaMensal? cargaMensal = null)
+        public Despesa(DescricaoDespesa descricao, ValorDespesa valor, CargaMensal cargaMensal)
         {
             this.Id = new DespesaId(Guid.NewGuid());
             this.Descricao = descricao;
