@@ -14,5 +14,9 @@ namespace dddnetcore.Domain.TiposEntregavel
             this.Id = new TipoEntregavelId(Guid.NewGuid());
             this.Nome = new NomeTipoEntregavel(nome);
         }
+
+        public void AlterarAtributos(string nome){
+            this.Nome = new NomeTipoEntregavel(nome);
+        }
     }
 }

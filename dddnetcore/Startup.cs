@@ -21,6 +21,12 @@ using dddnetcore.Domain.Contratos;
 using dddnetcore.Infraestructure.Contratos;
 using dddnetcore.Domain.CargasMensais;
 using dddnetcore.Infraestructure.CargasMensais;
+using dddnetcore.Domain.TiposEntregavel;
+using dddnetcore.Infraestructure.TiposEntregavel;
+using dddnetcore.Domain.Entregaveis;
+
+using dddnetcore.Domain.TiposVinculo;
+using dddnetcore.Infraestructure.TiposVinculo;
 
 namespace DDDSample1
 {
@@ -92,6 +98,15 @@ namespace DDDSample1
             services.AddTransient<ContratoService>();
 
             services.AddTransient<ICargaMensalRepository, CargaMensalRepository>();
+
+            services.AddTransient<ITipoEntregavelRepository, TipoEntregavelRepository>();
+            services.AddTransient<TipoEntregavelService>();
+
+            services.AddTransient<IEntregavelRepository, EntregavelRepository>();
+            services.AddTransient<EntregavelService>();
+
+            services.AddTransient<ITipoVinculoRepository, TipoVinculoRepository>();
+            services.AddTransient<TipoVinculoService>();
 
         }
     }

@@ -47,4 +47,20 @@ public class TipoEntregavelTests
         tipoEntregavel.Id.AsGuid().Should().NotBe(Guid.Empty, "O Id não deve ser vazio.");
     }
 
+       [Fact]
+    public void ChangeAttributes_ShouldUpdateFields()
+    {
+        // Arrange
+        var tipoEntregavel = new TipoEntregavel("Tipo A");
+
+        var novoNome = "Atualizado";
+
+        // Act
+        tipoEntregavel.AlterarAtributos(novoNome);
+
+        // Assert
+        tipoEntregavel.Nome.Nome.Should().Be(novoNome);
+    }
+
 }
+

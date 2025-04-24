@@ -38,6 +38,18 @@ namespace dddnetcore.Domain.TiposEntregavel
             return new TipoEntregavelDto (tipo);
         }
 
+        public async Task<TipoEntregavelDto> UpdateAsync(TipoEntregavelDto dto){
+            var tipo = await _repo.GetByIdAsync(new TipoEntregavelId(dto.Id));
+            if (tipo == null)
+                return null;
+
+            // Atualiza os campos
+            tipo.AlterarAtributos(dto.Nome);
+
+            await _unitOfWork.CommitAsync();
+            return new TipoEntregavelDto(tipo);
+        }
+
          public async Task<TipoEntregavelDto> DeleteAsync(TipoEntregavelId id)
         {
             TipoEntregavel tipo = await this._repo.GetByIdAsync(id);

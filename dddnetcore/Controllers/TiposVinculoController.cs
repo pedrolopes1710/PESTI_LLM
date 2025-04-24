@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using dddnetcore.Domain.TiposEntregavel;
+using dddnetcore.Domain.TiposVinculo;
 using DDDSample1.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,22 +11,22 @@ namespace dddnetcore.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class TiposEntregavelController : ControllerBase
+    public class TiposVinculoController : ControllerBase
     {
-         private readonly TipoEntregavelService _service;
+         private readonly TipoVinculoService _service;
 
-        public TiposEntregavelController(TipoEntregavelService service) {
+        public TiposVinculoController(TipoVinculoService service) {
             _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TipoEntregavelDto>>> GetAll() {
+        public async Task<ActionResult<IEnumerable<TipoVinculoDto>>> GetAll() {
             return await _service.GetAllAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TipoEntregavelDto>> GetById(Guid id) {
-            var tipo = await _service.GetByIdAsync(new TipoEntregavelId(id));
+        public async Task<ActionResult<TipoVinculoDto>> GetById(Guid id) {
+            var tipo = await _service.GetByIdAsync(new TipoVinculoId(id));
 
             if (tipo == null) {
                 return NotFound();
@@ -36,9 +36,9 @@ namespace dddnetcore.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<TipoEntregavelDto>> Create([FromBody] CreatingTipoEntregavelDto dto) {
+        public async Task<ActionResult<TipoVinculoDto>> Create([FromBody] CreatingTipoVinculoDto dto) {
             if (dto == null) {
-                return BadRequest("Dados de tipo de entregável inválidos.");
+                return BadRequest("Dados de tipo de vínculo inválidos.");
             }
             try{
                 var created = await _service.AddAsync(dto);
@@ -52,10 +52,10 @@ namespace dddnetcore.Controllers
         }
 
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<TipoEntregavelDto>> Update(Guid id, TipoEntregavelDto dto){
+        /*[HttpPut("{id}")]
+        public async Task<ActionResult<TipoVinculoDto>> Update(Guid id, TipoVinculoDto dto){
             if (id != dto.Id) {
-                return BadRequest("ID do tipo de entregável não coincide com o ID fornecido.");
+                return BadRequest("ID do tipo de vínculo não coincide com o ID fornecido.");
             }
             try
             {
@@ -74,12 +74,12 @@ namespace dddnetcore.Controllers
             {
                 return StatusCode(500, new { Message = "Erro inesperado", Details = ex.Message });
             }
-        }
+        }*/
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<TipoEntregavelDto>> Delete(Guid id) {
+        public async Task<ActionResult<TipoVinculoDto>> Delete(Guid id) {
             try{
-                var deleted = await _service.DeleteAsync(new TipoEntregavelId(id));
+                var deleted = await _service.DeleteAsync(new TipoVinculoId(id));
                 if (deleted == null)
                     return NotFound();
 
@@ -89,7 +89,7 @@ namespace dddnetcore.Controllers
                 return BadRequest(new {e.Message});
             } 
             catch(Exception ex){
-                return StatusCode(500, new { Message = "Erro inesperado ao eliminar o TipoEntregavel.", Details = ex.Message });
+                return StatusCode(500, new { Message = "Erro inesperado ao eliminar o TipoVinculo.", Details = ex.Message });
             }
             
 
