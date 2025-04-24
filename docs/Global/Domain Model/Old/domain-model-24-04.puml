@@ -37,12 +37,6 @@ package "<<Aggregate>> Contrato" #5D9B9B {
     class SalarioMensal <<Value Object>>
 }
 
-package "<<Aggregate>> Despesa" #F2C94C {
-    entity Despesa <<entity>> <<root>>
-    class DescricaoDespesa <<Value Object>>
-    class ValorDespesa <<Value Object>>
-}
-
 package "<<Aggregate>> Entregavel" #3E5F8A {
     entity Entregavel <<entity>> <<root>>
     class NomeEntregavel <<Value Object>>
@@ -97,6 +91,7 @@ package "<<Aggregate>> Projeto" #00BB2D {
 package "<<Aggregate>> Orcamento" #FF7514 {
     entity Orcamento <<entity>> <<root>>
     class GastoPlaneado <<Value Object>>
+    class GastoExecutado <<Value Object>>
 }
 
 
@@ -158,10 +153,6 @@ Contrato --> DataFimContrato
 Contrato --> TipoContrato
 Contrato --> SalarioMensal
 
-Despesa --> DescricaoDespesa
-Despesa --> ValorDespesa
-Despesa "0..1" -> "0..1" CargaMensal
-
 Entregavel --> NomeEntregavel
 Entregavel --> DescricaoEntregavel
 Entregavel --> DataEntrega
@@ -190,8 +181,8 @@ Projeto "1" ---> "*" Perfil
 Projeto "*" ---> "*" Pessoa
 
 Orcamento --> GastoPlaneado
+Orcamento --> GastoExecutado
 Orcamento "*" ---> "1" Rubrica
-Orcamento "1" ---> "*" Despesa
 
 Rubrica --> NomeRubrica
 
