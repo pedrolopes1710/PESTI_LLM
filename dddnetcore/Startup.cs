@@ -21,6 +21,8 @@ using dddnetcore.Domain.Contratos;
 using dddnetcore.Infraestructure.Contratos;
 using dddnetcore.Domain.CargasMensais;
 using dddnetcore.Infraestructure.CargasMensais;
+using dddnetcore.Domain.Despesas;
+using dddnetcore.Infraestructure.Despesas;
 
 namespace DDDSample1
 {
@@ -92,7 +94,10 @@ namespace DDDSample1
             services.AddTransient<ContratoService>();
 
             services.AddTransient<ICargaMensalRepository, CargaMensalRepository>();
+            services.AddTransient<CargaMensalService>();
 
+            services.AddTransient<IDespesaRepository, DespesaRepository>();
+            services.AddTransient<DespesaService>();
         }
     }
 }
