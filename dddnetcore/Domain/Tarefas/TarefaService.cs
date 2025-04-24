@@ -45,17 +45,35 @@ namespace dddnetcore.Domain.Tarefas
             return new TarefaDto(tarefa);
         }
 
+        public async Task<TarefaDto> UpdateAsync(TarefaDto dto)
+        {
+            Tarefa tarefa = await this._repo.GetByIdAsync(new TarefaId(dto.Id)); 
+
+            if (tarefa == null)
+                return null;   
+
+            // change all field
+            tarefa.ChangeDescricao(new DescricaoTarefa(dto.DescricaoTarefa));
+            tarefa.ChangeNome(new NomeTarefa(dto.Nome));
+            tarefa.ChangeStatus(Enum.Parse<StatusTarefa>(dto.Status));
+
+            await this._unitOfWork.CommitAsync();
+
+            return new TarefaDto (tarefa);
+            
+    }
+
 
          public async Task<TarefaDto> DeleteAsync(Guid id)
         {
-            Tarefa tarefa = await this._repo.GetByIdAsync(new TarefaId(id));
+            Tarefa tarefa = await this._repo.GetByIdAsync(new TarefaId(id)); 
 
-            if (tarefa == null) return null;
+            if (tarefa == null)
+                return null;   
 
-            // Example: Check if linked to atividade before delete (optional)
-            // if ((await this._atividadeRepo.GetByTarefaIdAsync(id)).Any())
-            //     throw new BusinessRuleValidationException("Cannot delete Tarefa linked to Atividade!");
-
+            if (tarefa.StatusTarefa == StatusTarefa.A_Decorrer)
+                throw new BusinessRuleValidationException("It is not possible to delete an active tarefa.");
+            
             this._repo.Remove(tarefa);
             await this._unitOfWork.CommitAsync();
 

@@ -1,6 +1,7 @@
 using System;
 using dddnetcore.Domain.Atividades;
 using dddnetcore.Domain.Orcamentos;
+using dddnetcore.Domain.Projetos;
 using dddnetcore.Domain.Tarefas;
 using DDDSample1.Domain.Shared;
 
@@ -13,9 +14,9 @@ namespace dddnetcore.Domain.Atividades
         public DescricaoAtividade DescricaoAtividade {get; private set;}
         public NomeAtividade NomeAtividade {get; private set;}
 
-        public Tarefa Tarefa {get; private set;}
+        public Tarefa? Tarefa {get; private set;}
 
-        public Orcamento Orcamento {get;private set;}
+        public Orcamento? Orcamento {get;private set;}
         
         private Atividade() {}
 
@@ -24,8 +25,8 @@ namespace dddnetcore.Domain.Atividades
             DataInicioAtividade dataInicioAtividade,
             DescricaoAtividade descricaoAtividade,
             NomeAtividade nomeAtividade,
-            Tarefa tarefa,
-            Orcamento orcamento)
+            Tarefa? tarefa,
+            Orcamento? orcamento)
         {
             this.Id = new AtividadeId(Guid.NewGuid());
             this.DataFimAtividade = dataFimAtividade;
@@ -34,6 +35,56 @@ namespace dddnetcore.Domain.Atividades
             this.NomeAtividade = nomeAtividade;
             this.Tarefa = tarefa;
             this.Orcamento = orcamento;
+        }
+        
+        public void ChangeDataFimAtividade(DataFimAtividade dataFimAtividade)
+        {
+            if (dataFimAtividade == null)
+            {
+            throw new BusinessRuleValidationException("DataFimAtividade cannot be null.");
+            }
+
+            if (dataFimAtividade.FimAtividade < this.DataInicioAtividade.InicioAtividade)
+            {
+            throw new BusinessRuleValidationException("DataFimAtividade cannot be earlier than DataInicioAtividade.");
+            }
+
+            this.DataFimAtividade = dataFimAtividade;
+        }
+
+        public void ChangeDataInicioAtividade(DataInicioAtividade dataInicioAtividade)
+        {
+            if (dataInicioAtividade == null)
+            {
+            throw new BusinessRuleValidationException("DataInicioAtividade cannot be null.");
+            }
+
+            if (this.DataFimAtividade != null && dataInicioAtividade.InicioAtividade > this.DataFimAtividade.FimAtividade)
+            {
+            throw new BusinessRuleValidationException("DataInicioAtividade cannot be later than DataFimAtividade.");
+            }
+
+            this.DataInicioAtividade = dataInicioAtividade;
+        }
+
+        public void ChangeDescricaoAtividade(DescricaoAtividade descricaoAtividade)
+        {
+            if (descricaoAtividade == null)
+            {
+            throw new BusinessRuleValidationException("DescricaoAtividade cannot be null.");
+            }
+
+            this.DescricaoAtividade = descricaoAtividade;
+        }
+
+        public void ChangeNomeAtividade(NomeAtividade nomeAtividade)
+        {
+            if (nomeAtividade == null)
+            {
+            throw new BusinessRuleValidationException("NomeAtividade cannot be null.");
+            }
+
+            this.NomeAtividade = nomeAtividade;
         }
 
     }

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+
 using System.Linq;
 using System.Threading.Tasks;
 using dddnetcore.Domain.Orcamentos;
+using dddnetcore.Domain.Projetos;
 using dddnetcore.Domain.Tarefas;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
@@ -13,10 +15,12 @@ namespace dddnetcore.Domain.Atividades
         public Guid Id {get;set;}
         public DateTime DataFimAtividade {get;set;}
         public DateTime DataInicioAtividade {get;set;}
-        public string DescricaoAtividade {get;set;}
-        public string NomeAtividade {get;set;}
-        public TarefaDto Tarefa {get;set;}
+        public String DescricaoAtividade {get;set;}
+        public String NomeAtividade {get;set;}
+        public TarefaDto TarefaDto {get;set;}
         public OrcamentoDto OrcamentoDto {get;set;}
+
+        
 
         public AtividadeDto() {}
 
@@ -26,8 +30,8 @@ namespace dddnetcore.Domain.Atividades
             this.DataInicioAtividade = atividade.DataInicioAtividade.InicioAtividade;
             this.DescricaoAtividade = atividade.DescricaoAtividade.Descricao;
             this.NomeAtividade = atividade.NomeAtividade.Nome;
-            this.Tarefa = new TarefaDto(atividade.Tarefa);
-            this.OrcamentoDto = new OrcamentoDto(atividade.Orcamento);
+            this.TarefaDto = atividade.Tarefa != null ? new TarefaDto(atividade.Tarefa) : null;
+            this.OrcamentoDto = atividade.Orcamento != null ? new OrcamentoDto(atividade.Orcamento) : null;
         }
     }
 }
