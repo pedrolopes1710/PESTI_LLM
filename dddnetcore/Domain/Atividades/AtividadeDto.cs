@@ -17,7 +17,6 @@ namespace dddnetcore.Domain.Atividades
         public DateTime DataInicioAtividade {get;set;}
         public String DescricaoAtividade {get;set;}
         public String NomeAtividade {get;set;}
-        public TarefaDto TarefaDto {get;set;}
         public OrcamentoDto OrcamentoDto {get;set;}
 
         
@@ -30,7 +29,6 @@ namespace dddnetcore.Domain.Atividades
             this.DataInicioAtividade = atividade.DataInicioAtividade.InicioAtividade;
             this.DescricaoAtividade = atividade.DescricaoAtividade.Descricao;
             this.NomeAtividade = atividade.NomeAtividade.Nome;
-            this.TarefaDto = atividade.Tarefa != null ? new TarefaDto(atividade.Tarefa) : null;
             this.OrcamentoDto = atividade.Orcamento != null ? new OrcamentoDto(atividade.Orcamento) : null;
         }
     }

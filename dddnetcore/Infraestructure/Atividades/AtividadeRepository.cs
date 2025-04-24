@@ -18,6 +18,14 @@ namespace dddnetcore.Infraestructure.Atividades
             _context = context;
         }
 
+        public async Task<Atividade> UpdateAsync(Atividade atividade) {
+            _context.Atividades.Update(atividade);
+
+            await _context.SaveChangesAsync();
+
+            return atividade;
+        }
+
         /*public async Task<List<Orcamento>> GetOrcamentosAsync(Guid? rubricaId = null)
         {
             if (rubricaId == null) return await GetAllAsync();

@@ -31,6 +31,8 @@ using dddnetcore.Domain.Entregaveis;
 using dddnetcore.Infraestructure.TiposEntregavel;
 using dddnetcore.Domain.TiposEntregavel;
 using dddnetcore.Infraestructure.Entregaveis;
+using dddnetcore.Infraestructure.TiposVinculo;
+using dddnetcore.Domain.TiposVinculo;
 using dddnetcore.Domain.Despesas;
 using dddnetcore.Infraestructure.Despesas;
 
@@ -61,6 +63,8 @@ namespace DDDSample1.Infrastructure
         public DbSet<CargaMensal> CargasMensais {get; set;}
         public DbSet<Entregavel> Entregaveis {get; set;}
         public DbSet<TipoEntregavel> TiposEntregavel {get; set;}
+
+        public DbSet<TipoVinculo> TiposVinculo {get; set;}
         public DbSet<Despesa> Despesas {get; set;}
         
         public DDDSample1DbContext(DbContextOptions options) : base(options)
@@ -87,6 +91,7 @@ namespace DDDSample1.Infrastructure
             modelBuilder.ApplyConfiguration(new CargaMensalEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new EntregavelEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TipoEntregavelEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TipoVinculoEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DespesaEntityTypeConfiguration());
 
 

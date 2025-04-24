@@ -42,10 +42,9 @@ namespace dddnetcore.Infraestructure.Atividades
                 .HasForeignKey("ProjetoId")
                 .IsRequired(false);
 
-            builder.HasOne(b => b.Tarefa)
-                .WithMany()
-                .HasForeignKey("TarefaId")
-                .IsRequired(false);
+            builder.HasMany(p => p.Tarefas)
+                .WithOne()
+                .HasForeignKey("AtividadeId");
                 
             builder.HasOne(b => b.Orcamento)
                 .WithMany()

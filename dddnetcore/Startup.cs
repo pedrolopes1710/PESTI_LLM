@@ -21,6 +21,18 @@ using dddnetcore.Domain.Contratos;
 using dddnetcore.Infraestructure.Contratos;
 using dddnetcore.Domain.CargasMensais;
 using dddnetcore.Infraestructure.CargasMensais;
+using dddnetcore.Domain.TiposEntregavel;
+using dddnetcore.Infraestructure.TiposEntregavel;
+using dddnetcore.Domain.Entregaveis;
+
+using dddnetcore.Domain.TiposVinculo;
+using dddnetcore.Infraestructure.TiposVinculo;
+using dddnetcore.Domain.Tarefas;
+using DDDSample1.Domain.Atividades;
+using dddnetcore.Infraestructure.Atividades;
+using dddnetcore.Domain.Atividades;
+using dddnetcore.Domain.Perfis;
+using dddnetcore.Infrastructure.Perfis;
 using dddnetcore.Domain.Despesas;
 using dddnetcore.Infraestructure.Despesas;
 
@@ -95,6 +107,24 @@ namespace DDDSample1
 
             services.AddTransient<ICargaMensalRepository, CargaMensalRepository>();
             services.AddTransient<CargaMensalService>();
+
+            services.AddTransient<ITipoEntregavelRepository, TipoEntregavelRepository>();
+            services.AddTransient<TipoEntregavelService>();
+
+            services.AddTransient<IEntregavelRepository, EntregavelRepository>();
+            services.AddTransient<EntregavelService>();
+
+            services.AddTransient<ITipoVinculoRepository, TipoVinculoRepository>();
+            services.AddTransient<TipoVinculoService>();
+
+            services.AddTransient<ITarefaRepository, TarefaRepository>();
+            services.AddTransient<TarefaService>(); 
+
+            services.AddTransient<IAtividadeRepository, AtividadeRepository>();
+            services.AddTransient<AtividadeService>();      
+            
+            services.AddTransient<IPerfilRepository, PerfilRepository>();   
+            services.AddTransient<PerfilService>();
 
             services.AddTransient<IDespesaRepository, DespesaRepository>();
             services.AddTransient<DespesaService>();

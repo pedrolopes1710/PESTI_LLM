@@ -15,8 +15,12 @@ namespace DDDSample1.Domain.Atividades
         private readonly ITarefaRepository _repoTarefa;
         private readonly IOrcamentoRepository _repoOrcamento;
 
-        public AtividadeService(IUnitOfWork unitOfWork, IAtividadeRepository repo, ITarefaRepository repoTarefa, IOrcamentoRepository repoOrcamento)
+        private readonly TarefaService _tarefaService;
+
+
+        public AtividadeService(IUnitOfWork unitOfWork, IAtividadeRepository repo, ITarefaRepository repoTarefa, IOrcamentoRepository repoOrcamento, TarefaService tarefaService) 
         {
+            this._tarefaService = tarefaService;
             this._unitOfWork = unitOfWork;
             this._repo = repo;
             this._repoTarefa = repoTarefa;
@@ -35,29 +39,40 @@ namespace DDDSample1.Domain.Atividades
 
         public async Task<AtividadeDto> AddAsync(CreatingAtividadeDto dto)
         {
-            Tarefa? tarefa = null;
-            if (dto.TarefaId.HasValue)
-            {
-                tarefa = await _repoTarefa.GetByIdAsync(new TarefaId(dto.TarefaId.Value));
-            }
-
             Orcamento? orcamento = null;
             if (dto.OrcamentoId.HasValue)
             {
                 orcamento = await _repoOrcamento.GetByIdAsync(new OrcamentoId(dto.OrcamentoId.Value));
             }            
 
-            var atividade = new Atividade(new DataFimAtividade(dto.DataFimAtividade), new DataInicioAtividade(dto.DataInicioAtividade), new DescricaoAtividade(dto.DescricaoAtividade), new NomeAtividade(dto.NomeAtividade), tarefa, orcamento);
+
+        
+            var atividade = new Atividade(new DataFimAtividade(dto.DataFimAtividade), new DataInicioAtividade(dto.DataInicioAtividade), new DescricaoAtividade(dto.DescricaoAtividade), new NomeAtividade(dto.NomeAtividade),orcamento);
+
 
             await this._repo.AddAsync(atividade);
             await this._unitOfWork.CommitAsync();
+
+             // associar tarefas
+            if (dto.TarefasIds != null)
+            {
+                foreach (var tarefaId in dto.TarefasIds)
+                {
+                    var tarefa = await _repoTarefa.GetByIdAsync(new TarefaId(tarefaId));
+                    if (tarefa != null)
+                    {
+                        tarefa.SetAtividadeId(atividade.Id); // método novo a criar na entidade
+                        _repoTarefa.UpdateAsync(tarefa); // atualizar a tarefa com a nova atividade
+                    }
+                }
+                await _unitOfWork.CommitAsync(); // segundo commit para guardar associações
+            }
 
             return new AtividadeDto(atividade);
         }
 
         public async Task<AtividadeDto> UpdateAsync(AtividadeDto dto)
         {
-            await checkTarefaIdAsync(new TarefaId(dto.TarefaDto.Id));
             var atividade = await this._repo.GetByIdAsync(new AtividadeId(dto.Id)); 
 
             if (atividade == null)
