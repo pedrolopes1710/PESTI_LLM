@@ -35,6 +35,7 @@ using dddnetcore.Domain.Perfis;
 using dddnetcore.Infrastructure.Perfis;
 using dddnetcore.Domain.Despesas;
 using dddnetcore.Infraestructure.Despesas;
+using dddnetcore.Services;
 
 namespace DDDSample1
 {
@@ -128,6 +129,9 @@ namespace DDDSample1
 
             services.AddTransient<IDespesaRepository, DespesaRepository>();
             services.AddTransient<DespesaService>();
+            
+            services.AddTransient<ProjetoService>();
+
         }
     }
 }
