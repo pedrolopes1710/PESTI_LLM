@@ -204,6 +204,9 @@ namespace DDDNetCore.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("OrcamentoId")
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("Valor")
                         .HasColumnType("REAL");
 
@@ -211,6 +214,8 @@ namespace DDDNetCore.Migrations
 
                     b.HasIndex("CargaMensalId")
                         .IsUnique();
+
+                    b.HasIndex("OrcamentoId");
 
                     b.ToTable("Despesas");
                 });
@@ -260,9 +265,6 @@ namespace DDDNetCore.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
-
-                    b.Property<double>("GastoExecutado")
-                        .HasColumnType("REAL");
 
                     b.Property<double>("GastoPlaneado")
                         .HasColumnType("REAL");
@@ -398,6 +400,12 @@ namespace DDDNetCore.Migrations
                     b.HasOne("dddnetcore.Domain.CargasMensais.CargaMensal", "CargaMensal")
                         .WithOne()
                         .HasForeignKey("dddnetcore.Domain.Despesas.Despesa", "CargaMensalId");
+
+                    b.HasOne("dddnetcore.Domain.Orcamentos.Orcamento", null)
+                        .WithMany("Despesas")
+                        .HasForeignKey("OrcamentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CargaMensal");
                 });
@@ -594,6 +602,11 @@ namespace DDDNetCore.Migrations
             modelBuilder.Entity("dddnetcore.Domain.Atividades.Atividade", b =>
                 {
                     b.Navigation("Tarefas");
+                });
+
+            modelBuilder.Entity("dddnetcore.Domain.Orcamentos.Orcamento", b =>
+                {
+                    b.Navigation("Despesas");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Projetos.Projeto", b =>

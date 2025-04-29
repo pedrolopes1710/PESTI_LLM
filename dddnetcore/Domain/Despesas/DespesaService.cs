@@ -32,8 +32,8 @@ namespace dddnetcore.Domain.Despesas
         public async Task<DespesaDto> AddAsync(CreatingDespesaDto dto) {
             Despesa despesa;
             if (dto.CargaMensalId == null) {
-                    if (dto.Descricao == null) 
-                throw new ArgumentNullException("Missing name for Expense creation!");
+                if (dto.Descricao == null) 
+                    throw new ArgumentNullException("Missing name for Expense creation!");
 
                 despesa = new Despesa(new DescricaoDespesa(dto.Descricao), new ValorDespesa(dto.Valor), null);
             } else {

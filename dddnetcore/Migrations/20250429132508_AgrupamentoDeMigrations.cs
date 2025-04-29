@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DDDNetCore.Migrations
 {
     /// <inheritdoc />
-    public partial class NewRe : Migration
+    public partial class AgrupamentoDeMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -165,25 +165,6 @@ namespace DDDNetCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Despesas",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Descricao = table.Column<string>(type: "TEXT", nullable: false),
-                    Valor = table.Column<double>(type: "REAL", nullable: false),
-                    CargaMensalId = table.Column<Guid>(type: "TEXT", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Despesas", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Despesas_CargasMensais_CargaMensalId",
-                        column: x => x.CargaMensalId,
-                        principalTable: "CargasMensais",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Indicadores",
                 columns: table => new
                 {
@@ -230,7 +211,6 @@ namespace DDDNetCore.Migrations
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     GastoPlaneado = table.Column<double>(type: "REAL", nullable: false),
-                    GastoExecutado = table.Column<double>(type: "REAL", nullable: false),
                     RubricaId = table.Column<Guid>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -293,6 +273,32 @@ namespace DDDNetCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Despesas",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Descricao = table.Column<string>(type: "TEXT", nullable: false),
+                    Valor = table.Column<double>(type: "REAL", nullable: false),
+                    CargaMensalId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    OrcamentoId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Despesas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Despesas_CargasMensais_CargaMensalId",
+                        column: x => x.CargaMensalId,
+                        principalTable: "CargasMensais",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Despesas_Orcamentos_OrcamentoId",
+                        column: x => x.OrcamentoId,
+                        principalTable: "Orcamentos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tarefas",
                 columns: table => new
                 {
@@ -332,6 +338,11 @@ namespace DDDNetCore.Migrations
                 table: "Despesas",
                 column: "CargaMensalId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Despesas_OrcamentoId",
+                table: "Despesas",
+                column: "OrcamentoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Entregaveis_TipoEntregavelId",

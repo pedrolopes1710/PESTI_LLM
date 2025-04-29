@@ -46,12 +46,7 @@ namespace dddnetcore.Domain.Orcamentos
             if (dto.GastoPlaneado != null) {
                 if (orcamento.Rubrica.Nome.Nome.Equals(NomeRubrica.NomeSalarial)) 
                     throw new BusinessRuleValidationException("Cannot change value of salarial budget.");
-                orcamento.MudarGastoExecutado(new GastoPlaneado(dto.GastoPlaneado.Value));
-            }
-            if (dto.GastoExecutado != null) {
-                if (orcamento.Rubrica.Nome.Nome.Equals(NomeRubrica.NomeSalarial)) 
-                    throw new BusinessRuleValidationException("Cannot change value of salarial budget.");
-                orcamento.MudarGastoExecutado(new GastoExecutado(dto.GastoExecutado.Value));
+                orcamento.MudarGastoPlaneado(new GastoPlaneado(dto.GastoPlaneado.Value));
             }
 
 

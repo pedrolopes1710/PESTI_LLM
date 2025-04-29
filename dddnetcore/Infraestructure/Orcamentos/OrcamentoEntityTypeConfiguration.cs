@@ -20,14 +20,15 @@ namespace dddnetcore.Infraestructure.Orcamentos
                     b => b.Quantidade,
                     b => new GastoPlaneado(b)).IsRequired();
 
-            builder.Property(b => b.GastoExecutado)
-                .HasConversion(
-                    b => b.Quantidade,
-                    b => new GastoExecutado(b)).IsRequired();
-
             builder.HasOne(b => b.Rubrica)
                 .WithMany()
                 .HasForeignKey("RubricaId")
+                .IsRequired();
+
+            builder.HasMany(b => b.Despesas)
+                .WithOne()
+                .HasForeignKey("OrcamentoId")
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
         }
     }

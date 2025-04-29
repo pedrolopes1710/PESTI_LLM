@@ -10,7 +10,6 @@ namespace dddnetcore.Domain.Orcamentos
     {
         public Guid Id {get;set;}
         public double GastoPlaneado {get;set;}
-        public double GastoExecutado {get;set;}
         public RubricaDto Rubrica {get;set;}
 
         public OrcamentoDto() {}
@@ -18,7 +17,6 @@ namespace dddnetcore.Domain.Orcamentos
         public OrcamentoDto(Orcamento orcamento) {
             this.Id = orcamento.Id.AsGuid();
             this.GastoPlaneado = orcamento.GastoPlaneado.Quantidade;
-            this.GastoExecutado = orcamento.GastoExecutado.Quantidade;
             this.Rubrica = new RubricaDto(orcamento.Rubrica);
         }
     }
