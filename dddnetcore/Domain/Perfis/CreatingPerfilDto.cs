@@ -10,5 +10,7 @@ namespace dddnetcore.Domain.Perfis
     {
         public int PMs{get;set;}
         public string Descricao{get;set;}
+
+        public Guid TipoVinculoId{get;set;}
     }
 }

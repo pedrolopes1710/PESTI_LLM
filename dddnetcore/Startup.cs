@@ -36,6 +36,8 @@ using dddnetcore.Infrastructure.Perfis;
 using dddnetcore.Domain.Despesas;
 using dddnetcore.Infraestructure.Despesas;
 using dddnetcore.Services;
+using dddnetcore.Infraestructure.Entregaveis;
+using dddnetcore.Infraestructure.Tarefas;
 
 namespace DDDSample1
 {

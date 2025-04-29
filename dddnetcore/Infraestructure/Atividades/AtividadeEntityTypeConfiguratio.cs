@@ -50,6 +50,15 @@ namespace dddnetcore.Infraestructure.Atividades
                 .WithMany()
                 .HasForeignKey("OrcamentoId")
                 .IsRequired(false);
+
+            builder.HasMany(p => p.Entregaveis)
+                .WithOne()
+                .HasForeignKey("AtividadeId");
+
+            builder.HasMany(p => p.Perfis)
+                .WithOne()
+                .HasForeignKey("AtividadeId");
+              
         }
     }
 }

@@ -7,6 +7,6 @@ namespace dddnetcore.Domain.Entregaveis
 {
     public interface IEntregavelRepository : IRepository<Entregavel, EntregavelId>
     {
-       
+       public Task<Entregavel> UpdateAsync(Entregavel entregavel);
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DDDSample1.Domain.Shared;
 using dddnetcore.Domain.TiposEntregavel;
-using dddnetcore.Domain.Entregavel;
+
 
 namespace dddnetcore.Domain.Entregaveis
 {

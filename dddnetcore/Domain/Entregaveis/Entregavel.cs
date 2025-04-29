@@ -1,4 +1,5 @@
 using System;
+using dddnetcore.Domain.Atividades;
 using dddnetcore.Domain.TiposEntregavel;
 using DDDSample1.Domain.Shared;
 
@@ -13,6 +14,8 @@ namespace dddnetcore.Domain.Entregaveis
         public DataEntregavel Data{get;private set;}
 
         public TipoEntregavel TipoEntregavel{get;private set;}
+
+         public AtividadeId AtividadeId { get; private set; } // já existe no DB
 
         private Entregavel() {
         }
@@ -30,6 +33,12 @@ namespace dddnetcore.Domain.Entregaveis
             this.Descricao = new DescricaoEntregavel(descricao);
             this.Data = new DataEntregavel(data);
             this.TipoEntregavel = tipo;
+        }
+        public void SetAtividadeId(AtividadeId atividadeId)
+        {
+            if (atividadeId == null)
+                throw new BusinessRuleValidationException("AtividadeId não pode ser nulo.");
+            this.AtividadeId = atividadeId;
         }
     }
 }
