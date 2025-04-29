@@ -9,6 +9,8 @@ namespace dddnetcore.Domain.CargasMensais
         public double FeriasBaixasLicencasFaltas { get; set; }
         public DateTime MesAno { get; set; }
         public double SalarioBase { get; set; }
+        public double TaxaSocialUnica { get; set; }
+
 
     }
 }

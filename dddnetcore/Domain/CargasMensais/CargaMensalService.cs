@@ -28,6 +28,7 @@ namespace dddnetcore.Domain.CargasMensais
             FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
             MesAno = c.MesAno.Valor,
             SalarioBase = c.SalarioBase.Valor,
+            TaxaSocialUnica = c.TSU.Valor
             });
 
             return listDto;
@@ -40,15 +41,7 @@ namespace dddnetcore.Domain.CargasMensais
             if (c == null)
                 return null;
 
-            return new CargaMensalDto
-            {
-                Id = c.Id.AsString(),
-                JornadaDiaria = c.JornadaDiaria.Valor,        //
-                DiasUteisTrabalhaveis = c.DiasUteis.Valor,
-                FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
-                MesAno = c.MesAno.Valor,
-                SalarioBase = c.SalarioBase.Valor,
-            };
+            return new CargaMensalDto(c);
         }
 
         public async Task<CargaMensalDto> AddAsync(CreatingCargaMensalDto dto)
@@ -58,7 +51,8 @@ namespace dddnetcore.Domain.CargasMensais
                 new DiasUteisTrabalhaveis(dto.DiasUteisTrabalhaveis),
                 new FeriasBaixasLicencasFaltas(dto.FeriasBaixasLicencasFaltas),
                 new SalarioBase(dto.SalarioBase),
-                new MesAno(dto.MesAno)
+                new MesAno(dto.MesAno),
+                new TaxaSocialUnica(dto.TaxaSocialUnica)
             );
 
             await this._repo.AddAsync(c);
@@ -72,6 +66,7 @@ namespace dddnetcore.Domain.CargasMensais
                 FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
                 MesAno = c.MesAno.Valor,
                 SalarioBase = c.SalarioBase.Valor,
+                TaxaSocialUnica = c.TSU.Valor
             };
         }
 
@@ -86,6 +81,7 @@ namespace dddnetcore.Domain.CargasMensais
             cargaMensal.AlterarDiasUteis(new DiasUteisTrabalhaveis(dto.DiasUteisTrabalhaveis));
             cargaMensal.AlterarAusencias(new FeriasBaixasLicencasFaltas(dto.FeriasBaixasLicencasFaltas));
             cargaMensal.AlterarSalarioBase(new SalarioBase(dto.SalarioBase));
+            cargaMensal.AlterarTSU(new TaxaSocialUnica(dto.TaxaSocialUnica));
 
             await this._unitOfWork.CommitAsync();
 
@@ -97,6 +93,7 @@ namespace dddnetcore.Domain.CargasMensais
                 FeriasBaixasLicencasFaltas = cargaMensal.Ausencias.Dias,
                 MesAno = cargaMensal.MesAno.Valor,
                 SalarioBase = cargaMensal.SalarioBase.Valor,
+                TaxaSocialUnica = cargaMensal.TSU.Valor
             };
         }
 
@@ -119,6 +116,7 @@ namespace dddnetcore.Domain.CargasMensais
                 FeriasBaixasLicencasFaltas = cargaMensal.Ausencias.Dias,
                 MesAno = cargaMensal.MesAno.Valor,
                 SalarioBase = cargaMensal.SalarioBase.Valor,
+                TaxaSocialUnica = cargaMensal.TSU.Valor
             };
         }
     }

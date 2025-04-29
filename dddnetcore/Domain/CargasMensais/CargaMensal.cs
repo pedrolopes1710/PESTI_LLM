@@ -10,6 +10,8 @@ namespace dddnetcore.Domain.CargasMensais
         public FeriasBaixasLicencasFaltas Ausencias { get; private set; }
         public SalarioBase SalarioBase { get; private set; }
         public MesAno MesAno { get; private set; }
+        public TaxaSocialUnica TSU { get; private set; }
+
 
         private CargaMensal() { }
 
@@ -18,7 +20,8 @@ namespace dddnetcore.Domain.CargasMensais
             DiasUteisTrabalhaveis diasUteis,
             FeriasBaixasLicencasFaltas ausencias,
             SalarioBase salarioBase,
-            MesAno mesAno)
+            MesAno mesAno,
+            TaxaSocialUnica tsu)
         {
             this.Id = new CargaMensalId(Guid.NewGuid());
             this.JornadaDiaria = jornadaDiaria ?? throw new ArgumentNullException(nameof(jornadaDiaria));
@@ -26,6 +29,7 @@ namespace dddnetcore.Domain.CargasMensais
             this.Ausencias = ausencias ?? throw new ArgumentNullException(nameof(ausencias));
             this.SalarioBase = salarioBase ?? throw new ArgumentNullException(nameof(salarioBase));
             this.MesAno = mesAno ?? throw new ArgumentNullException(nameof(mesAno));
+            this.TSU = tsu ?? throw new ArgumentNullException(nameof(tsu));
         }
 
         public void AlterarJornada(JornadaDiaria novaJornada)
@@ -53,9 +57,14 @@ namespace dddnetcore.Domain.CargasMensais
             this.MesAno = novoMesAno ?? throw new ArgumentNullException(nameof(novoMesAno));
         }
 
+        public void AlterarTSU(TaxaSocialUnica novaTSU)
+        {
+            this.TSU = novaTSU ?? throw new ArgumentNullException(nameof(novaTSU));
+        }        
+
         public override string ToString()
         {
-            return $"CargaMensal: {Id}, Jornada: {JornadaDiaria.Valor}, Dias Úteis: {DiasUteis.Valor}, Ausências: {Ausencias.Dias}, Salário: {SalarioBase.Valor}, Mês/Ano: {MesAno.Valor.ToString("MM/yyyy")}";
+            return $"CargaMensal: {Id}, Jornada: {JornadaDiaria.Valor}, Dias Úteis: {DiasUteis.Valor}, Ausências: {Ausencias.Dias}, Salário: {SalarioBase.Valor}, Mês/Ano: {MesAno.Valor.ToString("MM/yyyy")}, TSU: {TSU.Valor}";
         }
     }
 }

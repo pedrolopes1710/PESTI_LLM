@@ -50,6 +50,14 @@ namespace dddnetcore.Infraestructure.CargasMensais
                     v => new MesAno(v)
                 )
                 .IsRequired();
+
+            builder.Property(c => c.TSU)
+                .HasConversion(
+                    v => v.Valor,
+                    v => new TaxaSocialUnica(v)
+                )
+                .IsRequired();
+
         }
     }
 }
