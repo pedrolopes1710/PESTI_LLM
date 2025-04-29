@@ -19,7 +19,7 @@ namespace dddnetcore.Domain.CargasMensais
             if (obj == null || GetType() != obj.GetType())
                 return false;
 
-            var other = (DiasUteisTrabalhaveis)obj;
+            var other = (TaxaSocialUnica)obj;
             return Valor == other.Valor;
         }
 
