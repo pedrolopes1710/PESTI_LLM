@@ -16,13 +16,12 @@ namespace dddnetcore.Domain.Orcamentos
 
         public Orcamento(
             GastoPlaneado gastoPlaneado,
-            Rubrica rubrica,
-            List<Despesa> despesas)
+            Rubrica rubrica)
         {
             Id = new OrcamentoId(Guid.NewGuid());
             GastoPlaneado = gastoPlaneado;
             Rubrica = rubrica;
-            Despesas = despesas;
+            Despesas = [];
         }
 
         public void MudarGastoPlaneado(GastoPlaneado gasto) {
@@ -30,6 +29,9 @@ namespace dddnetcore.Domain.Orcamentos
             this.GastoPlaneado = gasto;
         }
 
-        //TODO editar rubrica (ver TODO no serviço)
+        public void MudarRubrica(Rubrica rubrica) {
+            ArgumentNullException.ThrowIfNull(rubrica);
+            this.Rubrica = rubrica;
+        }   
     }
 }

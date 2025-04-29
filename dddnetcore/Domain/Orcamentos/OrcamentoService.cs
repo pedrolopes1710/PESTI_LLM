@@ -19,6 +19,8 @@ namespace dddnetcore.Domain.Orcamentos
             this._rubricaRepo = rubricaRepo;
         }
 
+        //TODO: verificar com o pessoal se vamos usar o lazy loading
+
         public async Task<List<OrcamentoDto>> GetAllAsync() {
             return (await this._repo.GetAllAsync()).ConvertAll(orcamento => new OrcamentoDto(orcamento));
         }
@@ -29,25 +31,29 @@ namespace dddnetcore.Domain.Orcamentos
             return orcamento == null ? null : new OrcamentoDto(orcamento);
         }
 
-        /*public async Task<OrcamentoDto> AddAsync(CreatingOrcamentoDto dto) {
-            Orcamento orcamento = new
-        }*/
+        public async Task<OrcamentoDto> AddAsync(CreatingOrcamentoDto dto) {
+            //hj descobri q double e Guid nunca sao null
+
+            Rubrica rubrica = await this._rubricaRepo.GetByIdAsync(new RubricaId(dto.RubricaId)) ?? throw new NullReferenceException("Not Found Rubric: " + dto.RubricaId);
+            Orcamento orcamento = new Orcamento(new GastoPlaneado(dto.GastoPlaneado), rubrica);
+
+            await this._repo.AddAsync(orcamento);
+            await this._unitOfWork.CommitAsync();
+
+            return new OrcamentoDto(orcamento);
+        }
 
         public async Task<OrcamentoDto> EditOrcamentoAsync(OrcamentoId id, EditingOrcamentoDto dto) {
             Orcamento orcamento = await this._repo.GetByIdAsync(id) ?? throw new NullReferenceException("Not Found Budget: " + id);
         
-            //TODO quando tiver a parte das afeçtações completas,
-            /*
-            *Meter para editar rubricas, pois se se mudar para rubrica salarial,
-            *tem de se calcular automaticamente os gastos.
-            */
-            
-
             if (dto.GastoPlaneado != null) {
-                if (orcamento.Rubrica.Nome.Nome.Equals(NomeRubrica.NomeSalarial)) 
-                    throw new BusinessRuleValidationException("Cannot change value of salarial budget.");
                 orcamento.MudarGastoPlaneado(new GastoPlaneado(dto.GastoPlaneado.Value));
             }
+
+            if (dto.RubricaId != null) {
+                Rubrica rubrica = await this._rubricaRepo.GetByIdAsync(new RubricaId(dto.RubricaId.Value)) ?? throw new NullReferenceException("Not Found Rubric: " + id);
+                orcamento.MudarRubrica(rubrica);
+            }   
 
 
             await this._repo.UpdateAsync(orcamento);
