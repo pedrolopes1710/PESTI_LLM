@@ -45,6 +45,7 @@ namespace dddnetcore.Infraestructure.Orcamentos
         public new async Task<List<Orcamento>> GetAllAsync() {
             return await _context.Orcamentos
                 .Include(o => o.Rubrica)
+                .Include(o => o.Despesas)
                 .ToListAsync();
         }
     }
