@@ -19,8 +19,6 @@ namespace dddnetcore.Domain.Orcamentos
             this._rubricaRepo = rubricaRepo;
         }
 
-        //TODO: verificar com o pessoal se vamos usar o lazy loading
-
         public async Task<List<OrcamentoDto>> GetAllAsync() {
             return (await this._repo.GetAllAsync()).ConvertAll(orcamento => new OrcamentoDto(orcamento));
         }

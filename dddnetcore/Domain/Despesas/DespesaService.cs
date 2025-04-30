@@ -35,7 +35,7 @@ namespace dddnetcore.Domain.Despesas
                 if (dto.Descricao == null) 
                     throw new ArgumentNullException("Missing name for Expense creation!");
 
-                despesa = new Despesa(new DescricaoDespesa(dto.Descricao), new ValorDespesa(dto.Valor), null);
+                despesa = new Despesa(new DescricaoDespesa(dto.Descricao), new ValorDespesa(dto.Valor), null, new Automatico(false));
             } else {
                 CargaMensal cargaMensal = await this._cargaMensalRepo.GetByIdAsync(new CargaMensalId(dto.CargaMensalId!.Value)) ?? throw new NullReferenceException("Monthly Load not found!");
 

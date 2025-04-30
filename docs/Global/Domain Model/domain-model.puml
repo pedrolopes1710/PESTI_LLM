@@ -41,6 +41,7 @@ package "<<Aggregate>> Despesa" #F2C94C {
     entity Despesa <<entity>> <<root>>
     class DescricaoDespesa <<Value Object>>
     class ValorDespesa <<Value Object>>
+    class Automatico <<Value Object>>
 }
 
 package "<<Aggregate>> Entregavel" #3E5F8A {
@@ -160,12 +161,14 @@ Contrato --> SalarioMensal
 
 Despesa --> DescricaoDespesa
 Despesa --> ValorDespesa
+Despesa --> Automatico
 Despesa "0..1" -> "0..1" CargaMensal
 
 Entregavel --> NomeEntregavel
 Entregavel --> DescricaoEntregavel
 Entregavel --> DataEntrega
 Entregavel "*" ---> "1" TipoEntregavel
+Entregavel "*" -> "*" Pessoa
 
 Indicador --> NomeIndicador
 Indicador --> ValorAtual

@@ -38,6 +38,8 @@ using dddnetcore.Infraestructure.Despesas;
 using dddnetcore.Services;
 using dddnetcore.Infraestructure.Entregaveis;
 using dddnetcore.Infraestructure.Tarefas;
+using dddnetcore.Domain.AfetacaoMensais;
+using dddnetcore.Infraestructure.AfetacaoPerfis;
 
 namespace DDDSample1
 {
@@ -133,6 +135,9 @@ namespace DDDSample1
             services.AddTransient<DespesaService>();
             
             services.AddTransient<ProjetoService>();
+
+            services.AddTransient<IAfetacaoMensalRepository, AfetacaoMensalRepository>();
+            services.AddTransient<AfetacaoMensalService>();
 
         }
     }

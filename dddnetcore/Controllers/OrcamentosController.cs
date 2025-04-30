@@ -12,7 +12,7 @@ namespace dddnetcore.Controllers
     [ApiController]
     public class OrcamentosController    : ControllerBase
     {
-        private OrcamentoService _service;
+        private readonly OrcamentoService _service;
 
         public OrcamentosController(OrcamentoService service) {
             _service = service;

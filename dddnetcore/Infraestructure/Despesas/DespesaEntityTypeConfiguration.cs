@@ -32,6 +32,12 @@ namespace dddnetcore.Infraestructure.Despesas
                     b => new DescricaoDespesa(b)) 
                 .IsRequired();
 
+            builder.Property(b => b.Automatico)
+                .HasConversion(
+                    b => b.Auto, 
+                    b => new Automatico(b)) 
+                .IsRequired();
+
             builder.HasOne(b => b.CargaMensal)
                 .WithOne()
                 .HasForeignKey<Despesa>(b => b.CargaMensalId)
