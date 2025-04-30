@@ -16,6 +16,8 @@ namespace dddnetcore.Domain.Projetos
         public List<Atividade> Atividades { get; private set; }
         public List<Perfil> Perfis { get; private set; }
         public List<Indicador> Indicadores { get; private set; }
+        public ICollection<Pessoa> Pessoas { get; set; } = new List<Pessoa>();
+
 
         private Projeto()
         {

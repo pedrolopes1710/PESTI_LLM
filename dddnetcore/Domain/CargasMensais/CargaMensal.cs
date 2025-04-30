@@ -1,4 +1,5 @@
 using System;
+using dddnetcore.Domain.Pessoas;
 using DDDSample1.Domain.Shared;
 
 namespace dddnetcore.Domain.CargasMensais
@@ -11,6 +12,8 @@ namespace dddnetcore.Domain.CargasMensais
         public SalarioBase SalarioBase { get; private set; }
         public MesAno MesAno { get; private set; }
         public TaxaSocialUnica TSU { get; private set; }
+        public PessoaId PessoaId { get; private set; }
+
 
 
         private CargaMensal() { }
@@ -60,6 +63,13 @@ namespace dddnetcore.Domain.CargasMensais
         public void AlterarTSU(TaxaSocialUnica novaTSU)
         {
             this.TSU = novaTSU ?? throw new ArgumentNullException(nameof(novaTSU));
+        }
+        
+        public void AlterarPessoaId(PessoaId pessoaId)
+        {
+            if (pessoaId == null)
+                throw new BusinessRuleValidationException("PessoaId cannot be null.");
+            this.PessoaId = pessoaId;
         }        
 
         public override string ToString()

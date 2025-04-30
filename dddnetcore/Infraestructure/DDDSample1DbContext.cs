@@ -35,6 +35,8 @@ using dddnetcore.Infraestructure.TiposVinculo;
 using dddnetcore.Domain.TiposVinculo;
 using dddnetcore.Domain.Despesas;
 using dddnetcore.Infraestructure.Despesas;
+using dddnetcore.Domain.Pessoas;
+using dddnetcore.Infraestructure.Pessoas;
 
 namespace DDDSample1.Infrastructure
 {
@@ -66,6 +68,8 @@ namespace DDDSample1.Infrastructure
 
         public DbSet<TipoVinculo> TiposVinculo {get; set;}
         public DbSet<Despesa> Despesas {get; set;}
+        public DbSet<Pessoa> Pessoas {get; set;}
+
         
         public DDDSample1DbContext(DbContextOptions options) : base(options)
         {
@@ -93,6 +97,7 @@ namespace DDDSample1.Infrastructure
             modelBuilder.ApplyConfiguration(new TipoEntregavelEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new TipoVinculoEntityTypeConfiguration());
             modelBuilder.ApplyConfiguration(new DespesaEntityTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new PessoaEntityTypeConfiguration());
 
 
 
