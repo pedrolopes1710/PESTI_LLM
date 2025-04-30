@@ -1,5 +1,6 @@
 using System;
 using dddnetcore.Domain.CargasMensais;
+using dddnetcore.Domain.Pessoas;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -58,6 +59,10 @@ namespace dddnetcore.Infraestructure.CargasMensais
                 )
                 .IsRequired();
 
+            /*builder.HasOne<Pessoa>()
+                .WithMany(p => p.CargasMensais)
+                .HasForeignKey("PessoaId")
+                .IsRequired(false);*/
         }
     }
 }
