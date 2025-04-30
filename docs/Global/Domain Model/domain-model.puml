@@ -145,7 +145,7 @@ Atividade --> DataFimAtividade
 Atividade "1" ---> "*" Tarefa
 Atividade "*" ---> "*" Perfil
 Atividade "1" ---> "*" Entregavel
-Atividade "1" ---> "1" Orcamento
+Atividade "1" ---> "*" Orcamento
 
 CargaMensal --> JornadaDiaria
 CargaMensal --> DiasUteisTrabalhaveis
@@ -168,7 +168,6 @@ Entregavel --> NomeEntregavel
 Entregavel --> DescricaoEntregavel
 Entregavel --> DataEntrega
 Entregavel "*" ---> "1" TipoEntregavel
-Entregavel "*" -> "*" Pessoa
 
 Indicador --> NomeIndicador
 Indicador --> ValorAtual
