@@ -12,19 +12,6 @@ namespace DDDNetCore.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AfetacaoPerfis",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    DuracaoMes = table.Column<int>(type: "INTEGER", nullable: false),
-                    PMsAprovados = table.Column<double>(type: "REAL", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AfetacaoPerfis", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Categories",
                 columns: table => new
                 {
@@ -265,32 +252,6 @@ namespace DDDNetCore.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AfetacaoMensais",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    PMs = table.Column<double>(type: "REAL", nullable: false),
-                    AfetacaoPerfilId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    CargaMensalId = table.Column<Guid>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AfetacaoMensais", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AfetacaoMensais_AfetacaoPerfis_AfetacaoPerfilId",
-                        column: x => x.AfetacaoPerfilId,
-                        principalTable: "AfetacaoPerfis",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AfetacaoMensais_CargasMensais_CargaMensalId",
-                        column: x => x.CargaMensalId,
-                        principalTable: "CargasMensais",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Despesas",
                 columns: table => new
                 {
@@ -396,6 +357,57 @@ namespace DDDNetCore.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "AfetacaoPerfis",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    DuracaoMes = table.Column<int>(type: "INTEGER", nullable: false),
+                    PMsAprovados = table.Column<double>(type: "REAL", nullable: false),
+                    PerfilId = table.Column<Guid>(type: "TEXT", nullable: true),
+                    PessoaId = table.Column<Guid>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AfetacaoPerfis", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AfetacaoPerfis_Perfil_PerfilId",
+                        column: x => x.PerfilId,
+                        principalTable: "Perfil",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AfetacaoPerfis_Pessoas_PessoaId",
+                        column: x => x.PessoaId,
+                        principalTable: "Pessoas",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AfetacaoMensais",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    PMs = table.Column<double>(type: "REAL", nullable: false),
+                    AfetacaoPerfilId = table.Column<Guid>(type: "TEXT", nullable: false),
+                    CargaMensalId = table.Column<Guid>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AfetacaoMensais", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AfetacaoMensais_AfetacaoPerfis_AfetacaoPerfilId",
+                        column: x => x.AfetacaoPerfilId,
+                        principalTable: "AfetacaoPerfis",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AfetacaoMensais_CargasMensais_CargaMensalId",
+                        column: x => x.CargaMensalId,
+                        principalTable: "CargasMensais",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AfetacaoMensais_AfetacaoPerfilId",
                 table: "AfetacaoMensais",
@@ -405,6 +417,16 @@ namespace DDDNetCore.Migrations
                 name: "IX_AfetacaoMensais_CargaMensalId",
                 table: "AfetacaoMensais",
                 column: "CargaMensalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AfetacaoPerfis_PerfilId",
+                table: "AfetacaoPerfis",
+                column: "PerfilId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AfetacaoPerfis_PessoaId",
+                table: "AfetacaoPerfis",
+                column: "PessoaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Atividades_OrcamentoId",
@@ -506,9 +528,6 @@ namespace DDDNetCore.Migrations
                 name: "Indicadores");
 
             migrationBuilder.DropTable(
-                name: "Perfil");
-
-            migrationBuilder.DropTable(
                 name: "PessoaProjeto");
 
             migrationBuilder.DropTable(
@@ -527,22 +546,25 @@ namespace DDDNetCore.Migrations
                 name: "TiposEntregavel");
 
             migrationBuilder.DropTable(
-                name: "TiposVinculo");
+                name: "Perfil");
+
+            migrationBuilder.DropTable(
+                name: "Pessoas");
 
             migrationBuilder.DropTable(
                 name: "Atividades");
 
             migrationBuilder.DropTable(
-                name: "Pessoas");
+                name: "TiposVinculo");
+
+            migrationBuilder.DropTable(
+                name: "Contratos");
 
             migrationBuilder.DropTable(
                 name: "Orcamentos");
 
             migrationBuilder.DropTable(
                 name: "Projetos");
-
-            migrationBuilder.DropTable(
-                name: "Contratos");
 
             migrationBuilder.DropTable(
                 name: "Rubricas");

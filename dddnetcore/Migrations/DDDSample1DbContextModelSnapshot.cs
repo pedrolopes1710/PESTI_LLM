@@ -119,7 +119,17 @@ namespace DDDNetCore.Migrations
                     b.Property<double>("PMsAprovados")
                         .HasColumnType("REAL");
 
+                    b.Property<Guid?>("PerfilId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("PessoaId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PerfilId");
+
+                    b.HasIndex("PessoaId");
 
                     b.ToTable("AfetacaoPerfis");
                 });
@@ -479,6 +489,21 @@ namespace DDDNetCore.Migrations
                     b.Navigation("AfetacaoPerfil");
 
                     b.Navigation("CargaMensal");
+                });
+
+            modelBuilder.Entity("dddnetcore.Domain.AfetacaoPerfis.AfetacaoPerfil", b =>
+                {
+                    b.HasOne("dddnetcore.Domain.Perfis.Perfil", "Perfil")
+                        .WithMany()
+                        .HasForeignKey("PerfilId");
+
+                    b.HasOne("dddnetcore.Domain.Pessoas.Pessoa", "Pessoa")
+                        .WithMany()
+                        .HasForeignKey("PessoaId");
+
+                    b.Navigation("Perfil");
+
+                    b.Navigation("Pessoa");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Atividades.Atividade", b =>

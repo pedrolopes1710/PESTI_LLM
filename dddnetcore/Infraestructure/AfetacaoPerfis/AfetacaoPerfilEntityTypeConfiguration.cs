@@ -25,6 +25,17 @@ namespace dddnetcore.Infraestructure.AfetacaoPerfis
                 .HasConversion(
                     b => b.Quantidade,
                     b => new PMsAprovados(b)).IsRequired();
+
+            builder.HasOne(b => b.Perfil)
+                .WithMany()
+                .HasForeignKey("PerfilId")
+                .IsRequired(false);
+            
+            builder.HasOne(b => b.Pessoa)
+                .WithMany()
+                .HasForeignKey("PessoaId")
+                .IsRequired(false);
+                
         }
     }
 }
