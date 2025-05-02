@@ -21,12 +21,6 @@ namespace dddnetcore.Infraestructure.AfetacaoPerfis
             _context = context;
         }
 
-        public new async Task<AfetacaoMensal> GetByIdAsync(AfetacaoMensalId id) {
-            return await _context.AfetacaoMensais
-                .Include(o => o.AfetacaoPerfil)
-                .Include(o => o.CargaMensal)
-                .FirstOrDefaultAsync(o => o.Id.Equals(id));
-        }
         public new async Task<List<AfetacaoMensal>> GetAllAsync() {
             return await _context.AfetacaoMensais
                 .Include(o => o.AfetacaoPerfil)

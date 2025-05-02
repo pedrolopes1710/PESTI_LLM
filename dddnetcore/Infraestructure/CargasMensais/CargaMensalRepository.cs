@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using dddnetcore.Domain.CargasMensais;
+using dddnetcore.Domain.Pessoas;
 using DDDSample1.Infrastructure;
 using DDDSample1.Infrastructure.Shared;
+using Microsoft.EntityFrameworkCore;
 
 namespace dddnetcore.Infraestructure.CargasMensais
 {
@@ -17,5 +19,12 @@ namespace dddnetcore.Infraestructure.CargasMensais
             _context = context;
            
         }
+
+        public async Task<CargaMensal> GetByMesAnoAndPessoaAsync(MesAno mesAno, PessoaId pessoaId) {
+            return await _context.CargasMensais
+                .Where(c => c.MesAno.Equals(mesAno) && c.PessoaId.Equals(pessoaId))
+                .FirstOrDefaultAsync();
+        }
+
     }
 }

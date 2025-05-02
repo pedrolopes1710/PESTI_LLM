@@ -16,8 +16,8 @@ namespace dddnetcore.Domain.Pessoas
         public Contrato Contrato { get; private set; }
         public ContratoId ContratoId { get; private set; }
 
-        public List<CargaMensal> CargasMensais { get; private set; } = new List<CargaMensal>();
-        public ICollection<Projeto> Projetos { get; set; } = new List<Projeto>();
+        public List<CargaMensal> CargasMensais { get; private set; } = [];
+        public ICollection<Projeto> Projetos { get; set; } = [];
 
 
         public Pessoa(NomePessoa nome, EmailPessoa email, PessoaCienciaId cienciaId, PessoaUltimoPedPagam ultimoPedidoPagamento, Contrato contrato)
@@ -64,6 +64,12 @@ namespace dddnetcore.Domain.Pessoas
             Contrato = novoContrato;
             ContratoId = novoContrato.Id;
 
+        }
+
+        public void AdicionarCargaMensal(CargaMensal cargaMensal)
+        {
+            if (cargaMensal == null) throw new ArgumentNullException(nameof(cargaMensal));
+            CargasMensais.Add(cargaMensal);
         }
     }
 }

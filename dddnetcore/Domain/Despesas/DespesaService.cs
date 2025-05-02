@@ -39,7 +39,7 @@ namespace dddnetcore.Domain.Despesas
             } else {
                 CargaMensal cargaMensal = await this._cargaMensalRepo.GetByIdAsync(new CargaMensalId(dto.CargaMensalId!.Value)) ?? throw new NullReferenceException("Monthly Load not found!");
 
-                //TODO: qd a pessoa existir, criar despesa com a carga mensal
+                //TODO: qd a pessoa e afetações existirem, criar despesa com a carga mensal
                 throw new NotImplementedException("Not implemented yet!");
             }
             
