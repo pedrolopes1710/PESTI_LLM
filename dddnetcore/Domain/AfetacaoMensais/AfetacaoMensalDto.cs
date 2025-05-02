@@ -9,17 +9,18 @@ namespace dddnetcore.Domain.AfetacaoMensais
 {
     public class AfetacaoMensalDto
     {
-        public Guid Id { get; private set; }
-        public PMs PMs { get; private set; }
-        public AfetacaoPerfil AfetacaoPerfil { get; private set; }
-        public CargaMensal CargaMensal { get; private set; }
+        public Guid Id { get; set; }
+        public double PMs { get; set; }
+        //public AfetacaoPerfilDto AfetacaoPerfil { get; set; }
+        public CargaMensalDto CargaMensal { get; set; }
 
-        public AfetacaoMensalDto(AfetacaoMensal afetacaoMensal)
-        {
+        public AfetacaoMensalDto() {}
+
+        public AfetacaoMensalDto(AfetacaoMensal afetacaoMensal) {
             this.Id = afetacaoMensal.Id.AsGuid();
-            this.PMs = afetacaoMensal.PMs;
-            this.AfetacaoPerfil = afetacaoMensal.AfetacaoPerfil;
-            this.CargaMensal = afetacaoMensal.CargaMensal;
+            this.PMs = afetacaoMensal.PMs.Quantidade;
+            //this.AfetacaoPerfil = new AfetacaoPerfilDto(afetacaoMensal.AfetacaoPerfil);
+            this.CargaMensal = new CargaMensalDto(afetacaoMensal.CargaMensal);
         }
     }
 }

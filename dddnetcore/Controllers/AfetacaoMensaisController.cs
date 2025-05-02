@@ -9,7 +9,7 @@ namespace dddnetcore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AfetacaoMensaisController
+    public class AfetacaoMensaisController : ControllerBase
     {
         private readonly AfetacaoMensalService _service;
 
@@ -21,5 +21,16 @@ namespace dddnetcore.Controllers
         public async Task<ActionResult<IEnumerable<AfetacaoMensalDto>>> GetAll() {
             return await _service.GetAllAsync();
         } 
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<AfetacaoMensalDto>> GetById(Guid id) {
+            var afetacaoMensal = await _service.GetByIdAsync(new AfetacaoMensalId(id));
+
+            if (afetacaoMensal == null) {
+                return NotFound();
+            }
+
+            return afetacaoMensal;
+        }
     }
 }
