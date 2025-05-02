@@ -6,6 +6,7 @@ using dddnetcore.Domain.AfetacaoMensais;
 using dddnetcore.Domain.Atividades;
 using dddnetcore.Domain.Perfis;
 using dddnetcore.Domain.Tarefas;
+using dddnetcore.Domain.TiposVinculo;
 using DDDSample1.Domain.Shared;
 
 namespace dddnetcore.Domain.Perfis
@@ -16,10 +17,13 @@ namespace dddnetcore.Domain.Perfis
         private readonly IPerfilRepository _repo;
         private readonly IAtividadeRepository _atividadeRepo;
 
-        public PerfilService(IUnitOfWork unitOfWork, IPerfilRepository repo, IAtividadeRepository atividadeRepo) {
+        private readonly ITipoVinculoRepository _tipoVinculoRepo;
+
+        public PerfilService(IUnitOfWork unitOfWork, IPerfilRepository repo, IAtividadeRepository atividadeRepo, ITipoVinculoRepository tipoVinculoRepo) {
             this._unitOfWork = unitOfWork;
             this._repo = repo;
             this._atividadeRepo = atividadeRepo;
+            this._tipoVinculoRepo = tipoVinculoRepo;
         }
 
         public async Task<List<PerfilDto>> GetAllAsync() {
@@ -36,7 +40,8 @@ namespace dddnetcore.Domain.Perfis
         public async Task<PerfilDto> AddAsync(CreatingPerfilDto dto)
         {
         
-            var perfil = new Perfil(dto.PMs,dto.Descricao);
+            var tipoVinculo = await this._tipoVinculoRepo.GetByIdAsync(new TipoVinculoId(dto.TipoVinculoId));
+            var perfil = new Perfil(dto.PMs, dto.Descricao, tipoVinculo);
 
             await this._repo.AddAsync(perfil);
             await this._unitOfWork.CommitAsync();

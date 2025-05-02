@@ -1,5 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using dddnetcore.Domain.Contratos;
+using dddnetcore.Domain.CargasMensais;
+using dddnetcore.Domain.Projetos;
+using dddnetcore.Controllers;
+
 
 namespace dddnetcore.Domain.Pessoas
 {
@@ -10,7 +16,9 @@ namespace dddnetcore.Domain.Pessoas
         public string Email { get; set; }
         public string PessoaCienciaId { get; set; }
         public DateTime PessoaUltimoPedPagam { get; set; }
-        public ContratoDto Contrato { get; set; }
+        public ContratoDto? Contrato { get; set; }
+        public List<CreateProjetoDto> Projetos { get; set; } = new();
+        public List<CargaMensalDto> CargasMensais { get; set; } = new();
 
         public PessoaDto() {}
 
@@ -21,7 +29,18 @@ namespace dddnetcore.Domain.Pessoas
             Email = pessoa.Email.Value;
             PessoaCienciaId = pessoa.CienciaId.Value;
             PessoaUltimoPedPagam = pessoa.UltimoPedidoPagamento.Value;
-            Contrato = new ContratoDto(pessoa.Contrato); // Supondo que tens um ContratoDto
+            
+            if (pessoa.Contrato != null)
+                Contrato = new ContratoDto(pessoa.Contrato);
+            
+            Projetos = pessoa.Projetos?.Select(p => new CreateProjetoDto {
+                Nome = p.NomeProjeto.Valor,
+                Descricao = p.DescricaoProjeto.Valor,
+            }).ToList() ?? new();    
+
+            CargasMensais = pessoa.CargasMensais?
+                .Select(c => new CargaMensalDto(c)) // assumes CargaMensalDto has a constructor
+                .ToList() ?? new();
         }
     }
 }

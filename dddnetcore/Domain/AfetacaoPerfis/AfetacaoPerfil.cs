@@ -1,5 +1,6 @@
 using System;
-
+using dddnetcore.Domain.Perfis;
+using dddnetcore.Domain.Pessoas;
 using DDDSample1.Domain.Shared;
 
 namespace dddnetcore.Domain.AfetacaoPerfis
@@ -10,18 +11,41 @@ namespace dddnetcore.Domain.AfetacaoPerfis
 
         public PMsAprovados PMsAprovados {get;private set;}
 
+        public Perfil Perfil {get;private set;}
+
+        public Pessoa Pessoa {get;private set;} 
+
         
         private AfetacaoPerfil() {}
 
         public AfetacaoPerfil(
             DuracaoMes duracaoMes,
-            PMsAprovados pmsAprovados)
+            PMsAprovados pmsAprovados,
+            Perfil perfil,
+            Pessoa pessoa)
         {
             this.Id = new AfetacaoPerfilId(Guid.NewGuid()); 
             this.DuracaoMes = duracaoMes;
             this.PMsAprovados = pmsAprovados;   
-
+            this.Perfil = perfil;
+            this.Pessoa = pessoa;
+        }
+        public void ChangeDuracaoMes(DuracaoMes duracaoMes)
+        {
+            if (duracaoMes == null)
+            {
+            throw new BusinessRuleValidationException("DuracaoMes cannot be null.");
+            }
+            this.DuracaoMes = duracaoMes;
         }
 
+        public void ChangePMsAprovados(PMsAprovados pmsAprovados)
+        {
+            if (pmsAprovados == null)
+            {
+            throw new BusinessRuleValidationException("PMsAprovados cannot be null.");
+            }
+            this.PMsAprovados = pmsAprovados;
+        }
     }
 }

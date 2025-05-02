@@ -20,6 +20,16 @@ namespace dddnetcore.Infraestructure.AfetacaoMensais
                 .HasConversion(
                     b => b.Quantidade,
                     b => new PMs(b)).IsRequired();
+
+            builder.HasOne(b => b.AfetacaoPerfil)
+                .WithMany()
+                .HasForeignKey("AfetacaoPerfilId")
+                .IsRequired();
+
+            builder.HasOne(b => b.CargaMensal)
+                .WithMany()
+                .HasForeignKey("CargaMensalId")
+                .IsRequired();
         }
     }
 }

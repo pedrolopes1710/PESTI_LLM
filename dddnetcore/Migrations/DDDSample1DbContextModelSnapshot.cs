@@ -70,6 +70,21 @@ namespace DDDNetCore.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("PessoaProjeto", b =>
+                {
+                    b.Property<Guid>("PessoasId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ProjetosId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("PessoasId", "ProjetosId");
+
+                    b.HasIndex("ProjetosId");
+
+                    b.ToTable("PessoaProjeto");
+                });
+
             modelBuilder.Entity("dddnetcore.Domain.AfetacaoMensais.AfetacaoMensal", b =>
                 {
                     b.Property<Guid>("Id")
@@ -78,12 +93,17 @@ namespace DDDNetCore.Migrations
                     b.Property<Guid?>("AfetacaoPerfilId")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("CargaMensalId")
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("PMs")
                         .HasColumnType("REAL");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AfetacaoPerfilId");
+
+                    b.HasIndex("CargaMensalId");
 
                     b.ToTable("AfetacaoMensais");
                 });
@@ -99,7 +119,17 @@ namespace DDDNetCore.Migrations
                     b.Property<double>("PMsAprovados")
                         .HasColumnType("REAL");
 
+                    b.Property<Guid?>("PerfilId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("PessoaId")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PerfilId");
+
+                    b.HasIndex("PessoaId");
 
                     b.ToTable("AfetacaoPerfis");
                 });
@@ -155,10 +185,18 @@ namespace DDDNetCore.Migrations
                     b.Property<DateTime>("MesAno")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("PessoaId")
+                        .HasColumnType("TEXT");
+
                     b.Property<double>("SalarioBase")
                         .HasColumnType("REAL");
 
+                    b.Property<double>("TSU")
+                        .HasColumnType("REAL");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PessoaId");
 
                     b.ToTable("CargasMensais");
                 });
@@ -194,11 +232,17 @@ namespace DDDNetCore.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("Automatico")
+                        .HasColumnType("INTEGER");
+
                     b.Property<Guid?>("CargaMensalId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("OrcamentoId")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("Valor")
@@ -209,12 +253,17 @@ namespace DDDNetCore.Migrations
                     b.HasIndex("CargaMensalId")
                         .IsUnique();
 
+                    b.HasIndex("OrcamentoId");
+
                     b.ToTable("Despesas");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Entregaveis.Entregavel", b =>
                 {
                     b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("AtividadeId")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Data")
@@ -233,6 +282,8 @@ namespace DDDNetCore.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AtividadeId");
+
                     b.HasIndex("TipoEntregavelId");
 
                     b.ToTable("Entregaveis");
@@ -242,7 +293,7 @@ namespace DDDNetCore.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
-
+                    
                     b.Property<Guid?>("ProjetoId")
                         .HasColumnType("TEXT");
 
@@ -279,14 +330,55 @@ namespace DDDNetCore.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid>("ProjetoId")
+                    b.Property<Guid?>("AtividadeId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ProjetoId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("TipoVinculoId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AtividadeId");
+
                     b.HasIndex("ProjetoId");
 
+                    b.HasIndex("TipoVinculoId");
+
                     b.ToTable("Perfil");
+                });
+
+            modelBuilder.Entity("dddnetcore.Domain.Pessoas.Pessoa", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CienciaId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ContratoId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UltimoPedidoPagamento")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContratoId")
+                        .IsUnique();
+
+                    b.ToTable("Pessoas");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Projetos.Projeto", b =>
@@ -368,13 +460,53 @@ namespace DDDNetCore.Migrations
                     b.ToTable("TiposVinculo");
                 });
 
+            modelBuilder.Entity("PessoaProjeto", b =>
+                {
+                    b.HasOne("dddnetcore.Domain.Pessoas.Pessoa", null)
+                        .WithMany()
+                        .HasForeignKey("PessoasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("dddnetcore.Domain.Projetos.Projeto", null)
+                        .WithMany()
+                        .HasForeignKey("ProjetosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("dddnetcore.Domain.AfetacaoMensais.AfetacaoMensal", b =>
                 {
                     b.HasOne("dddnetcore.Domain.AfetacaoPerfis.AfetacaoPerfil", "AfetacaoPerfil")
                         .WithMany()
-                        .HasForeignKey("AfetacaoPerfilId");
+                        .HasForeignKey("AfetacaoPerfilId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("dddnetcore.Domain.CargasMensais.CargaMensal", "CargaMensal")
+                        .WithMany()
+                        .HasForeignKey("CargaMensalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("AfetacaoPerfil");
+
+                    b.Navigation("CargaMensal");
+                });
+
+            modelBuilder.Entity("dddnetcore.Domain.AfetacaoPerfis.AfetacaoPerfil", b =>
+                {
+                    b.HasOne("dddnetcore.Domain.Perfis.Perfil", "Perfil")
+                        .WithMany()
+                        .HasForeignKey("PerfilId");
+
+                    b.HasOne("dddnetcore.Domain.Pessoas.Pessoa", "Pessoa")
+                        .WithMany()
+                        .HasForeignKey("PessoaId");
+
+                    b.Navigation("Perfil");
+
+                    b.Navigation("Pessoa");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Atividades.Atividade", b =>
@@ -390,17 +522,34 @@ namespace DDDNetCore.Migrations
                     b.Navigation("Orcamento");
                 });
 
+            modelBuilder.Entity("dddnetcore.Domain.CargasMensais.CargaMensal", b =>
+                {
+                    b.HasOne("dddnetcore.Domain.Pessoas.Pessoa", null)
+                        .WithMany("CargasMensais")
+                        .HasForeignKey("PessoaId");
+                });
+
             modelBuilder.Entity("dddnetcore.Domain.Despesas.Despesa", b =>
                 {
                     b.HasOne("dddnetcore.Domain.CargasMensais.CargaMensal", "CargaMensal")
                         .WithOne()
                         .HasForeignKey("dddnetcore.Domain.Despesas.Despesa", "CargaMensalId");
 
+                    b.HasOne("dddnetcore.Domain.Orcamentos.Orcamento", null)
+                        .WithMany("Despesas")
+                        .HasForeignKey("OrcamentoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CargaMensal");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Entregaveis.Entregavel", b =>
                 {
+                    b.HasOne("dddnetcore.Domain.Atividades.Atividade", null)
+                        .WithMany("Entregaveis")
+                        .HasForeignKey("AtividadeId");
+
                     b.HasOne("dddnetcore.Domain.TiposEntregavel.TipoEntregavel", "TipoEntregavel")
                         .WithMany()
                         .HasForeignKey("TipoEntregavelId")
@@ -414,7 +563,9 @@ namespace DDDNetCore.Migrations
                 {
                     b.HasOne("dddnetcore.Domain.Projetos.Projeto", null)
                         .WithMany("Indicadores")
-                        .HasForeignKey("ProjetoId");
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.OwnsOne("dddnetcore.Domain.Indicadores.NomeIndicador", "Nome", b1 =>
                         {
@@ -488,9 +639,18 @@ namespace DDDNetCore.Migrations
 
             modelBuilder.Entity("dddnetcore.Domain.Perfis.Perfil", b =>
                 {
+                    b.HasOne("dddnetcore.Domain.Atividades.Atividade", null)
+                        .WithMany("Perfis")
+                        .HasForeignKey("AtividadeId");
+
                     b.HasOne("dddnetcore.Domain.Projetos.Projeto", null)
                         .WithMany("Perfis")
                         .HasForeignKey("ProjetoId")
+                        .HasForeignKey("ProjetoId");
+
+                    b.HasOne("dddnetcore.Domain.TiposVinculo.TipoVinculo", "TipoVinculo")
+                        .WithMany()
+                        .HasForeignKey("TipoVinculoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -534,6 +694,17 @@ namespace DDDNetCore.Migrations
 
                     b.Navigation("PMs")
                         .IsRequired();
+
+                    b.Navigation("TipoVinculo");
+                });
+
+            modelBuilder.Entity("dddnetcore.Domain.Pessoas.Pessoa", b =>
+                {
+                    b.HasOne("dddnetcore.Domain.Contratos.Contrato", "Contrato")
+                        .WithOne()
+                        .HasForeignKey("dddnetcore.Domain.Pessoas.Pessoa", "ContratoId");
+
+                    b.Navigation("Contrato");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Projetos.Projeto", b =>
@@ -588,7 +759,21 @@ namespace DDDNetCore.Migrations
 
             modelBuilder.Entity("dddnetcore.Domain.Atividades.Atividade", b =>
                 {
+                    b.Navigation("Entregaveis");
+
+                    b.Navigation("Perfis");
+
                     b.Navigation("Tarefas");
+                });
+
+            modelBuilder.Entity("dddnetcore.Domain.Orcamentos.Orcamento", b =>
+                {
+                    b.Navigation("Despesas");
+                });
+
+            modelBuilder.Entity("dddnetcore.Domain.Pessoas.Pessoa", b =>
+                {
+                    b.Navigation("CargasMensais");
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Projetos.Projeto", b =>

@@ -1,3 +1,4 @@
+using dddnetcore.Domain.Atividades;
 using dddnetcore.Domain.Entregaveis;
 using dddnetcore.Domain.TiposEntregavel;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,11 @@ namespace dddnetcore.Infraestructure.Entregaveis
                 .WithMany()
                 .HasForeignKey("TipoEntregavelId")
                 .IsRequired(); 
+
+            builder.HasOne<Atividade>()
+                .WithMany(p => p.Entregaveis)
+                .HasForeignKey("AtividadeId")
+                .IsRequired(false);
         }
     }
 }

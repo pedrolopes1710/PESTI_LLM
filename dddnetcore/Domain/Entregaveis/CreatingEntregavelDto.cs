@@ -2,7 +2,7 @@ using System;
 using dddnetcore.Domain.TiposEntregavel;
 
 
-namespace dddnetcore.Domain.Entregavel
+namespace dddnetcore.Domain.Entregaveis
 {
     public class CreatingEntregavelDto
     {

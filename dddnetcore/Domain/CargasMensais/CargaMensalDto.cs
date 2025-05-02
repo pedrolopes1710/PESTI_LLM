@@ -10,6 +10,8 @@ namespace dddnetcore.Domain.CargasMensais
         public double FeriasBaixasLicencasFaltas { get; set; }
         public DateTime? MesAno { get; set; } 
         public double SalarioBase { get; set; }
+        public double TaxaSocialUnica { get; set; }
+
 
 
         public CargaMensalDto() {}
@@ -22,6 +24,7 @@ namespace dddnetcore.Domain.CargasMensais
             FeriasBaixasLicencasFaltas = cargaMensal.Ausencias.Dias;
             MesAno = cargaMensal.MesAno.Valor;
             SalarioBase = cargaMensal.SalarioBase.Valor;
+            TaxaSocialUnica = cargaMensal.TSU.Valor;
         }
     }
 }

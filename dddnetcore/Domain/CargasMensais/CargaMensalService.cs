@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using DDDSample1.Domain.Shared;
+using dddnetcore.Domain.Pessoas;
+
 
 namespace dddnetcore.Domain.CargasMensais
 {
@@ -9,11 +11,14 @@ namespace dddnetcore.Domain.CargasMensais
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICargaMensalRepository _repo;
+        private readonly IPessoaRepository _pessoaRepo;
 
-        public CargaMensalService(IUnitOfWork unitOfWork, ICargaMensalRepository repo)
+
+        public CargaMensalService(IUnitOfWork unitOfWork, ICargaMensalRepository repo, IPessoaRepository pessoaRepo)
         {
             this._unitOfWork = unitOfWork;
             this._repo = repo;
+            this._pessoaRepo = pessoaRepo;
         }
 
         public async Task<List<CargaMensalDto>> GetAllAsync()
@@ -28,6 +33,7 @@ namespace dddnetcore.Domain.CargasMensais
             FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
             MesAno = c.MesAno.Valor,
             SalarioBase = c.SalarioBase.Valor,
+            TaxaSocialUnica = c.TSU.Valor
             });
 
             return listDto;
@@ -40,27 +46,24 @@ namespace dddnetcore.Domain.CargasMensais
             if (c == null)
                 return null;
 
-            return new CargaMensalDto
-            {
-                Id = c.Id.AsString(),
-                JornadaDiaria = c.JornadaDiaria.Valor,        //
-                DiasUteisTrabalhaveis = c.DiasUteis.Valor,
-                FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
-                MesAno = c.MesAno.Valor,
-                SalarioBase = c.SalarioBase.Valor,
-            };
+            return new CargaMensalDto(c);
         }
 
         public async Task<CargaMensalDto> AddAsync(CreatingCargaMensalDto dto)
         {
+            var pessoa = await _pessoaRepo.GetByIdAsync(new PessoaId(Guid.Parse(dto.PessoaId)))
+            ?? throw new NullReferenceException("Pessoa não encontrada.");
+            
             var c = new CargaMensal(
                 new JornadaDiaria(dto.JornadaDiaria),
                 new DiasUteisTrabalhaveis(dto.DiasUteisTrabalhaveis),
                 new FeriasBaixasLicencasFaltas(dto.FeriasBaixasLicencasFaltas),
                 new SalarioBase(dto.SalarioBase),
-                new MesAno(dto.MesAno)
+                new MesAno(dto.MesAno),
+                new TaxaSocialUnica(dto.TaxaSocialUnica)
             );
 
+            pessoa.AdicionarCargaMensal(c);
             await this._repo.AddAsync(c);
             await this._unitOfWork.CommitAsync();
 
@@ -72,6 +75,7 @@ namespace dddnetcore.Domain.CargasMensais
                 FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
                 MesAno = c.MesAno.Valor,
                 SalarioBase = c.SalarioBase.Valor,
+                TaxaSocialUnica = c.TSU.Valor
             };
         }
 
@@ -86,6 +90,7 @@ namespace dddnetcore.Domain.CargasMensais
             cargaMensal.AlterarDiasUteis(new DiasUteisTrabalhaveis(dto.DiasUteisTrabalhaveis));
             cargaMensal.AlterarAusencias(new FeriasBaixasLicencasFaltas(dto.FeriasBaixasLicencasFaltas));
             cargaMensal.AlterarSalarioBase(new SalarioBase(dto.SalarioBase));
+            cargaMensal.AlterarTSU(new TaxaSocialUnica(dto.TaxaSocialUnica));
 
             await this._unitOfWork.CommitAsync();
 
@@ -97,6 +102,7 @@ namespace dddnetcore.Domain.CargasMensais
                 FeriasBaixasLicencasFaltas = cargaMensal.Ausencias.Dias,
                 MesAno = cargaMensal.MesAno.Valor,
                 SalarioBase = cargaMensal.SalarioBase.Valor,
+                TaxaSocialUnica = cargaMensal.TSU.Valor
             };
         }
 
@@ -119,6 +125,7 @@ namespace dddnetcore.Domain.CargasMensais
                 FeriasBaixasLicencasFaltas = cargaMensal.Ausencias.Dias,
                 MesAno = cargaMensal.MesAno.Valor,
                 SalarioBase = cargaMensal.SalarioBase.Valor,
+                TaxaSocialUnica = cargaMensal.TSU.Valor
             };
         }
     }

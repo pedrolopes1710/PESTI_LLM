@@ -4,7 +4,9 @@ using dddnetcore.Domain.Atividades;
 using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Domain.Projetos;
 using dddnetcore.Domain.Tarefas;
+using dddnetcore.Domain.Entregaveis;
 using DDDSample1.Domain.Shared;
+using dddnetcore.Domain.Perfis;
 
 namespace dddnetcore.Domain.Atividades
 {
@@ -16,6 +18,10 @@ namespace dddnetcore.Domain.Atividades
         public NomeAtividade NomeAtividade {get; private set;}
 
         public List<Tarefa> Tarefas {get; private set;}
+
+        public List<Entregavel> Entregaveis {get; private set;}
+
+        public List<Perfil> Perfis {get; private set;}  
 
         public Orcamento? Orcamento {get;private set;}
         

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using dddnetcore.Domain.Entregaveis;
-using dddnetcore.Domain.Entregavel;
 using DDDSample1.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 

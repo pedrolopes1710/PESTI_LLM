@@ -40,6 +40,16 @@ using dddnetcore.Infraestructure.Despesas;
 using dddnetcore.Infrastructure.Indicadores;
 using dddnetcore.Infrastructure.Projetos;
 using dddnetcore.Services;
+using dddnetcore.Infraestructure.Entregaveis;
+using dddnetcore.Infraestructure.Tarefas;
+using dddnetcore.Domain.Pessoas;
+using dddnetcore.Infraestructure.Pessoas;
+using dddnetcore.Domain.AfetacaoMensais;
+using dddnetcore.Infraestructure.AfetacaoPerfis;
+using dddnetcore.Domain.AfetacaoPerfis;
+using DDDSample1.Domain.AfetacaoPerfis;
+using dddnetcore.Domain.Projetos;
+using dddnetcore.Infrastructure.Projetos;
 
 namespace DDDSample1
 {
@@ -133,6 +143,9 @@ namespace DDDSample1
 
             services.AddTransient<IDespesaRepository, DespesaRepository>();
             services.AddTransient<DespesaService>();
+
+            services.AddTransient<IPessoaRepository, PessoaRepository>();
+            services.AddTransient<PessoaService>();
             
             services.AddTransient<IProjetoRepository, ProjetoRepository>();
             services.AddTransient<ProjetoService>();
@@ -140,6 +153,12 @@ namespace DDDSample1
             services.AddTransient<IIndicadorRepository, IndicadorRepository>();
             services.AddTransient<IndicadorService>();
 
+
+            services.AddTransient<IAfetacaoMensalRepository, AfetacaoMensalRepository>();
+            services.AddTransient<AfetacaoMensalService>();
+
+            services.AddTransient<IAfetacaoPerfilRepository, AfetacaoPerfilRepository>();
+            services.AddTransient<AfetacaoPerfilService>();
 
         }
     }

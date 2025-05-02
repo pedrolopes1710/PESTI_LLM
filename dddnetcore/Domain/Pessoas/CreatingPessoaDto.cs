@@ -7,8 +7,8 @@ namespace dddnetcore.Domain.Pessoas
         public string Nome { get; set; }
         public string Email { get; set; }
         public string PessoaCienciaId { get; set; }
-        public string PessoaUltimoPedPagam { get; set; }
-        public Guid? ContratoId { get; set; }
+        public DateTime PessoaUltimoPedPagam { get; set; }
+        public string? ContratoId { get; set; }
 
     }
 }

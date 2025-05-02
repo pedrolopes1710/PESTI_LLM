@@ -20,11 +20,16 @@ namespace dddnetcore.Domain.CargasMensais
                 return false;
 
             var other = (MesAno)obj;
-            return Valor == other.Valor;
+            return Valor.Month == other.Valor.Month &&
+                   Valor.Year == other.Valor.Year;
         }
 
         public override int GetHashCode(){
             return Valor.GetHashCode();
+        }
+
+        public override string ToString() {
+            return Valor.ToString("MM/yyyy");
         }
     }
 }

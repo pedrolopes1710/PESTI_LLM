@@ -12,17 +12,22 @@ namespace dddnetcore.Domain.Despesas
         public ValorDespesa Valor { get; private set; }
         public CargaMensal CargaMensal { get; private set; }
         public CargaMensalId CargaMensalId { get; private set; }
+        public Automatico Automatico {get; private set;}
+
 
         private Despesa()
         {}
 
-        public Despesa(DescricaoDespesa descricao, ValorDespesa valor, CargaMensal cargaMensal)
+        public Despesa(DescricaoDespesa descricao, ValorDespesa valor, CargaMensal cargaMensal, Automatico automatico)
         {
             this.Id = new DespesaId(Guid.NewGuid());
             this.Descricao = descricao;
             this.Valor = valor;
             this.CargaMensal = cargaMensal;
+            this.Automatico = automatico;
         }
+
+
 
     }
 }

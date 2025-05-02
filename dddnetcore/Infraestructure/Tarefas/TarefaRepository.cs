@@ -9,7 +9,7 @@ using DDDSample1.Infrastructure;
 using DDDSample1.Infrastructure.Shared;
 using Microsoft.EntityFrameworkCore;
 
-namespace dddnetcore.Infraestructure.Orcamentos
+namespace dddnetcore.Infraestructure.Tarefas
 {
     public class TarefaRepository : BaseRepository<Tarefa,TarefaId>,ITarefaRepository
     {

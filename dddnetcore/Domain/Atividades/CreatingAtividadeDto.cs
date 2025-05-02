@@ -13,5 +13,7 @@ namespace dddnetcore.Domain.Orcamentos
         public string NomeAtividade {get;set;}
         public Guid? OrcamentoId {get;set;}
         public List<Guid> TarefasIds { get; set; }
+        public List<Guid> EntregaveisIds { get; set; }
+        public List<Guid> PerfisIds { get; set; }
     }
 }

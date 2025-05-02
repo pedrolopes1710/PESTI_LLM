@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using dddnetcore.Domain.Perfis;
 using dddnetcore.Domain.Projetos;
+using dddnetcore.Domain.Atividades;
 
 namespace dddnetcore.Infrastructure.Perfis
 {
@@ -31,9 +32,14 @@ namespace dddnetcore.Infrastructure.Perfis
                     .IsRequired();
             });
             
-            builder.HasOne<Projeto>()
+            builder.HasOne<Atividade>()
                 .WithMany(p => p.Perfis)
-                .HasForeignKey("ProjetoId")
+                .HasForeignKey("AtividadeId")
+                .IsRequired(false);
+
+            builder.HasOne(b => b.TipoVinculo)
+                .WithMany()
+                .HasForeignKey("TipoVinculoId")
                 .IsRequired();
             
             builder.Navigation(b => b.DescricaoPerfil).IsRequired();

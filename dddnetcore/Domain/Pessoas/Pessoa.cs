@@ -1,6 +1,9 @@
 using System;
 using dddnetcore.Domain.Contratos;
+using dddnetcore.Domain.CargasMensais;
+using dddnetcore.Domain.Projetos;
 using DDDSample1.Domain.Shared;
+using System.Collections.Generic;
 
 namespace dddnetcore.Domain.Pessoas
 {
@@ -10,8 +13,12 @@ namespace dddnetcore.Domain.Pessoas
         public EmailPessoa Email { get; private set; }
         public PessoaCienciaId CienciaId { get; private set; }
         public PessoaUltimoPedPagam UltimoPedidoPagamento { get; private set; }
+        public Contrato? Contrato { get; private set; }
+        public ContratoId? ContratoId { get; private set; }
 
-        public Contrato Contrato { get; private set; }
+        public List<CargaMensal> CargasMensais { get; private set; } = new List<CargaMensal>();
+         public ICollection<Projeto> Projetos { get; set; } = new List<Projeto>();
+
 
         public Pessoa(NomePessoa nome, EmailPessoa email, PessoaCienciaId cienciaId, PessoaUltimoPedPagam ultimoPedidoPagamento, Contrato contrato)
         {
@@ -22,6 +29,8 @@ namespace dddnetcore.Domain.Pessoas
             UltimoPedidoPagamento = ultimoPedidoPagamento;
             Contrato = contrato;
         }
+
+        private Pessoa() { } // Para o EF
 
 
         // Métodos de alteração
@@ -53,6 +62,14 @@ namespace dddnetcore.Domain.Pessoas
         {
             if (novoContrato == null) throw new ArgumentNullException(nameof(novoContrato));
             Contrato = novoContrato;
+            ContratoId = novoContrato.Id;
+
+        }
+
+        public void AdicionarCargaMensal(CargaMensal cargaMensal)
+        {
+            if (cargaMensal == null) throw new ArgumentNullException(nameof(cargaMensal));
+            CargasMensais.Add(cargaMensal);
         }
     }
 }

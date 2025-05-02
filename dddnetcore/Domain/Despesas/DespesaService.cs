@@ -32,14 +32,14 @@ namespace dddnetcore.Domain.Despesas
         public async Task<DespesaDto> AddAsync(CreatingDespesaDto dto) {
             Despesa despesa;
             if (dto.CargaMensalId == null) {
-                    if (dto.Descricao == null) 
-                throw new ArgumentNullException("Missing name for Expense creation!");
+                if (dto.Descricao == null) 
+                    throw new ArgumentNullException("Missing name for Expense creation!");
 
-                despesa = new Despesa(new DescricaoDespesa(dto.Descricao), new ValorDespesa(dto.Valor), null);
+                despesa = new Despesa(new DescricaoDespesa(dto.Descricao), new ValorDespesa(dto.Valor), null, new Automatico(false));
             } else {
                 CargaMensal cargaMensal = await this._cargaMensalRepo.GetByIdAsync(new CargaMensalId(dto.CargaMensalId!.Value)) ?? throw new NullReferenceException("Monthly Load not found!");
 
-                //TODO: qd a pessoa existir, criar despesa com a carga mensal
+                //TODO: qd a pessoa e afetações existirem, criar despesa com a carga mensal
                 throw new NotImplementedException("Not implemented yet!");
             }
             
