@@ -139,6 +139,7 @@ namespace DDDSample1
             services.AddTransient<DespesaService>();
 
             services.AddTransient<IPessoaRepository, PessoaRepository>();
+            services.AddTransient<PessoaService>();
             
             services.AddTransient<ProjetoService>();
 

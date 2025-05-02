@@ -13,8 +13,8 @@ namespace dddnetcore.Domain.Pessoas
         public EmailPessoa Email { get; private set; }
         public PessoaCienciaId CienciaId { get; private set; }
         public PessoaUltimoPedPagam UltimoPedidoPagamento { get; private set; }
-        public Contrato Contrato { get; private set; }
-        public ContratoId ContratoId { get; private set; }
+        public Contrato? Contrato { get; private set; }
+        public ContratoId? ContratoId { get; private set; }
 
         public List<CargaMensal> CargasMensais { get; private set; } = new List<CargaMensal>();
         public ICollection<Projeto> Projetos { get; set; } = new List<Projeto>();
