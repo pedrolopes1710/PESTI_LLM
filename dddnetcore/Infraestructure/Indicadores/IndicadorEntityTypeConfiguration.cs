@@ -30,12 +30,12 @@ namespace dddnetcore.Infrastructure.Indicadores
                 .Property(p => p.Valor)
                 .HasColumnName("ValorMaximo")
                 .IsRequired();
-            
+
             builder.HasOne<Projeto>()
                 .WithMany(p => p.Indicadores)
-                .HasForeignKey("ProjetoId")
-                .IsRequired();
-
+                .HasForeignKey(i => i.ProjetoId)
+                .HasPrincipalKey(p => p.Id)
+                .IsRequired(false);
         }
     }
 }

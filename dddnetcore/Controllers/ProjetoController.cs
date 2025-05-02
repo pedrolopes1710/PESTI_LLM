@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using dddnetcore.Services;
 
@@ -17,19 +18,27 @@ namespace dddnetcore.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<List<ProjetoDTO>>> GetAll()
         {
             var projetos = await _service.GetAllAsync();
             return Ok(projetos);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateProjetoDto dto)
+        public async Task<ActionResult<ProjetoDTO>> Create([FromBody] CreateProjetoDto dto)
         {
             var projeto = await _service.CreateAsync(dto.Nome, dto.Descricao);
             return CreatedAtAction(nameof(GetAll), new { id = projeto.Id }, projeto);
         }
-        
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProjetoDTO>> GetById(Guid id)
+        {
+            var projeto = await _service.GetByIdAsync(id);
+            if (projeto == null) return NotFound();
+            return Ok(projeto);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -39,9 +48,4 @@ namespace dddnetcore.Controllers
         }
     }
 
-    public class CreateProjetoDto
-    {
-        public string Nome { get; set; }
-        public string Descricao { get; set; }
-    }
 }

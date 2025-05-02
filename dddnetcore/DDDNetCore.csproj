@@ -43,4 +43,17 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\20250422113624_ProjetoMigration2.cs" />
+    <Compile Remove="Migrations\20250422113624_ProjetoMigration2.Designer.cs" />
+    <Compile Remove="Migrations\20250502221401_UpdateIndicador.cs" />
+    <Compile Remove="Migrations\20250502221401_UpdateIndicador.Designer.cs" />
+    <Compile Remove="Migrations\20250422113301_ProjetoMigration.cs" />
+    <Compile Remove="Migrations\20250422113301_ProjetoMigration.Designer.cs" />
+    <Compile Remove="Migrations\20250422111747_PerfilMigration.cs" />
+    <Compile Remove="Migrations\20250422111747_PerfilMigration.Designer.cs" />
+    <Compile Remove="Migrations\20250422111236_IndicadoresMigration.cs" />
+    <Compile Remove="Migrations\20250422111236_IndicadoresMigration.Designer.cs" />
+  </ItemGroup>
+
 </Project>

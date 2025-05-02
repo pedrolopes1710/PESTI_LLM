@@ -18,29 +18,48 @@ namespace dddnetcore.Services
             _context = context;
         }
 
-        public async Task<List<Projeto>> GetAllAsync()
+        public async Task<List<ProjetoDTO>> GetAllAsync()
         {
-            return await _context.Set<Projeto>().ToListAsync();
+            return await _context.Set<Projeto>()
+                .Select(p => new ProjetoDTO
+                {
+                    Id = p.Id.AsGuid(),
+                    Nome = p.NomeProjeto.Valor,
+                    Descricao = p.DescricaoProjeto.Valor
+                })
+                .ToListAsync();
         }
 
-        public async Task<Projeto> GetByIdAsync(Guid id)
+        public async Task<ProjetoDTO> GetByIdAsync(Guid id)
         {
-            return await _context.Set<Projeto>().FindAsync(new ProjetoId(id));
+            var projeto = await _context.Set<Projeto>().FindAsync(new ProjetoId(id));
+            if (projeto == null) return null;
+
+            return new ProjetoDTO
+            {
+                Id = projeto.Id.AsGuid(),
+                Nome = projeto.NomeProjeto.Valor,
+                Descricao = projeto.DescricaoProjeto.Valor
+            };
         }
 
-        public async Task<Projeto> CreateAsync(string nome, string descricao)
+        public async Task<ProjetoDTO> CreateAsync(string nome, string descricao)
         {
             var projeto = new Projeto(nome, descricao);
             _context.Set<Projeto>().Add(projeto);
             await _context.SaveChangesAsync();
-            return projeto;
-        }
 
-       
+            return new ProjetoDTO
+            {
+                Id = projeto.Id.AsGuid(),
+                Nome = projeto.NomeProjeto.Valor,
+                Descricao = projeto.DescricaoProjeto.Valor
+            };
+        }
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var projeto = await GetByIdAsync(id);
+            var projeto = await _context.Set<Projeto>().FindAsync(new ProjetoId(id));
             if (projeto == null) return false;
 
             _context.Set<Projeto>().Remove(projeto);
@@ -48,4 +67,6 @@ namespace dddnetcore.Services
             return true;
         }
     }
-}
+
+    }
+
