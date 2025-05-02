@@ -44,6 +44,8 @@ using dddnetcore.Domain.AfetacaoMensais;
 using dddnetcore.Infraestructure.AfetacaoPerfis;
 using dddnetcore.Domain.AfetacaoPerfis;
 using DDDSample1.Domain.AfetacaoPerfis;
+using dddnetcore.Domain.Projetos;
+using dddnetcore.Infrastructure.Projetos;
 
 namespace DDDSample1
 {
@@ -141,6 +143,7 @@ namespace DDDSample1
             services.AddTransient<IPessoaRepository, PessoaRepository>();
             services.AddTransient<PessoaService>();
             
+            services.AddTransient<IProjetoRepository, ProjetoRepository>();
             services.AddTransient<ProjetoService>();
 
             services.AddTransient<IAfetacaoMensalRepository, AfetacaoMensalRepository>();

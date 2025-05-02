@@ -10,6 +10,7 @@ namespace dddnetcore.Domain.CargasMensais
         public DateTime MesAno { get; set; }
         public double SalarioBase { get; set; }
         public double TaxaSocialUnica { get; set; }
+        public string PessoaId { get; set; }
 
 
     }

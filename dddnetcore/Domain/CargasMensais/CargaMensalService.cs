@@ -2,6 +2,8 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using DDDSample1.Domain.Shared;
+using dddnetcore.Domain.Pessoas;
+
 
 namespace dddnetcore.Domain.CargasMensais
 {
@@ -9,11 +11,14 @@ namespace dddnetcore.Domain.CargasMensais
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICargaMensalRepository _repo;
+        private readonly IPessoaRepository _pessoaRepo;
 
-        public CargaMensalService(IUnitOfWork unitOfWork, ICargaMensalRepository repo)
+
+        public CargaMensalService(IUnitOfWork unitOfWork, ICargaMensalRepository repo, IPessoaRepository pessoaRepo)
         {
             this._unitOfWork = unitOfWork;
             this._repo = repo;
+            this._pessoaRepo = pessoaRepo;
         }
 
         public async Task<List<CargaMensalDto>> GetAllAsync()
@@ -46,6 +51,9 @@ namespace dddnetcore.Domain.CargasMensais
 
         public async Task<CargaMensalDto> AddAsync(CreatingCargaMensalDto dto)
         {
+            var pessoa = await _pessoaRepo.GetByIdAsync(new PessoaId(Guid.Parse(dto.PessoaId)))
+            ?? throw new NullReferenceException("Pessoa não encontrada.");
+            
             var c = new CargaMensal(
                 new JornadaDiaria(dto.JornadaDiaria),
                 new DiasUteisTrabalhaveis(dto.DiasUteisTrabalhaveis),
@@ -55,6 +63,7 @@ namespace dddnetcore.Domain.CargasMensais
                 new TaxaSocialUnica(dto.TaxaSocialUnica)
             );
 
+            pessoa.AdicionarCargaMensal(c);
             await this._repo.AddAsync(c);
             await this._unitOfWork.CommitAsync();
 

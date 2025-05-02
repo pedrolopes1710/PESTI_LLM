@@ -110,5 +110,31 @@ namespace dddnetcore.Controllers
                 return NotFound(new { ex.Message });
             }
         }
+
+
+        // DELETE: api/pessoas/{id}/associarProjetos
+        [HttpPost("{id}/associarProjetos")]
+        public async Task<ActionResult<PessoaDto>> AssociarProjetos(string id, [FromBody] List<string> projetosIds)
+        {
+            var dto = new AssociarProjetoDto
+            {
+                PessoaId = id,
+                ProjetosIds = projetosIds
+            };
+
+            try
+            {
+                var result = await _service.AssociarProjetosAsync(dto);
+                return Ok(result);
+            }
+            catch (NullReferenceException ex)
+            {
+                return NotFound(new { ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ex.Message });
+            }
+        }
     }
 }

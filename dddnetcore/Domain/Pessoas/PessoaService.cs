@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using dddnetcore.Domain.Contratos;
+using dddnetcore.Domain.Projetos;
 using DDDSample1.Domain.Shared;
 
 namespace dddnetcore.Domain.Pessoas
@@ -12,12 +13,14 @@ namespace dddnetcore.Domain.Pessoas
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPessoaRepository _repo;
         private readonly IContratoRepository _contratoRepo;
+        private readonly IProjetoRepository _projetoRepo;
 
-        public PessoaService(IUnitOfWork unitOfWork, IPessoaRepository repo, IContratoRepository contratoRepo)
+        public PessoaService(IUnitOfWork unitOfWork, IPessoaRepository repo, IContratoRepository contratoRepo, IProjetoRepository projetoRepo)
         {
             _unitOfWork = unitOfWork;
             _repo = repo;
             _contratoRepo = contratoRepo;
+            _projetoRepo = projetoRepo;
         }
 
         public async Task<PessoaDto> GetByIdAsync(PessoaId id)
@@ -101,6 +104,26 @@ namespace dddnetcore.Domain.Pessoas
 
             return new PessoaDto(pessoa);
         }
+
+
+        //Associar Projetos
+        public async Task<PessoaDto> AssociarProjetosAsync(AssociarProjetoDto dto)
+        {
+            var pessoa = await _repo.GetByIdAsync(new PessoaId(Guid.Parse(dto.PessoaId)));
+            if (pessoa == null) throw new NullReferenceException("Pessoa não encontrada");
+
+            var projetos = await _projetoRepo.GetByIdsAsync(dto.ProjetosIds.Select(id => new ProjetoId(Guid.Parse(id))));
+            
+            foreach (var projeto in projetos)
+            {
+                pessoa.Projetos.Add(projeto);
+            }
+
+            await _unitOfWork.CommitAsync();
+
+            return new PessoaDto(pessoa); // Certifique-se que o MapToDto inclui projetos se necessário
+        }
+
 
     }
 }
