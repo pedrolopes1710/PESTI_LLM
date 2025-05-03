@@ -11,7 +11,7 @@ namespace dddnetcore.Domain.AfetacaoMensais
     {
         public Guid Id { get; set; }
         public double PMs { get; set; }
-        //public AfetacaoPerfilDto AfetacaoPerfil { get; set; }
+        public AfetacaoPerfilDto AfetacaoPerfil { get; set; }
         public CargaMensalDto CargaMensal { get; set; }
 
         public AfetacaoMensalDto() {}
@@ -19,7 +19,7 @@ namespace dddnetcore.Domain.AfetacaoMensais
         public AfetacaoMensalDto(AfetacaoMensal afetacaoMensal) {
             this.Id = afetacaoMensal.Id.AsGuid();
             this.PMs = afetacaoMensal.PMs.Quantidade;
-            //this.AfetacaoPerfil = new AfetacaoPerfilDto(afetacaoMensal.AfetacaoPerfil);
+            this.AfetacaoPerfil = new AfetacaoPerfilDto(afetacaoMensal.AfetacaoPerfil);
             this.CargaMensal = new CargaMensalDto(afetacaoMensal.CargaMensal);
         }
     }

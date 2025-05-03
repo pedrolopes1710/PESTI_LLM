@@ -27,5 +27,13 @@ namespace dddnetcore.Infraestructure.AfetacaoPerfis
                 .Include(o => o.CargaMensal)
                 .ToListAsync();
         }
+
+        public async Task<AfetacaoMensal> UpdateAsync(AfetacaoMensal afetacaoMensal) {
+            _context.AfetacaoMensais.Update(afetacaoMensal);
+
+            await _context.SaveChangesAsync();
+
+            return afetacaoMensal;
+        }
     }
 }

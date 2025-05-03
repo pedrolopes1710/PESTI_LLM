@@ -7,7 +7,6 @@ namespace dddnetcore.Domain.AfetacaoMensais
 {
     public interface IAfetacaoMensalRepository : IRepository<AfetacaoMensal, AfetacaoMensalId>
     {
-        /*public Task<List<Orcamento>> GetOrcamentosAsync(Guid? rubricaId = null);
-        public Task<Orcamento> UpdateAsync(Orcamento orcamento);*/
+        public Task<AfetacaoMensal> UpdateAsync(AfetacaoMensal afetacaoMensal);
     }
 }
