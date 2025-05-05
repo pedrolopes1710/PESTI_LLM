@@ -93,7 +93,7 @@ namespace dddnetcore.Domain.AfetacaoMensais
             return new AfetacaoMensalDto(afetacaoMensal);
         }
 
-        private bool IsUnlocked(CargaMensal cargaMensal, Pessoa pessoa) {
+        private static bool IsUnlocked(CargaMensal cargaMensal, Pessoa pessoa) {
             DateTime carga = cargaMensal.MesAno.Valor;
             DateTime pess = pessoa.UltimoPedidoPagamento.Value;
             return carga > pess;
