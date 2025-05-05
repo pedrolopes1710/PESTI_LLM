@@ -26,5 +26,13 @@ namespace dddnetcore.Infraestructure.CargasMensais
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<List<CargaMensal>> GetByPessoaIdAsync(PessoaId pessoaId)
+        {
+            return await _context.CargasMensais
+                .Where(c => c.PessoaId == pessoaId)
+                .ToListAsync();
+        }
+
+
     }
 }

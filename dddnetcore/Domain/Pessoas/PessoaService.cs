@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using dddnetcore.Domain.Contratos;
 using dddnetcore.Domain.Projetos;
+using dddnetcore.Domain.CargasMensais;
 using DDDSample1.Domain.Shared;
+using FluentAssertions;
 
 namespace dddnetcore.Domain.Pessoas
 {
@@ -14,13 +16,16 @@ namespace dddnetcore.Domain.Pessoas
         private readonly IPessoaRepository _repo;
         private readonly IContratoRepository _contratoRepo;
         private readonly IProjetoRepository _projetoRepo;
+        private readonly ICargaMensalRepository _cargaMensalRepo;
 
-        public PessoaService(IUnitOfWork unitOfWork, IPessoaRepository repo, IContratoRepository contratoRepo, IProjetoRepository projetoRepo)
+
+        public PessoaService(IUnitOfWork unitOfWork, IPessoaRepository repo, IContratoRepository contratoRepo, IProjetoRepository projetoRepo, ICargaMensalRepository cargaMensalRepo)
         {
             _unitOfWork = unitOfWork;
             _repo = repo;
             _contratoRepo = contratoRepo;
             _projetoRepo = projetoRepo;
+            _cargaMensalRepo = cargaMensalRepo;
         }
 
         public async Task<PessoaDto> GetByIdAsync(PessoaId id)
@@ -28,17 +33,97 @@ namespace dddnetcore.Domain.Pessoas
             var pessoa = await _repo.GetByIdAsync(id)
                 ?? throw new NullReferenceException($"Pessoa não encontrada com o ID: {id}");
 
-            return new PessoaDto(pessoa);
+ 
+            // Buscar os dados relacionados
+            var cargas = await _cargaMensalRepo.GetByPessoaIdAsync(id); // método no CargaMensalRepository
+            var contrato = await _contratoRepo.GetByPessoaIdAsync(id); // método no ContratoRepository
+
+            // Retornar o DTO completo
+            return new PessoaDto
+            {
+                Id = pessoa.Id.AsGuid(),
+                Nome = pessoa.Nome.Value,
+                Email = pessoa.Email.Value,
+                PessoaCienciaId = pessoa.CienciaId.Value,
+                PessoaUltimoPedPagam = pessoa.UltimoPedidoPagamento.Value,
+                Contrato = contrato != null ? new ContratoDto
+                {
+                    Id = contrato.Id.AsString(),
+                    DataInicio = contrato.DataInicio.InicioContrato,
+                    DataFim = contrato.DataFim.FimContrato,
+                    Salario = contrato.Salario.Valor,
+                    Tipo = contrato.Tipo.ToString()
+                } : null,
+                CargasMensais = cargas.Select(c => new CargaMensalDto
+                {
+                    Id = c.Id.AsString(),
+                    JornadaDiaria = c.JornadaDiaria.Valor,
+                    DiasUteisTrabalhaveis = c.DiasUteis.Valor,
+                    FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
+                    MesAno = c.MesAno.Valor,
+                    SalarioBase = c.SalarioBase.Valor,
+                    TaxaSocialUnica = c.TSU.Valor
+                }).ToList(),
+                Projetos = pessoa.Projetos.Select(p => new ProjetoDTO
+                {
+                    Id = p.Id.AsGuid(),
+                    Nome = p.NomeProjeto.Valor,
+                    Descricao = p.DescricaoProjeto.Valor
+                }).ToList()
+            };
         }
 
-        public async Task<List<PessoaDto>> GetAllAsync()
+public async Task<List<PessoaDto>> GetAllAsync()
+{
+    var pessoas = await _repo.GetAllAsync();
+    
+    var todasCargas = await _cargaMensalRepo.GetAllAsync();
+    //var todosProjetos = await _projetoRepo.GetAllAsync();
+    var todosContratos = await _contratoRepo.GetAllAsync();
+
+    var dtos = pessoas.Select(p => new PessoaDto
+    {
+        Id = p.Id.AsGuid(),
+        Nome = p.Nome.Value,
+        Email = p.Email.Value,
+        PessoaCienciaId = p.CienciaId.Value,
+        PessoaUltimoPedPagam = p.UltimoPedidoPagamento.Value,
+        Contrato = todosContratos
+            .Where(contrato => contrato.Id == p.ContratoId)
+            .Select(contrato => new ContratoDto
+            {
+            Id = contrato.Id.AsString(),
+            Tipo = contrato.Tipo.ToString(),
+            Salario = contrato.Salario.Valor,
+            DataInicio = contrato.DataInicio.InicioContrato,
+            DataFim = contrato.DataFim.FimContrato,
+            Ativo = contrato.Ativo
+            })
+            .FirstOrDefault(),
+        CargasMensais = todasCargas
+            .Where(c => c.PessoaId == p.Id)
+            .Select(c => new CargaMensalDto
+            {
+                Id = c.Id.AsString(),
+                JornadaDiaria = c.JornadaDiaria.Valor,
+                DiasUteisTrabalhaveis = c.DiasUteis.Valor,
+                FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
+                MesAno = c.MesAno.Valor,
+                SalarioBase = c.SalarioBase.Valor,
+                TaxaSocialUnica = c.TSU.Valor
+            })
+            .ToList(),
+        Projetos = p.Projetos?.Select(proj => new ProjetoDTO
         {
-            var list = await _repo.GetAllAsync();
+            Id = proj.Id.AsGuid(),
+            Nome = proj.NomeProjeto.Valor,
             
-            List<PessoaDto> listDto = list.ConvertAll<PessoaDto>(c => new PessoaDto(c));
+        }).ToList()
+    }).ToList();
 
-            return listDto;
-        }
+    return dtos;
+}
+
 
         public async Task<PessoaDto> AddAsync(CreatingPessoaDto dto)
         {
@@ -121,8 +206,99 @@ namespace dddnetcore.Domain.Pessoas
 
             await _unitOfWork.CommitAsync();
 
-            return new PessoaDto(pessoa); // Certifique-se que o MapToDto inclui projetos se necessário
-        }
+                // Recolher dados relacionados via os novos métodos
+            var cargas = await _cargaMensalRepo.GetByPessoaIdAsync(pessoa.Id);
+            var contrato = await _contratoRepo.GetByPessoaIdAsync(pessoa.Id);
+
+            return new PessoaDto
+    {
+        Id = pessoa.Id.AsGuid(),
+        Nome = pessoa.Nome.Value,
+        Email = pessoa.Email.Value,
+        PessoaCienciaId = pessoa.CienciaId.Value,
+        PessoaUltimoPedPagam = pessoa.UltimoPedidoPagamento.Value,
+        Contrato = contrato == null ? null : new ContratoDto
+        {
+            Id = contrato.Id.AsString(),
+            DataInicio = contrato.DataInicio.InicioContrato,
+            DataFim = contrato.DataFim.FimContrato,
+            Salario = contrato.Salario.Valor,
+            Tipo = contrato.Tipo.ToString()
+        },
+        CargasMensais = cargas.Select(c => new CargaMensalDto
+        {
+            Id = c.Id.AsString(),
+            JornadaDiaria = c.JornadaDiaria.Valor,
+            DiasUteisTrabalhaveis = c.DiasUteis.Valor,
+            FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
+            MesAno = c.MesAno.Valor,
+            SalarioBase = c.SalarioBase.Valor,
+            TaxaSocialUnica = c.TSU.Valor
+        }).ToList(),
+    Projetos = pessoa.Projetos.Select(p => new ProjetoDTO
+    {
+        Id = p.Id.AsGuid(),
+        Nome = p.NomeProjeto.Valor,
+        Descricao = p.DescricaoProjeto.Valor
+    }).ToList()
+    };
+}
+
+
+public async Task<PessoaDto> DesassociarProjetosAsync(AssociarProjetoDto dto)
+{
+    var pessoa = await _repo.GetByIdAsync(new PessoaId(Guid.Parse(dto.PessoaId)));
+    if (pessoa == null) throw new NullReferenceException("Pessoa não encontrada");
+
+    var contrato = await _contratoRepo.GetByPessoaIdAsync(pessoa.Id);
+
+    var cargas = await _cargaMensalRepo.GetByPessoaIdAsync(pessoa.Id);
+
+
+    var projetosARemover = pessoa.Projetos
+        .Where(p => dto.ProjetosIds.Contains(p.Id.AsString()))
+        .ToList();
+
+    foreach (var projeto in projetosARemover)
+    {
+        pessoa.Projetos.Remove(projeto);
+    }
+
+    await _unitOfWork.CommitAsync();
+
+    return new PessoaDto
+    {
+        Id = pessoa.Id.AsGuid(),
+        Nome = pessoa.Nome.Value,
+        Email = pessoa.Email.Value,
+        PessoaCienciaId = pessoa.CienciaId.Value,
+        PessoaUltimoPedPagam = pessoa.UltimoPedidoPagamento.Value,
+        Contrato = contrato == null ? null : new ContratoDto
+        {
+            Id = contrato.Id.AsString(),
+            DataInicio = contrato.DataInicio.InicioContrato,
+            DataFim = contrato.DataFim.FimContrato,
+            Salario = contrato.Salario.Valor,
+            Tipo = contrato.Tipo.ToString()
+        },
+        CargasMensais = cargas.Select(c => new CargaMensalDto
+        {
+            Id = c.Id.AsString(),
+            JornadaDiaria = c.JornadaDiaria.Valor,
+            DiasUteisTrabalhaveis = c.DiasUteis.Valor,
+            FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
+            MesAno = c.MesAno.Valor,
+            SalarioBase = c.SalarioBase.Valor,
+            TaxaSocialUnica = c.TSU.Valor
+        }).ToList(),
+    Projetos = pessoa.Projetos.Select(p => new ProjetoDTO
+    {
+        Id = p.Id.AsGuid(),
+        Nome = p.NomeProjeto.Valor,
+        Descricao = p.DescricaoProjeto.Valor
+    }).ToList()
+    };
+}
 
 
     }

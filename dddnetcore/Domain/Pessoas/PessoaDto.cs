@@ -17,7 +17,7 @@ namespace dddnetcore.Domain.Pessoas
         public string PessoaCienciaId { get; set; }
         public DateTime PessoaUltimoPedPagam { get; set; }
         public ContratoDto? Contrato { get; set; }
-        public List<CreateProjetoDto> Projetos { get; set; } = new();
+        public List<ProjetoDTO> Projetos { get; set; } = new();
         public List<CargaMensalDto> CargasMensais { get; set; } = new();
 
         public PessoaDto() {}
@@ -30,17 +30,6 @@ namespace dddnetcore.Domain.Pessoas
             PessoaCienciaId = pessoa.CienciaId.Value;
             PessoaUltimoPedPagam = pessoa.UltimoPedidoPagamento.Value;
             
-            if (pessoa.Contrato != null)
-                Contrato = new ContratoDto(pessoa.Contrato);
-            
-            Projetos = pessoa.Projetos?.Select(p => new CreateProjetoDto {
-                Nome = p.NomeProjeto.Valor,
-                Descricao = p.DescricaoProjeto.Valor,
-            }).ToList() ?? new();    
-
-            CargasMensais = pessoa.CargasMensais?
-                .Select(c => new CargaMensalDto(c)) // assumes CargaMensalDto has a constructor
-                .ToList() ?? new();
         }
     }
 }
