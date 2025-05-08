@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dddnetcore.Domain.CargasMensais;
 
 namespace dddnetcore.Domain.Despesas
 {
-    public class CreatingDespesaDto
+    public class GeneratingDespesaDto
     {
-        public string Descricao { get; set; }
-        public double Valor { get; set; }
+        public CargaMensalId cargaMensalId { get; set; }
     }
 }

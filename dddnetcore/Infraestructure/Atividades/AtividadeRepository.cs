@@ -26,23 +26,13 @@ namespace dddnetcore.Infraestructure.Atividades
             return atividade;
         }
 
-        /*public async Task<List<Orcamento>> GetOrcamentosAsync(Guid? rubricaId = null)
-        {
-            if (rubricaId == null) return await GetAllAsync();
-
-            var query = _context.Orcamentos.AsQueryable();
-
-            query = query.Where(orcamento => orcamento.Rubrica.Id.Equals(new RubricaId(rubricaId.Value)));
-
-            return await query.ToListAsync();
+        public new async Task<Atividade> GetByIdAsync(AtividadeId id) {
+            return await _context.Atividades
+                .Include(a => a.Tarefas)
+                .Include(a => a.Entregaveis)
+                .Include(a => a.Perfis)
+                .Include(a => a.Orcamentos)
+                .FirstOrDefaultAsync(a => a.Id.Equals(id));
         }
-
-        public async Task<Orcamento> UpdateAsync(Orcamento orcamento) {
-            _context.Orcamentos.Update(orcamento);
-
-            await _context.SaveChangesAsync();
-
-            return orcamento;
-        }*/
     }
 }

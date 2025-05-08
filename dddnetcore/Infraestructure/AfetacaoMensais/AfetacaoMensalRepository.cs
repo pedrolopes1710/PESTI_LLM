@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using dddnetcore.Infraestructure.AfetacaoPerfis;
 using dddnetcore.Domain.AfetacaoPerfis;
 using dddnetcore.Domain.AfetacaoMensais;
+using dddnetcore.Domain.CargasMensais;
 
 namespace dddnetcore.Infraestructure.AfetacaoPerfis
 {
@@ -19,6 +20,16 @@ namespace dddnetcore.Infraestructure.AfetacaoPerfis
         
         public AfetacaoMensalRepository(DDDSample1DbContext context):base(context.AfetacaoMensais) {
             _context = context;
+        }
+
+        public async Task<List<AfetacaoMensal>> GetByCargaMensalIdAsync(CargaMensalId cargaMensalId) {
+            var query = _context.AfetacaoMensais.AsQueryable();
+
+            query = query.Where(af => af.CargaMensal.Id.Equals(cargaMensalId));
+            query = query.Include(af => af.AfetacaoPerfil);
+            query = query.Include(af => af.CargaMensal);
+            
+            return await query.ToListAsync();
         }
 
         public new async Task<List<AfetacaoMensal>> GetAllAsync() {

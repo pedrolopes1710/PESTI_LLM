@@ -7,7 +7,7 @@ namespace dddnetcore.Domain.Atividades
 {
     public interface IAtividadeRepository : IRepository<Atividade, AtividadeId>
     {
-        /*public Task<List<Orcamento>> GetOrcamentosAsync(Guid? rubricaId = null);
-        public Task<Orcamento> UpdateAsync(Orcamento orcamento);*/
+        //public Task<List<Orcamento>> GetOrcamentosAsync(Guid? rubricaId = null);
+        Task<Atividade> UpdateAsync(Atividade atividade);
     }
 }

@@ -92,5 +92,20 @@ namespace dddnetcore.Domain.Atividades
             this.NomeAtividade = nomeAtividade;
         }
 
+        public void AddOrcamento(Orcamento orcamento)
+        {
+            if (orcamento == null)
+            {
+                throw new BusinessRuleValidationException("Orcamento cannot be null.");
+            }
+
+            if (this.Orcamentos == null)
+            {
+                this.Orcamentos = new List<Orcamento>();
+            }
+
+            this.Orcamentos.Add(orcamento);
+        }
+
     }
 }
