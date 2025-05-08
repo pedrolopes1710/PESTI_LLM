@@ -23,7 +23,7 @@ namespace dddnetcore.Domain.Atividades
 
         public List<Perfil> Perfis {get; private set;}  
 
-        public Orcamento? Orcamento {get;private set;}
+        public List<Orcamento> Orcamentos {get;private set;}
         
         private Atividade() {}
 
@@ -31,16 +31,15 @@ namespace dddnetcore.Domain.Atividades
             DataFimAtividade dataFimAtividade,
             DataInicioAtividade dataInicioAtividade,
             DescricaoAtividade descricaoAtividade,
-            NomeAtividade nomeAtividade,
-            Orcamento? orcamento)
+            NomeAtividade nomeAtividade
+            )
         {
             this.Id = new AtividadeId(Guid.NewGuid());
             this.DataFimAtividade = dataFimAtividade;
             this.DataInicioAtividade = dataInicioAtividade;
             this.DescricaoAtividade = descricaoAtividade;
             this.NomeAtividade = nomeAtividade;
-            Tarefas = new List<Tarefa>();
-            this.Orcamento = orcamento;
+
         }
         
         public void ChangeDataFimAtividade(DataFimAtividade dataFimAtividade)

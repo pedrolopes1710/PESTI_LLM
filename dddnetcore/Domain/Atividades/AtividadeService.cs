@@ -44,15 +44,8 @@ namespace DDDSample1.Domain.Atividades
 
         public async Task<AtividadeDto> AddAsync(CreatingAtividadeDto dto)
         {
-            Orcamento? orcamento = null;
-            if (dto.OrcamentoId.HasValue)
-            {
-                orcamento = await _repoOrcamento.GetByIdAsync(new OrcamentoId(dto.OrcamentoId.Value));
-            }            
-
-
         
-            var atividade = new Atividade(new DataFimAtividade(dto.DataFimAtividade), new DataInicioAtividade(dto.DataInicioAtividade), new DescricaoAtividade(dto.DescricaoAtividade), new NomeAtividade(dto.NomeAtividade),orcamento);
+            var atividade = new Atividade(new DataFimAtividade(dto.DataFimAtividade), new DataInicioAtividade(dto.DataInicioAtividade), new DescricaoAtividade(dto.DescricaoAtividade), new NomeAtividade(dto.NomeAtividade));
 
 
             await this._repo.AddAsync(atividade);
@@ -94,6 +87,19 @@ namespace DDDSample1.Domain.Atividades
                     {
                         perfil.SetAtividadeId(atividade.Id); // método novo a criar na entidade
                         await _repoPerfil.UpdateAsync(perfil); // atualizar o perfil com a nova atividade
+                    }
+                }
+                await _unitOfWork.CommitAsync(); // segundo commit para guardar associações
+            }
+            if (dto.OrcamentoIds != null)
+            {
+                foreach (var orcamentoId in dto.OrcamentoIds)
+                {
+                    var orcamento = await _repoOrcamento.GetByIdAsync(new OrcamentoId(orcamentoId));
+                    if (orcamento != null)
+                    {
+                        orcamento.SetAtividadeId(atividade.Id); // método novo a criar na entidade
+                        await _repoOrcamento.UpdateAsync(orcamento); // atualizar o orcamento com a nova atividade
                     }
                 }
                 await _unitOfWork.CommitAsync(); // segundo commit para guardar associações

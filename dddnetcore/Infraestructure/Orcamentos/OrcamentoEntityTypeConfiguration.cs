@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using dddnetcore.Domain.Orcamentos;
+using dddnetcore.Domain.Atividades;
 
 namespace dddnetcore.Infraestructure.Orcamentos
 {
@@ -30,6 +31,11 @@ namespace dddnetcore.Infraestructure.Orcamentos
                 .HasForeignKey("OrcamentoId")
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
+            
+            builder.HasOne<Atividade>()
+                .WithMany(p => p.Orcamentos)
+                .HasForeignKey("AtividadeId")
+                .IsRequired(false);
         }
     }
 }
