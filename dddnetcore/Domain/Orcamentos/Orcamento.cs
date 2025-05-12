@@ -41,5 +41,10 @@ namespace dddnetcore.Domain.Orcamentos
                 throw new BusinessRuleValidationException("AtividadeId não pode ser nulo.");
             this.AtividadeId = atividadeId;
         }  
+
+        public void AddDespesa(Despesa despesa) {
+            ArgumentNullException.ThrowIfNull(despesa);
+            this.Despesas.Add(despesa);
+        }
     }
 }

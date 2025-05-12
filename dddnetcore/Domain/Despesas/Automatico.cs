@@ -10,7 +10,7 @@ namespace dddnetcore.Domain.Despesas
     {
         public Boolean Auto { get; private set; }
         
-        public Automatico(Boolean auto)
+        public Automatico(bool auto)
         {
             this.Auto = auto;
         }

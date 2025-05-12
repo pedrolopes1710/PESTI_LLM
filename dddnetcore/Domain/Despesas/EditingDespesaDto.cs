@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 
 namespace dddnetcore.Domain.Despesas
 {
-    public class CreatingDespesaDto
+    public class EditingDespesaDto
     {
         public string Descricao { get; set; }
-        public double Valor { get; set; }
-        public Guid OrcamentoId { get; set; }
+        public double? Valor { get; set; }
     }
 }

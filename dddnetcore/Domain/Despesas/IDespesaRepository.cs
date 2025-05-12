@@ -8,6 +8,6 @@ namespace dddnetcore.Domain.Despesas
 {
     public interface IDespesaRepository : IRepository<Despesa, DespesaId>
     {
-        
+        Task<Despesa> UpdateAsync(Despesa despesa);
     }
 }

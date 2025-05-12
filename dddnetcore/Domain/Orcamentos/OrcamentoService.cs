@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dddnetcore.Domain.Despesas;
 using dddnetcore.Domain.Rubricas;
 using DDDSample1.Domain.Shared;
 
@@ -12,11 +13,13 @@ namespace dddnetcore.Domain.Orcamentos
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOrcamentoRepository _repo;
         private readonly IRubricaRepository _rubricaRepo;
+        private readonly IDespesaRepository _despesaRepo;
 
-        public OrcamentoService(IUnitOfWork unitOfWork, IOrcamentoRepository repo, IRubricaRepository rubricaRepo) {
+        public OrcamentoService(IUnitOfWork unitOfWork, IOrcamentoRepository repo, IRubricaRepository rubricaRepo, IDespesaRepository despesaRepo) {    
             this._unitOfWork = unitOfWork;
             this._repo = repo;
             this._rubricaRepo = rubricaRepo;
+            this._despesaRepo = despesaRepo;
         }
 
         public async Task<List<OrcamentoDto>> GetAllAsync() {
@@ -52,6 +55,11 @@ namespace dddnetcore.Domain.Orcamentos
                 Rubrica rubrica = await this._rubricaRepo.GetByIdAsync(new RubricaId(dto.RubricaId.Value)) ?? throw new NullReferenceException("Not Found Rubric: " + id);
                 orcamento.MudarRubrica(rubrica);
             }   
+
+            if (dto.DespesaId != null) {
+                Despesa despesa = await this._despesaRepo.GetByIdAsync(new DespesaId(dto.DespesaId.Value)) ?? throw new NullReferenceException("Not Found Expense: " + id);
+                orcamento.AddDespesa(despesa);
+            }
 
 
             await this._repo.UpdateAsync(orcamento);

@@ -24,8 +24,9 @@ namespace dddnetcore.Domain.Despesas
         private readonly OrcamentoService _orcamentoService;
         private readonly IRubricaRepository _rubricaRepo;
         private readonly RubricaService _rubricaService;
+        private readonly IOrcamentoRepository _orcamentoRepo;
 
-        public DespesaService(IUnitOfWork unitOfWork, IDespesaRepository repo, ICargaMensalRepository cargaMensalRepository, IPessoaRepository pessoaRepository, IAfetacaoMensalRepository afetacaoMensalRepository, IAtividadeRepository atividadeRepositor, OrcamentoService orcamentoService, IRubricaRepository rubricaRepository, RubricaService rubricaService) {
+        public DespesaService(IUnitOfWork unitOfWork, IDespesaRepository repo, ICargaMensalRepository cargaMensalRepository, IPessoaRepository pessoaRepository, IAfetacaoMensalRepository afetacaoMensalRepository, IAtividadeRepository atividadeRepositor, OrcamentoService orcamentoService, IRubricaRepository rubricaRepository, RubricaService rubricaService, IOrcamentoRepository orcamentoRepository) {   
             if (unitOfWork == null) throw new ArgumentNullException("Unit of Work cannot be null!");
             this._unitOfWork = unitOfWork;
             this._repo = repo;
@@ -36,6 +37,7 @@ namespace dddnetcore.Domain.Despesas
             this._orcamentoService = orcamentoService;
             this._rubricaRepo = rubricaRepository;
             this._rubricaService = rubricaService;
+            this._orcamentoRepo = orcamentoRepository;
         }
 
         public async Task<List<DespesaDto>> GetAllAsync() {
@@ -52,7 +54,7 @@ namespace dddnetcore.Domain.Despesas
             if (dto.Descricao == null) 
                 throw new ArgumentNullException("Missing name for Expense creation!");
 
-            Despesa despesa = new Despesa(new DescricaoDespesa(dto.Descricao), new ValorDespesa(dto.Valor), null, new Automatico(false));
+            Despesa despesa = new Despesa(new DescricaoDespesa(dto.Descricao), new ValorDespesa((double)dto.Valor), null, new Automatico(false), new OrcamentoId(dto.OrcamentoId));
         
             await this._repo.AddAsync(despesa);
             await this._unitOfWork.CommitAsync();
@@ -95,14 +97,44 @@ namespace dddnetcore.Domain.Despesas
                 string descricao = $"Salary of month {cargaMensal.MesAno.Valor.ToString("MM/yyyy")} for {pessoa.Nome}.";
             
                 
-                Despesa despesa = new Despesa(new DescricaoDespesa(descricao), new ValorDespesa(valor), cargaMensal, new Automatico(true));
-        
+                Despesa despesa = new Despesa(new DescricaoDespesa(descricao), new ValorDespesa(valor), cargaMensal, new Automatico(true), orcamento.Id);
                 novasDespesas.Add(despesa);
                 await this._repo.AddAsync(despesa);
+                await _unitOfWork.CommitAsync();
+
+                orcamento.AddDespesa(despesa);
+                await _orcamentoRepo.UpdateAsync(orcamento);
                 await _unitOfWork.CommitAsync();
             }
 
             return novasDespesas.ConvertAll(despesa => new DespesaDto(despesa));
+        }
+
+        public async Task<DespesaDto> EditAsync(DespesaId id, EditingDespesaDto dto) {
+            Despesa despesa = await this._repo.GetByIdAsync(id) ?? throw new NullReferenceException("Not Found Expense: " + id);
+            if (dto.Descricao != null) {
+                despesa.EditDescricao(new DescricaoDespesa(dto.Descricao));
+            }
+            if (dto.Valor != null) {
+                despesa.EditValor(new ValorDespesa((double)dto.Valor));
+            }
+            await this._repo.UpdateAsync(despesa);
+            await this._unitOfWork.CommitAsync();
+
+            return new DespesaDto(despesa);
+        }
+
+        public async Task<DespesaDto> DeleteAsync(DespesaId id) {
+            Despesa despesa = await this._repo.GetByIdAsync(id) ?? throw new NullReferenceException("Not Found Expense: " + id);
+
+            if (despesa.Automatico.Auto) {
+                throw new BusinessRuleValidationException("Cannot delete an automatic expense!");
+            }
+            
+            this._repo.Remove(despesa);
+            await this._unitOfWork.CommitAsync();
+
+            return new DespesaDto(despesa);
         }
 
         private static Orcamento? GetSalarial(List<Orcamento> orcamentos) {
