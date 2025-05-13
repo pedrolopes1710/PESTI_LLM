@@ -69,6 +69,18 @@ namespace DDDSample1
             services.AddDbContext<DDDSample1DbContext>(opt =>
                 opt.UseSqlite(connectionString));
 
+                // Adiciona a configuração de CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin", policy =>
+                {
+                // Aqui, define o domínio do frontend que vai poder acessar a API
+                policy.WithOrigins("http://localhost:5173")  // Porta do frontend (Vite)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });    
+
             ConfigureMyServices(services);
 
             services.AddControllers().AddNewtonsoftJson();
@@ -87,6 +99,9 @@ namespace DDDSample1
 
             app.UseHttpsRedirection();
             app.UseRouting();
+
+            // Habilita o uso do CORS
+            app.UseCors("AllowSpecificOrigin");  // Nome da política que definimos antes
 
             app.UseAuthorization();
 
