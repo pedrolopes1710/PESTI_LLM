@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dddnetcore.Domain.Atividades;
 using dddnetcore.Domain.Orcamentos;
 using dddnetcore.Domain.Rubricas;
 using DDDSample1.Infrastructure;
@@ -10,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace dddnetcore.Infraestructure.Orcamentos
 {
-    public class OrcamentoRepository : BaseRepository<Orcamento,OrcamentoId>,IOrcamentoRepository
+    public class OrcamentoRepository : BaseRepository<Orcamento,OrcamentoId>, IOrcamentoRepository
     {
         private readonly DDDSample1DbContext _context;
         
@@ -25,6 +26,17 @@ namespace dddnetcore.Infraestructure.Orcamentos
             var query = _context.Orcamentos.AsQueryable();
 
             query = query.Where(orcamento => orcamento.Rubrica.Id.Equals(new RubricaId(rubricaId.Value)));
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<List<Orcamento>> GetOrcamentosByAtividadeAsync(Guid? atividadeId = null)
+        {
+            if (atividadeId == null) return await GetAllAsync();
+
+            var query = _context.Orcamentos.AsQueryable();
+
+            query = query.Where(orcamento => orcamento.AtividadeId.Equals(new AtividadeId(atividadeId.Value)));
 
             return await query.ToListAsync();
         }

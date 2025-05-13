@@ -19,8 +19,8 @@ namespace dddnetcore.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<OrcamentoDto>>> GetAll() {
-            return await _service.GetAllAsync();
+        public async Task<ActionResult<IEnumerable<OrcamentoDto>>> GetAll(Guid? atividadeId = null) {
+            return await _service.GetAllAsync(atividadeId);
         }
 
         [HttpGet("{id}")]

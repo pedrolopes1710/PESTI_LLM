@@ -22,7 +22,10 @@ namespace dddnetcore.Domain.Orcamentos
             this._despesaRepo = despesaRepo;
         }
 
-        public async Task<List<OrcamentoDto>> GetAllAsync() {
+        public async Task<List<OrcamentoDto>> GetAllAsync(Guid? atividadeId = null) {
+            if (atividadeId != null) {
+                return (await this._repo.GetOrcamentosByAtividadeAsync(atividadeId)).ConvertAll(orcamento => new OrcamentoDto(orcamento));
+            }
             return (await this._repo.GetAllAsync()).ConvertAll(orcamento => new OrcamentoDto(orcamento));
         }
 
