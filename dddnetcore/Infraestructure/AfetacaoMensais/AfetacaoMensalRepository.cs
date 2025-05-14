@@ -39,6 +39,7 @@ namespace dddnetcore.Infraestructure.AfetacaoPerfis
                 .ToListAsync();
         }
 
+
         public async Task<AfetacaoMensal> UpdateAsync(AfetacaoMensal afetacaoMensal) {
             _context.AfetacaoMensais.Update(afetacaoMensal);
 

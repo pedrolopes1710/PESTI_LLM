@@ -48,8 +48,7 @@ using dddnetcore.Domain.AfetacaoMensais;
 using dddnetcore.Infraestructure.AfetacaoPerfis;
 using dddnetcore.Domain.AfetacaoPerfis;
 using DDDSample1.Domain.AfetacaoPerfis;
-using dddnetcore.Domain.Projetos;
-using dddnetcore.Infrastructure.Projetos;
+using dddnetcore.Domain.TabelaAfetacoes;
 
 namespace DDDSample1
 {
@@ -174,6 +173,8 @@ namespace DDDSample1
 
             services.AddTransient<IAfetacaoPerfilRepository, AfetacaoPerfilRepository>();
             services.AddTransient<AfetacaoPerfilService>();
+
+            services.AddTransient<TabelaAfetacoesService>();
 
         }
     }

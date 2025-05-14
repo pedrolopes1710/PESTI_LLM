@@ -17,5 +17,12 @@ namespace dddnetcore.Infraestructure.Orcamentos
             _context = context;
         }
 
+        public new async Task<Pessoa> GetByIdAsync(PessoaId id) {
+            return await _context.Pessoas
+                .Include(p => p.Contrato)
+                .Include(p => p.CargasMensais)
+                .Include(p => p.Projetos) //talvez esta não faça sentido
+                .FirstOrDefaultAsync(p => p.Id.Equals(id));
+        }   
     }
 }

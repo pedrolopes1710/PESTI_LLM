@@ -9,6 +9,7 @@ using DDDSample1.Infrastructure.Shared;
 using Microsoft.EntityFrameworkCore;
 using dddnetcore.Infraestructure.AfetacaoPerfis;
 using dddnetcore.Domain.AfetacaoPerfis;
+using dddnetcore.Domain.Pessoas;
 
 namespace dddnetcore.Infraestructure.AfetacaoPerfis
 {
@@ -20,23 +21,27 @@ namespace dddnetcore.Infraestructure.AfetacaoPerfis
             _context = context;
         }
 
-        /*public async Task<List<Orcamento>> GetOrcamentosAsync(Guid? rubricaId = null)
-        {
-            if (rubricaId == null) return await GetAllAsync();
-
-            var query = _context.Orcamentos.AsQueryable();
-
-            query = query.Where(orcamento => orcamento.Rubrica.Id.Equals(new RubricaId(rubricaId.Value)));
-
-            return await query.ToListAsync();
+        public new async Task<List<AfetacaoPerfil>> GetAllAsync() {
+            return await _context.AfetacaoPerfis
+                .Include(o => o.Pessoa)
+                .Include(o => o.Perfil)
+                .ToListAsync();
         }
 
-        public async Task<Orcamento> UpdateAsync(Orcamento orcamento) {
-            _context.Orcamentos.Update(orcamento);
+        public new async Task<AfetacaoPerfil> GetByIdAsync(AfetacaoPerfilId id) {
+            return await _context.AfetacaoPerfis
+                .Include(o => o.Pessoa)
+                .Include(o => o.Perfil)
+                .FirstOrDefaultAsync(o => o.Id == id);
+        }
 
-            await _context.SaveChangesAsync();
-
-            return orcamento;
-        }*/
+        public async Task<List<AfetacaoPerfil>> GetByPessoaIdAsync(PessoaId pessoaId)
+        {
+            return await _context.AfetacaoPerfis
+                .Where(a => a.Pessoa.Id == pessoaId)
+                .Include(a => a.Pessoa)
+                .Include(a => a.Perfil)
+                .ToListAsync();
+        } 
     }
 }
