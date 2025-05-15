@@ -15,51 +15,7 @@ export default function TeamActivity() {
       target: "Design homepage wireframes",
       project: "Website Redesign",
       time: "2 hours ago",
-    },
-    {
-      id: 2,
-      user: {
-        name: "Jamie Chen",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-      action: "commented",
-      target: "Implement authentication flow",
-      project: "Mobile App Development",
-      time: "4 hours ago",
-    },
-    {
-      id: 3,
-      user: {
-        name: "Casey Lee",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-      action: "assigned",
-      target: "Prepare data schema for migration",
-      project: "Data Migration",
-      time: "Yesterday",
-    },
-    {
-      id: 4,
-      user: {
-        name: "Jordan Smith",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-      action: "updated",
-      target: "Set up analytics dashboard",
-      project: "CRM Integration",
-      time: "Yesterday",
-    },
-    {
-      id: 5,
-      user: {
-        name: "Taylor Kim",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-      action: "created",
-      target: "Social media content calendar",
-      project: "Marketing Campaign",
-      time: "2 days ago",
-    },
+    }
   ]
 
   const getActionIcon = (action: string) => {
@@ -92,7 +48,6 @@ export default function TeamActivity() {
           {activities.map((activity) => (
             <div key={activity.id} className="flex items-start gap-4 p-4">
               <Avatar className="h-10 w-10">
-                <AvatarImage src={activity.user.avatar || "/placeholder.svg"} alt={activity.user.name} />
                 <AvatarFallback>{activity.user.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">

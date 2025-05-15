@@ -17,47 +17,7 @@ export default function ProjectList() {
       dueDate: "2025-06-15",
       tasks: 24,
       completedTasks: 16,
-    },
-    {
-      id: 2,
-      name: "Mobile App Development",
-      client: "TechCorp",
-      status: "On Hold",
-      progress: 30,
-      dueDate: "2025-07-20",
-      tasks: 32,
-      completedTasks: 10,
-    },
-    {
-      id: 3,
-      name: "Marketing Campaign",
-      client: "Global Media",
-      status: "Completed",
-      progress: 100,
-      dueDate: "2025-05-01",
-      tasks: 18,
-      completedTasks: 18,
-    },
-    {
-      id: 4,
-      name: "CRM Integration",
-      client: "Sales Pro",
-      status: "In Progress",
-      progress: 45,
-      dueDate: "2025-06-30",
-      tasks: 28,
-      completedTasks: 12,
-    },
-    {
-      id: 5,
-      name: "Data Migration",
-      client: "DataFlow",
-      status: "Not Started",
-      progress: 0,
-      dueDate: "2025-08-10",
-      tasks: 15,
-      completedTasks: 0,
-    },
+    }
   ]
 
   const getStatusColor = (status: string) => {

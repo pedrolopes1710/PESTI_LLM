@@ -19,84 +19,7 @@ export default function TeamPage() {
       avatar: "/placeholder.svg?height=128&width=128",
       activeProjects: 3,
       activeTasks: 8,
-    },
-    {
-      id: 2,
-      name: "Jamie Chen",
-      email: "jamie@example.com",
-      phone: "+1 (555) 234-5678",
-      role: "Senior Developer",
-      department: "Engineering",
-      avatar: "/placeholder.svg?height=128&width=128",
-      activeProjects: 2,
-      activeTasks: 6,
-    },
-    {
-      id: 3,
-      name: "Taylor Kim",
-      email: "taylor@example.com",
-      phone: "+1 (555) 345-6789",
-      role: "Marketing Specialist",
-      department: "Marketing",
-      avatar: "/placeholder.svg?height=128&width=128",
-      activeProjects: 1,
-      activeTasks: 4,
-    },
-    {
-      id: 4,
-      name: "Jordan Smith",
-      email: "jordan@example.com",
-      phone: "+1 (555) 456-7890",
-      role: "UX Designer",
-      department: "Design",
-      avatar: "/placeholder.svg?height=128&width=128",
-      activeProjects: 2,
-      activeTasks: 5,
-    },
-    {
-      id: 5,
-      name: "Casey Lee",
-      email: "casey@example.com",
-      phone: "+1 (555) 567-8901",
-      role: "Data Analyst",
-      department: "Analytics",
-      avatar: "/placeholder.svg?height=128&width=128",
-      activeProjects: 1,
-      activeTasks: 3,
-    },
-    {
-      id: 6,
-      name: "Morgan Taylor",
-      email: "morgan@example.com",
-      phone: "+1 (555) 678-9012",
-      role: "Backend Developer",
-      department: "Engineering",
-      avatar: "/placeholder.svg?height=128&width=128",
-      activeProjects: 3,
-      activeTasks: 7,
-    },
-    {
-      id: 7,
-      name: "Riley Johnson",
-      email: "riley@example.com",
-      phone: "+1 (555) 789-0123",
-      role: "Frontend Developer",
-      department: "Engineering",
-      avatar: "/placeholder.svg?height=128&width=128",
-      activeProjects: 2,
-      activeTasks: 5,
-    },
-    {
-      id: 8,
-      name: "Quinn Davis",
-      email: "quinn@example.com",
-      phone: "+1 (555) 890-1234",
-      role: "Content Strategist",
-      department: "Marketing",
-      avatar: "/placeholder.svg?height=128&width=128",
-      activeProjects: 1,
-      activeTasks: 4,
-    },
+    }
   ]
 
   return (
@@ -152,7 +75,7 @@ export default function TeamPage() {
                   </div>
                   <div className="flex flex-col items-center">
                     <Avatar className="h-20 w-20 mb-2">
-                      <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
+                      
                       <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <CardTitle>{member.name}</CardTitle>

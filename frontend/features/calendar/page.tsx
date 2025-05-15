@@ -14,38 +14,6 @@ export default function CalendarPage() {
       time: "10:00 AM - 11:30 AM",
       participants: 4,
     },
-    {
-      id: 2,
-      title: "Sprint Planning",
-      project: "Mobile App Development",
-      date: "2025-05-16",
-      time: "9:00 AM - 10:00 AM",
-      participants: 6,
-    },
-    {
-      id: 3,
-      title: "Client Presentation",
-      project: "Website Redesign",
-      date: "2025-05-17",
-      time: "2:00 PM - 3:30 PM",
-      participants: 5,
-    },
-    {
-      id: 4,
-      title: "Data Migration Planning",
-      project: "Data Migration",
-      date: "2025-05-18",
-      time: "11:00 AM - 12:00 PM",
-      participants: 3,
-    },
-    {
-      id: 5,
-      title: "Marketing Strategy Meeting",
-      project: "Marketing Campaign",
-      date: "2025-05-19",
-      time: "1:00 PM - 2:30 PM",
-      participants: 4,
-    },
   ]
 
   // Generate calendar days
