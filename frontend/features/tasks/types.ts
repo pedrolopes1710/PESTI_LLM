@@ -4,7 +4,7 @@ export interface Assignee {
 }
 
 export interface Task {
-  id: number
+  id: string | number
   title: string
   description: string
   project: string

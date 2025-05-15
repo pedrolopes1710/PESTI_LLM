@@ -1,5 +1,6 @@
-'use client'
-import { useState, useEffect } from 'react' // Importando hooks do React
+"use client"
+
+import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -17,145 +18,58 @@ import {
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowUpDown, Calendar, ChevronDown, Filter, MoreHorizontal, Plus, Search } from "lucide-react"
+import type { Activity } from "./types"
+import { type ApiTask, mapApiDataToActivities } from "./api"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle, RefreshCw } from "lucide-react"
 
-
- 
- 
 export default function TasksPage() {
-  const [posts, setPosts] = useState(null)
- 
+  const [activities, setActivities] = useState<Activity[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [posts, setPosts] = useState<ApiTask[] | null>(null)
+
+  // Função para carregar os dados da API conforme fornecido pelo usuário
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const res = await fetch('https://localhost:7284/api/Tarefas')
-        if(!res.ok) {
-          throw new Error('Network response was not ok')
+        setLoading(true)
+        setError(null)
+        const res = await fetch("http://localhost:5225/api/Tarefas")
+        if (!res.ok) {
+          throw new Error("Network response was not ok")
         }
         const data = await res.json()
-        console.log(data);
+        console.log(data)
         setPosts(data)
+
+        // Mapear os dados da API para o formato da aplicação
+        const mappedActivities = mapApiDataToActivities(data)
+        setActivities(mappedActivities)
       } catch (error) {
         console.error("Error fetching posts:", error)
+        setError("Não foi possível carregar as tarefas. Verifique se a API está em execução.")
+      } finally {
+        setLoading(false)
       }
     }
     fetchPosts()
   }, [])
 
-  // Modelo de dados com atividades e tarefas associadas
-  const activities = [
-    {
-      id: 1,
-      name: "Desenvolvimento Frontend",
-      description: "Atividades relacionadas ao desenvolvimento da interface do usuário",
-      tasks: [
-        {
-          id: 101,
-          title: "Design homepage wireframes",
-          description: "Create wireframes for the new homepage design based on client feedback",
-          project: "Website Redesign",
-          status: "In Progress",
-          dataInicio: "2025-05-20",
-          dataFim: "2025-05-25",
-          assignee: {
-            name: "Alex Morgan",
-            avatar: "/placeholder.svg?height=32&width=32",
-          },
-        },
-        {
-          id: 102,
-          title: "Implementar componentes React",
-          description: "Desenvolver componentes reutilizáveis para o sistema",
-          project: "Website Redesign",
-          status: "Not Started",
-          dataInicio: "2025-05-26",
-          dataFim: "2025-06-02",
-          assignee: {
-            name: "Jamie Chen",
-            avatar: "/placeholder.svg?height=32&width=32",
-          },
-        },
-        {
-          id: 103,
-          title: "Otimizar performance",
-          description: "Melhorar o tempo de carregamento e a responsividade da aplicação",
-          project: "Website Redesign",
-          status: "Not Started",
-          dataInicio: "2025-06-03",
-          dataFim: "2025-06-10",
-          assignee: {
-            name: "Riley Johnson",
-            avatar: "/placeholder.svg?height=32&width=32",
-          },
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Desenvolvimento Backend",
-      description: "Atividades relacionadas à implementação da lógica de negócios e APIs",
-      tasks: [
-        {
-          id: 201,
-          title: "Implementar autenticação",
-          description: "Desenvolver sistema de login e registro de usuários",
-          project: "CRM Integration",
-          status: "In Progress",
-          dataInicio: "2025-05-15",
-          dataFim: "2025-05-22",
-          assignee: {
-            name: "Morgan Taylor",
-            avatar: "/placeholder.svg?height=32&width=32",
-          },
-        },
-        {
-          id: 202,
-          title: "Criar endpoints de API",
-          description: "Desenvolver endpoints RESTful para comunicação com o frontend",
-          project: "CRM Integration",
-          status: "Not Started",
-          dataInicio: "2025-05-23",
-          dataFim: "2025-05-30",
-          assignee: {
-            name: "Casey Lee",
-            avatar: "/placeholder.svg?height=32&width=32",
-          },
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Design UX/UI",
-      description: "Atividades relacionadas ao design da experiência do usuário",
-      tasks: [
-        {
-          id: 301,
-          title: "Criar guia de estilos",
-          description: "Desenvolver guia de estilos com cores, tipografia e componentes",
-          project: "Mobile App Development",
-          status: "Completed",
-          dataInicio: "2025-05-10",
-          dataFim: "2025-05-15",
-          assignee: {
-            name: "Jordan Smith",
-            avatar: "/placeholder.svg?height=32&width=32",
-          },
-        },
-        {
-          id: 302,
-          title: "Prototipar telas principais",
-          description: "Criar protótipos interativos das principais telas do aplicativo",
-          project: "Mobile App Development",
-          status: "In Progress",
-          dataInicio: "2025-05-16",
-          dataFim: "2025-05-23",
-          assignee: {
-            name: "Jordan Smith",
-            avatar: "/placeholder.svg?height=32&width=32",
-          },
-        },
-      ],
-    },
-  ]
+  // Filtrar tarefas com base no termo de pesquisa
+  const filteredActivities = activities
+    .map((activity) => ({
+      ...activity,
+      tasks: activity.tasks.filter(
+        (task) =>
+          task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          task.project.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
+    }))
+    .filter((activity) => activity.tasks.length > 0)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -170,16 +84,75 @@ export default function TasksPage() {
     }
   }
 
+  // Componente de carregamento
+  const LoadingSkeleton = () => (
+    <>
+      {[1, 2, 3].map((i) => (
+        <Card key={i} className="mb-6">
+          <CardHeader className="bg-muted/50 py-3">
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent className="p-4">
+            {[1, 2].map((j) => (
+              <div key={j} className="flex items-start gap-4 py-4 border-b last:border-0">
+                <Skeleton className="h-4 w-4 rounded-sm mt-1" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-5 w-full max-w-md" />
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-full" />
+                  <div className="flex justify-between items-center pt-2">
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      ))}
+    </>
+  )
+
+  // Função para recarregar os dados
+  const reloadData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const res = await fetch("http://localhost:5225/api/Tarefas")
+      if (!res.ok) {
+        throw new Error("Network response was not ok")
+      }
+      const data = await res.json()
+      console.log(data)
+      setPosts(data)
+
+      // Mapear os dados da API para o formato da aplicação
+      const mappedActivities = mapApiDataToActivities(data)
+      setActivities(mappedActivities)
+    } catch (error) {
+      console.error("Error fetching posts:", error)
+      setError("Não foi possível carregar as tarefas. Verifique se a API está em execução.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
         <p className="text-muted-foreground">Manage and track all your tasks</p>
       </div>
+
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center w-full max-w-sm gap-2">
           <Search className="h-4 w-4 text-muted-foreground absolute ml-3 pointer-events-none" />
-          <Input placeholder="Search tasks..." className="pl-9" />
+          <Input
+            placeholder="Search tasks..."
+            className="pl-9"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         <div className="flex items-center gap-2">
           <DropdownMenu>
@@ -228,6 +201,20 @@ export default function TasksPage() {
         </div>
       </div>
 
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Erro</AlertTitle>
+          <AlertDescription className="flex justify-between items-center">
+            {error}
+            <Button variant="outline" size="sm" onClick={reloadData} className="ml-2">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Tentar novamente
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Tabs defaultValue="all" className="space-y-4">
         <TabsList>
           <TabsTrigger value="all">All Tasks</TabsTrigger>
@@ -236,69 +223,79 @@ export default function TasksPage() {
           <TabsTrigger value="completed">Completed</TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="space-y-4">
-          {activities.map((activity) => (
-            <Card key={activity.id} className="mb-6">
-              <CardHeader className="bg-muted/50 py-3">
-                <CardTitle className="text-lg flex items-center justify-between">
-                  <span>{activity.name}</span>
-                  <Badge variant="outline" className="ml-2">
-                    {activity.tasks.length} tasks
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="divide-y">
-                  {activity.tasks.map((task) => (
-                    <div key={task.id} className="flex items-start p-4 hover:bg-muted/50">
-                      <Checkbox id={`task-${task.id}`} className="mt-1 mr-4" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <div>
-                            <div className="font-medium">{task.title}</div>
-                            <div className="text-sm text-muted-foreground">{task.project}</div>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline" className={getStatusColor(task.status)}>
-                              {task.status}
-                            </Badge>
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              <span>{new Date(task.dataInicio).toLocaleDateString()}</span>
+          {loading ? (
+            <LoadingSkeleton />
+          ) : filteredActivities.length > 0 ? (
+            filteredActivities.map((activity) => (
+              <Card key={activity.id} className="mb-6">
+                <CardHeader className="bg-muted/50 py-3">
+                  <CardTitle className="text-lg flex items-center justify-between">
+                    <span>{activity.name}</span>
+                    <Badge variant="outline" className="ml-2">
+                      {activity.tasks.length} tasks
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="divide-y">
+                    {activity.tasks.map((task) => (
+                      <div key={task.id} className="flex items-start p-4 hover:bg-muted/50">
+                        <Checkbox id={`task-${task.id}`} className="mt-1 mr-4" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div>
+                              <div className="font-medium">{task.title}</div>
+                              <div className="text-sm text-muted-foreground">{task.project}</div>
                             </div>
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              <span>{new Date(task.dataFim).toLocaleDateString()}</span>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Badge variant="outline" className={getStatusColor(task.status)}>
+                                {task.status}
+                              </Badge>
+                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                <Calendar className="h-3 w-3" />
+                                <span>{new Date(task.dataInicio).toLocaleDateString()}</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                <Calendar className="h-3 w-3" />
+                                <span>{new Date(task.dataFim).toLocaleDateString()}</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-2">{task.description}</p>
-                        <div className="flex items-center justify-between mt-4">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={task.assignee.avatar || "/placeholder.svg"} alt={task.assignee.name} />
-                            <AvatarFallback>{task.assignee.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Actions</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>Edit Task</DropdownMenuItem>
-                              <DropdownMenuItem>Change Assignee</DropdownMenuItem>
-                              <DropdownMenuItem>Change Activity</DropdownMenuItem>
-                              <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
+                          <p className="text-sm text-muted-foreground mt-2">{task.description}</p>
+                          <div className="flex items-center justify-between mt-4">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={task.assignee.avatar || "/placeholder.svg"} alt={task.assignee.name} />
+                              <AvatarFallback>{task.assignee.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Actions</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem>Edit Task</DropdownMenuItem>
+                                <DropdownMenuItem>Change Assignee</DropdownMenuItem>
+                                <DropdownMenuItem>Change Activity</DropdownMenuItem>
+                                <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                {searchTerm ? "Nenhuma tarefa encontrada para a pesquisa." : "Nenhuma tarefa disponível."}
               </CardContent>
             </Card>
-          ))}
+          )}
         </TabsContent>
         <TabsContent value="my" className="space-y-4">
           <Card>

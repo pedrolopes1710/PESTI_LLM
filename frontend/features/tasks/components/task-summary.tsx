@@ -10,7 +10,7 @@ export default function TaskSummary() {
   const tasks = [
     {
       id: 1,
-      title: "Design homepage wireframes",
+      title: "Exemplo",
       project: "Website Redesign",
       priority: "High",
       dataInicio:"2025-05-15",

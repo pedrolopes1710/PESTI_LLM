@@ -74,7 +74,7 @@ namespace DDDSample1
                 options.AddPolicy("AllowSpecificOrigin", policy =>
                 {
                 // Aqui, define o domínio do frontend que vai poder acessar a API
-                policy.WithOrigins("http://localhost:5173")  // Porta do frontend (Vite)
+                policy.WithOrigins("http://localhost:3000")  // Porta do frontend (Vite)
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
@@ -95,8 +95,8 @@ namespace DDDSample1
             {
                 app.UseHsts();
             }
-
-            app.UseHttpsRedirection();
+            
+            //app.UseHttpsRedirection();
             app.UseRouting();
 
             // Habilita o uso do CORS
