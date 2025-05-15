@@ -10,56 +10,13 @@ export default function TaskSummary() {
   const tasks = [
     {
       id: 1,
-      title: "Design homepage wireframes",
+      title: "Exemplo",
       project: "Website Redesign",
       priority: "High",
-      dueDate: "2025-05-20",
+      dataInicio:"2025-05-15",
+      dataFim: "2025-05-20",
       assignee: {
-        name: "Alex Morgan",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 2,
-      title: "Implement authentication flow",
-      project: "Mobile App Development",
-      priority: "Medium",
-      dueDate: "2025-05-22",
-      assignee: {
-        name: "Jamie Chen",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 3,
-      title: "Create social media content calendar",
-      project: "Marketing Campaign",
-      priority: "Low",
-      dueDate: "2025-05-25",
-      assignee: {
-        name: "Taylor Kim",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 4,
-      title: "Set up analytics dashboard",
-      project: "CRM Integration",
-      priority: "Medium",
-      dueDate: "2025-05-18",
-      assignee: {
-        name: "Jordan Smith",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 5,
-      title: "Prepare data schema for migration",
-      project: "Data Migration",
-      priority: "High",
-      dueDate: "2025-05-30",
-      assignee: {
-        name: "Casey Lee",
+        name: "Alex ",
         avatar: "/placeholder.svg?height=32&width=32",
       },
     },
@@ -112,7 +69,7 @@ export default function TaskSummary() {
                 </Badge>
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <Calendar className="h-3 w-3" />
-                  <span>{new Date(task.dueDate).toLocaleDateString()}</span>
+                  <span>{new Date(task.dataInicio).toLocaleDateString()}</span>
                 </div>
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={task.assignee.avatar || "/placeholder.svg"} alt={task.assignee.name} />

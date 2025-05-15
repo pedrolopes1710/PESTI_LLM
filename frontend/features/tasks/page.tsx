@@ -1,7 +1,10 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
@@ -15,127 +18,58 @@ import {
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowUpDown, Calendar, ChevronDown, Filter, MoreHorizontal, Plus, Search } from "lucide-react"
+import type { Activity } from "./types"
+import { type ApiTask, mapApiDataToActivities } from "./api"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle, RefreshCw } from "lucide-react"
 
 export default function TasksPage() {
-  const tasks = [
-    {
-      id: 1,
-      title: "Design homepage wireframes",
-      description: "Create wireframes for the new homepage design based on client feedback",
-      project: "Website Redesign",
-      priority: "High",
-      status: "In Progress",
-      dueDate: "2025-05-20",
-      assignee: {
-        name: "Alex Morgan",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 2,
-      title: "Implement authentication flow",
-      description: "Build user authentication system with login, registration and password reset",
-      project: "Mobile App Development",
-      priority: "Medium",
-      status: "Not Started",
-      dueDate: "2025-05-22",
-      assignee: {
-        name: "Jamie Chen",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 3,
-      title: "Create social media content calendar",
-      description: "Develop content calendar for Q2 marketing campaign across all platforms",
-      project: "Marketing Campaign",
-      priority: "Low",
-      status: "Completed",
-      dueDate: "2025-05-25",
-      assignee: {
-        name: "Taylor Kim",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 4,
-      title: "Set up analytics dashboard",
-      description: "Configure analytics dashboard to track key performance metrics",
-      project: "CRM Integration",
-      priority: "Medium",
-      status: "In Progress",
-      dueDate: "2025-05-18",
-      assignee: {
-        name: "Jordan Smith",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 5,
-      title: "Prepare data schema for migration",
-      description: "Design database schema for the new system and plan migration strategy",
-      project: "Data Migration",
-      priority: "High",
-      status: "Not Started",
-      dueDate: "2025-05-30",
-      assignee: {
-        name: "Casey Lee",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 6,
-      title: "Optimize product images",
-      description: "Compress and optimize all product images for faster loading times",
-      project: "E-commerce Platform",
-      priority: "Low",
-      status: "In Progress",
-      dueDate: "2025-05-19",
-      assignee: {
-        name: "Alex Morgan",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 7,
-      title: "Implement payment gateway",
-      description: "Integrate Stripe payment processing for online transactions",
-      project: "E-commerce Platform",
-      priority: "High",
-      status: "Not Started",
-      dueDate: "2025-05-28",
-      assignee: {
-        name: "Jamie Chen",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-    {
-      id: 8,
-      title: "Create user onboarding flow",
-      description: "Design and implement user onboarding experience for new users",
-      project: "Mobile App Development",
-      priority: "Medium",
-      status: "In Progress",
-      dueDate: "2025-05-24",
-      assignee: {
-        name: "Jordan Smith",
-        avatar: "/placeholder.svg?height=32&width=32",
-      },
-    },
-  ]
+  const [activities, setActivities] = useState<Activity[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [posts, setPosts] = useState<ApiTask[] | null>(null)
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "High":
-        return "bg-red-500/20 text-red-700 hover:bg-red-500/30"
-      case "Medium":
-        return "bg-amber-500/20 text-amber-700 hover:bg-amber-500/30"
-      case "Low":
-        return "bg-green-500/20 text-green-700 hover:bg-green-500/30"
-      default:
-        return "bg-gray-500/20 text-gray-700 hover:bg-gray-500/30"
+  // Função para carregar os dados da API conforme fornecido pelo usuário
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        setLoading(true)
+        setError(null)
+        const res = await fetch("http://localhost:5225/api/Tarefas")
+        if (!res.ok) {
+          throw new Error("Network response was not ok")
+        }
+        const data = await res.json()
+        console.log(data)
+        setPosts(data)
+
+        // Mapear os dados da API para o formato da aplicação
+        const mappedActivities = mapApiDataToActivities(data)
+        setActivities(mappedActivities)
+      } catch (error) {
+        console.error("Error fetching posts:", error)
+        setError("Não foi possível carregar as tarefas. Verifique se a API está em execução.")
+      } finally {
+        setLoading(false)
+      }
     }
-  }
+    fetchPosts()
+  }, [])
+
+  // Filtrar tarefas com base no termo de pesquisa
+  const filteredActivities = activities
+    .map((activity) => ({
+      ...activity,
+      tasks: activity.tasks.filter(
+        (task) =>
+          task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          task.project.toLowerCase().includes(searchTerm.toLowerCase()),
+      ),
+    }))
+    .filter((activity) => activity.tasks.length > 0)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -150,6 +84,59 @@ export default function TasksPage() {
     }
   }
 
+  // Componente de carregamento
+  const LoadingSkeleton = () => (
+    <>
+      {[1, 2, 3].map((i) => (
+        <Card key={i} className="mb-6">
+          <CardHeader className="bg-muted/50 py-3">
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent className="p-4">
+            {[1, 2].map((j) => (
+              <div key={j} className="flex items-start gap-4 py-4 border-b last:border-0">
+                <Skeleton className="h-4 w-4 rounded-sm mt-1" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-5 w-full max-w-md" />
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-full" />
+                  <div className="flex justify-between items-center pt-2">
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      ))}
+    </>
+  )
+
+  // Função para recarregar os dados
+  const reloadData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const res = await fetch("http://localhost:5225/api/Tarefas")
+      if (!res.ok) {
+        throw new Error("Network response was not ok")
+      }
+      const data = await res.json()
+      console.log(data)
+      setPosts(data)
+
+      // Mapear os dados da API para o formato da aplicação
+      const mappedActivities = mapApiDataToActivities(data)
+      setActivities(mappedActivities)
+    } catch (error) {
+      console.error("Error fetching posts:", error)
+      setError("Não foi possível carregar as tarefas. Verifique se a API está em execução.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
@@ -160,7 +147,12 @@ export default function TasksPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center w-full max-w-sm gap-2">
           <Search className="h-4 w-4 text-muted-foreground absolute ml-3 pointer-events-none" />
-          <Input placeholder="Search tasks..." className="pl-9" />
+          <Input
+            placeholder="Search tasks..."
+            className="pl-9"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         <div className="flex items-center gap-2">
           <DropdownMenu>
@@ -179,10 +171,12 @@ export default function TasksPage() {
               <DropdownMenuCheckboxItem>Not Started</DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem>Completed</DropdownMenuCheckboxItem>
               <DropdownMenuSeparator />
-              <DropdownMenuLabel>Priority</DropdownMenuLabel>
-              <DropdownMenuCheckboxItem checked>High</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem checked>Medium</DropdownMenuCheckboxItem>
-              <DropdownMenuCheckboxItem checked>Low</DropdownMenuCheckboxItem>
+              <DropdownMenuLabel>Activity</DropdownMenuLabel>
+              {activities.map((activity) => (
+                <DropdownMenuCheckboxItem key={activity.id} checked>
+                  {activity.name}
+                </DropdownMenuCheckboxItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
           <DropdownMenu>
@@ -196,8 +190,7 @@ export default function TasksPage() {
             <DropdownMenuContent align="end">
               <DropdownMenuItem>Due Date (Ascending)</DropdownMenuItem>
               <DropdownMenuItem>Due Date (Descending)</DropdownMenuItem>
-              <DropdownMenuItem>Priority (High to Low)</DropdownMenuItem>
-              <DropdownMenuItem>Priority (Low to High)</DropdownMenuItem>
+              <DropdownMenuItem>Activity</DropdownMenuItem>
               <DropdownMenuItem>Project</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -208,6 +201,20 @@ export default function TasksPage() {
         </div>
       </div>
 
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Erro</AlertTitle>
+          <AlertDescription className="flex justify-between items-center">
+            {error}
+            <Button variant="outline" size="sm" onClick={reloadData} className="ml-2">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Tentar novamente
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <Tabs defaultValue="all" className="space-y-4">
         <TabsList>
           <TabsTrigger value="all">All Tasks</TabsTrigger>
@@ -216,58 +223,79 @@ export default function TasksPage() {
           <TabsTrigger value="completed">Completed</TabsTrigger>
         </TabsList>
         <TabsContent value="all" className="space-y-4">
-          <Card>
-            <CardContent className="p-0">
-              <div className="divide-y">
-                {tasks.map((task) => (
-                  <div key={task.id} className="flex items-start p-4 hover:bg-muted/50">
-                    <Checkbox id={`task-${task.id}`} className="mt-1 mr-4" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div>
-                          <div className="font-medium">{task.title}</div>
-                          <div className="text-sm text-muted-foreground">{task.project}</div>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Badge variant="outline" className={getPriorityColor(task.priority)}>
-                            {task.priority}
-                          </Badge>
-                          <Badge variant="outline" className={getStatusColor(task.status)}>
-                            {task.status}
-                          </Badge>
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Calendar className="h-3 w-3" />
-                            <span>{new Date(task.dueDate).toLocaleDateString()}</span>
+          {loading ? (
+            <LoadingSkeleton />
+          ) : filteredActivities.length > 0 ? (
+            filteredActivities.map((activity) => (
+              <Card key={activity.id} className="mb-6">
+                <CardHeader className="bg-muted/50 py-3">
+                  <CardTitle className="text-lg flex items-center justify-between">
+                    <span>{activity.name}</span>
+                    <Badge variant="outline" className="ml-2">
+                      {activity.tasks.length} tasks
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <div className="divide-y">
+                    {activity.tasks.map((task) => (
+                      <div key={task.id} className="flex items-start p-4 hover:bg-muted/50">
+                        <Checkbox id={`task-${task.id}`} className="mt-1 mr-4" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div>
+                              <div className="font-medium">{task.title}</div>
+                              <div className="text-sm text-muted-foreground">{task.project}</div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Badge variant="outline" className={getStatusColor(task.status)}>
+                                {task.status}
+                              </Badge>
+                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                <Calendar className="h-3 w-3" />
+                                <span>{new Date(task.dataInicio).toLocaleDateString()}</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                <Calendar className="h-3 w-3" />
+                                <span>{new Date(task.dataFim).toLocaleDateString()}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-2">{task.description}</p>
+                          <div className="flex items-center justify-between mt-4">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={task.assignee.avatar || "/placeholder.svg"} alt={task.assignee.name} />
+                              <AvatarFallback>{task.assignee.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Actions</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem>Edit Task</DropdownMenuItem>
+                                <DropdownMenuItem>Change Assignee</DropdownMenuItem>
+                                <DropdownMenuItem>Change Activity</DropdownMenuItem>
+                                <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-2">{task.description}</p>
-                      <div className="flex items-center justify-between mt-4">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={task.assignee.avatar || "/placeholder.svg"} alt={task.assignee.name} />
-                          <AvatarFallback>{task.assignee.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Actions</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Edit Task</DropdownMenuItem>
-                            <DropdownMenuItem>Change Assignee</DropdownMenuItem>
-                            <DropdownMenuItem>Set Priority</DropdownMenuItem>
-                            <DropdownMenuItem>Mark as Complete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                {searchTerm ? "Nenhuma tarefa encontrada para a pesquisa." : "Nenhuma tarefa disponível."}
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
         <TabsContent value="my" className="space-y-4">
           <Card>
