@@ -17,48 +17,47 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ArrowUpDown, Calendar, ChevronDown, Filter, MoreHorizontal, Plus, Search } from "lucide-react"
+import { ArrowUpDown, Calendar, ChevronDown, Filter, MoreHorizontal, Search } from "lucide-react"
 import type { Activity } from "./types"
-import { type ApiTask, mapApiDataToActivities } from "./api"
+import { fetchTasksGroupedByActivity } from "./api"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, RefreshCw } from "lucide-react"
+
+import { Toaster } from "@/components/ui/toaster"
+import { Progress } from "@/components/ui/progress"
 
 export default function TasksPage() {
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
-  const [posts, setPosts] = useState<ApiTask[] | null>(null)
 
-  // Função para carregar os dados da API conforme fornecido pelo usuário
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        setLoading(true)
-        setError(null)
-        const res = await fetch("http://localhost:5225/api/Tarefas")
-        if (!res.ok) {
-          throw new Error("Network response was not ok")
-        }
-        const data = await res.json()
-        console.log(data)
-        setPosts(data)
+  // Função para carregar os dados da API
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      setError(null)
 
-        // Mapear os dados da API para o formato da aplicação
-        const mappedActivities = mapApiDataToActivities(data)
-        setActivities(mappedActivities)
-      } catch (error) {
-        console.error("Error fetching posts:", error)
-        setError("Não foi possível carregar as tarefas. Verifique se a API está em execução.")
-      } finally {
-        setLoading(false)
-      }
+      // Buscar tarefas agrupadas por atividade usando a função da API
+      const groupedActivities = await fetchTasksGroupedByActivity()
+      console.log("Atividades agrupadas:", groupedActivities)
+
+      setActivities(groupedActivities)
+    } catch (error) {
+      console.error("Error fetching data:", error)
+      setError("Não foi possível carregar as tarefas. Verifique se a API está em execução.")
+    } finally {
+      setLoading(false)
     }
-    fetchPosts()
+  }
+
+  // Carregar dados quando o componente montar
+  useEffect(() => {
+    fetchData()
   }, [])
 
-  // Filtrar tarefas com base no termo de pesquisa
+  // Filtrar atividades e tarefas com base no termo de pesquisa
   const filteredActivities = activities
     .map((activity) => ({
       ...activity,
@@ -66,7 +65,7 @@ export default function TasksPage() {
         (task) =>
           task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           task.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          task.project.toLowerCase().includes(searchTerm.toLowerCase()),
+          activity.name.toLowerCase().includes(searchTerm.toLowerCase()),
       ),
     }))
     .filter((activity) => activity.tasks.length > 0)
@@ -113,32 +112,15 @@ export default function TasksPage() {
     </>
   )
 
-  // Função para recarregar os dados
-  const reloadData = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const res = await fetch("http://localhost:5225/api/Tarefas")
-      if (!res.ok) {
-        throw new Error("Network response was not ok")
-      }
-      const data = await res.json()
-      console.log(data)
-      setPosts(data)
-
-      // Mapear os dados da API para o formato da aplicação
-      const mappedActivities = mapApiDataToActivities(data)
-      setActivities(mappedActivities)
-    } catch (error) {
-      console.error("Error fetching posts:", error)
-      setError("Não foi possível carregar as tarefas. Verifique se a API está em execução.")
-    } finally {
-      setLoading(false)
-    }
+  // Função para lidar com a criação de uma nova tarefa
+  const handleTaskCreated = () => {
+    // Recarregar os dados após a criação de uma nova tarefa
+    fetchData()
   }
 
   return (
     <div className="space-y-6">
+      <Toaster />
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
         <p className="text-muted-foreground">Manage and track all your tasks</p>
@@ -194,10 +176,6 @@ export default function TasksPage() {
               <DropdownMenuItem>Project</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Task
-          </Button>
         </div>
       </div>
 
@@ -207,7 +185,7 @@ export default function TasksPage() {
           <AlertTitle>Erro</AlertTitle>
           <AlertDescription className="flex justify-between items-center">
             {error}
-            <Button variant="outline" size="sm" onClick={reloadData} className="ml-2">
+            <Button variant="outline" size="sm" onClick={fetchData} className="ml-2">
               <RefreshCw className="h-4 w-4 mr-2" />
               Tentar novamente
             </Button>
@@ -229,11 +207,49 @@ export default function TasksPage() {
             filteredActivities.map((activity) => (
               <Card key={activity.id} className="mb-6">
                 <CardHeader className="bg-muted/50 py-3">
-                  <CardTitle className="text-lg flex items-center justify-between">
-                    <span>{activity.name}</span>
-                    <Badge variant="outline" className="ml-2">
-                      {activity.tasks.length} tasks
-                    </Badge>
+                  <CardTitle className="text-lg flex flex-col md:flex-row md:items-center justify-between gap-2">
+                    <div>
+                      <span>{activity.name}</span>
+                      <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
+                    </div>
+                    <div className="flex flex-col md:items-end gap-2">
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col md:items-end text-sm">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3 text-muted-foreground" />
+                            <span className="text-muted-foreground">
+                              {new Date(activity.dataInicio).toLocaleDateString()} -{" "}
+                              {new Date(activity.dataFim).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="ml-2">
+                          {activity.tasks.length} tasks
+                        </Badge>
+                      </div>
+
+                      {/* Barra de progresso */}
+                      <div className="w-full md:w-48 flex flex-col gap-1">
+                        {(() => {
+                          const completedTasks = activity.tasks.filter((task) => task.status === "Completed").length
+                          const progressPercentage =
+                            activity.tasks.length > 0 ? Math.round((completedTasks / activity.tasks.length) * 100) : 0
+
+                          return (
+                            <>
+                              <div className="flex items-center justify-between text-xs">
+                                <span>Progresso</span>
+                                <span>{progressPercentage}%</span>
+                              </div>
+                              <Progress value={progressPercentage} className="h-2" />
+                              <div className="text-xs text-muted-foreground text-right">
+                                {completedTasks}/{activity.tasks.length} concluídas
+                              </div>
+                            </>
+                          )
+                        })()}
+                      </div>
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -251,14 +267,6 @@ export default function TasksPage() {
                               <Badge variant="outline" className={getStatusColor(task.status)}>
                                 {task.status}
                               </Badge>
-                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                <Calendar className="h-3 w-3" />
-                                <span>{new Date(task.dataInicio).toLocaleDateString()}</span>
-                              </div>
-                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                <Calendar className="h-3 w-3" />
-                                <span>{new Date(task.dataFim).toLocaleDateString()}</span>
-                              </div>
                             </div>
                           </div>
                           <p className="text-sm text-muted-foreground mt-2">{task.description}</p>

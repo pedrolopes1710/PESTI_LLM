@@ -12,12 +12,15 @@ export interface Task {
   dataInicio: string
   dataFim: string
   assignee: Assignee
-  activityId?: number
+  atividadeId?: string
 }
 
 export interface Activity {
-  id: number
+  id: string
   name: string
   description: string
+  dataInicio: string
+  dataFim: string
   tasks: Task[]
+  progress: number
 }

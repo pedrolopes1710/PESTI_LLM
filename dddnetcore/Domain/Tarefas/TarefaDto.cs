@@ -14,6 +14,8 @@ namespace dddnetcore.Domain.Tarefas
         
         public string DescricaoTarefa{get;set;}
 
+        public Guid? AtividadeId { get; set; } // já existe no DB
+
         public TarefaDto() {}
 
         public TarefaDto(Tarefa tarefa)
@@ -22,6 +24,7 @@ namespace dddnetcore.Domain.Tarefas
             this.Nome = tarefa.NomeTarefa.Nome;
             this.Status=tarefa.StatusTarefa.ToString();
             this.DescricaoTarefa=tarefa.DescricaoTarefa.Descricao;
+            this.AtividadeId = tarefa.AtividadeId?.AsGuid();
         }   
     }
 }
