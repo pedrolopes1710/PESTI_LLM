@@ -66,6 +66,30 @@ namespace dddnetcore.Services
             await _context.SaveChangesAsync();
             return true;
         }
+        
+        public async Task<ProjetoDTO> UpdateAsync(Guid id, string nome, string descricao)
+        {
+            var projeto = await _context.Set<Projeto>().FindAsync(new ProjetoId(id));
+            if (projeto == null) return null;
+
+            // Atualiza os campos necessários
+            if (!string.IsNullOrWhiteSpace(nome))
+                projeto.AlterarNome(nome);
+
+            if (!string.IsNullOrWhiteSpace(descricao))
+                projeto.AlterarDescricao(descricao);
+
+            _context.Set<Projeto>().Update(projeto);
+            await _context.SaveChangesAsync();
+
+            return new ProjetoDTO
+            {
+                Id = projeto.Id.AsGuid(),
+                Nome = projeto.NomeProjeto.Valor,
+                Descricao = projeto.DescricaoProjeto.Valor
+            };
+        }
+
     }
 
     }

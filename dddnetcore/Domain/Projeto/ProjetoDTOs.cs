@@ -12,3 +12,9 @@ public class ProjetoDTO
     public string Nome { get; set; }
     public string Descricao { get; set; }
 }
+
+public class UpdateProjetoDto
+{
+    public string Nome { get; set; }
+    public string Descricao { get; set; }
+}

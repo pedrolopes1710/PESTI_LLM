@@ -46,6 +46,15 @@ namespace dddnetcore.Controllers
             if (!success) return NotFound();
             return NoContent();
         }
+        
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ProjetoDTO>> Update(Guid id, [FromBody] UpdateProjetoDto dto)
+        {
+            var projeto = await _service.UpdateAsync(id, dto.Nome, dto.Descricao);
+            if (projeto == null) return NotFound();
+            return Ok(projeto);
+        }
+
     }
 
 }
