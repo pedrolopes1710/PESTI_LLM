@@ -11,7 +11,9 @@ namespace dddnetcore.Infrastructure.Projetos
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.Id)
-                .HasConversion(id => id.AsGuid(), guid => new ProjetoId(guid));
+                .HasConversion(
+                    id => id.AsGuid(),
+                    guid => new ProjetoId(guid));
 
             builder.OwnsOne(p => p.NomeProjeto, np =>
             {
@@ -34,11 +36,11 @@ namespace dddnetcore.Infrastructure.Projetos
             builder.HasMany(p => p.Perfis)
                 .WithOne()
                 .HasForeignKey("ProjetoId");
-            
 
             builder.HasMany(p => p.Indicadores)
                 .WithOne()
-                .HasForeignKey("ProjetoId");
+                .HasForeignKey(i => i.ProjetoId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

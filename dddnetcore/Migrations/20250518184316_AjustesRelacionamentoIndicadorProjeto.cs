@@ -5,7 +5,7 @@
 namespace DDDNetCore.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdateIndicadores : Migration
+    public partial class AjustesRelacionamentoIndicadorProjeto : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

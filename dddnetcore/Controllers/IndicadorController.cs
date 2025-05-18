@@ -13,9 +13,8 @@ namespace dddnetcore.Controllers
     public class IndicadorController : ControllerBase
     {
         private readonly IndicadorService _service;
-        private readonly IProjetoRepository _projetoRepository;  // Adicionando repositório de Projeto
+        private readonly IProjetoRepository _projetoRepository;
 
-        // Injeta o repositório de projeto
         public IndicadorController(IndicadorService service, IProjetoRepository projetoRepository)
         {
             _service = service;
@@ -23,22 +22,15 @@ namespace dddnetcore.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IndicadorDTO>> Criar(CriarIndicadorDTO dto)
+        public async Task<ActionResult<IndicadorDTO>> Criar([FromBody] CriarIndicadorDTO dto)
         {
             try
             {
-                // Verificar se o projetoId existe
-                var projetoId = new ProjetoId(dto.ProjetoId);  // Criando ProjetoId a partir do Guid
-                var projeto = await _projetoRepository.GetByIdAsync(projetoId);
-        
+                var projeto = await _projetoRepository.GetByIdAsync(new ProjetoId(dto.ProjetoId));
                 if (projeto == null)
-                {
                     return BadRequest("Projeto não encontrado.");
-                }
 
-                // Se o projeto for encontrado, chama o serviço para criar o indicador
                 var result = await _service.CriarAsync(dto);
-
                 return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
             }
             catch (BusinessRuleValidationException ex)
@@ -83,5 +75,12 @@ namespace dddnetcore.Controllers
             if (!deleted) return NotFound();
             return NoContent();
         }
+        [HttpGet("testar-hash")]
+        public ActionResult<string> TestarHash()
+        {
+            var id = new ProjetoId(Guid.NewGuid());
+            return "HashCode: " + id.GetHashCode();
+        }
+
     }
 }

@@ -289,7 +289,7 @@ namespace DDDNetCore.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("ProjetoId")
+                    b.Property<Guid>("ProjetoId")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -554,7 +554,9 @@ namespace DDDNetCore.Migrations
                 {
                     b.HasOne("dddnetcore.Domain.Projetos.Projeto", null)
                         .WithMany("Indicadores")
-                        .HasForeignKey("ProjetoId");
+                        .HasForeignKey("ProjetoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.OwnsOne("dddnetcore.Domain.Indicadores.NomeIndicador", "Nome", b1 =>
                         {

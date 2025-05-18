@@ -13,17 +13,18 @@ namespace dddnetcore.Domain.Indicadores
 
         protected override object createFromString(string text)
         {
-            return Guid.Parse(text); 
+            return Guid.Parse(text);
         }
 
         public override string AsString()
         {
-            return Value.ToString();
+            // Evita loop chamando direto o ObjValue
+            return ((Guid)ObjValue).ToString();
         }
 
         public Guid AsGuid()
         {
-            return Guid.Parse(Value.ToString()); 
+            return (Guid)ObjValue;
         }
     }
 }

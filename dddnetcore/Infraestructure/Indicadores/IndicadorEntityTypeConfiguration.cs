@@ -16,6 +16,12 @@ namespace dddnetcore.Infrastructure.Indicadores
                     id => id.AsGuid(),
                     guid => new IndicadorId(guid));
 
+            builder.Property(b => b.ProjetoId)  // Conversão do ProjetoId FK para Guid
+                .HasConversion(
+                    id => id.AsGuid(),
+                    guid => new ProjetoId(guid))
+                .IsRequired();
+
             builder.OwnsOne(b => b.Nome)
                 .Property(p => p.Valor)
                 .HasColumnName("NomeIndicador")
@@ -34,8 +40,7 @@ namespace dddnetcore.Infrastructure.Indicadores
             builder.HasOne<Projeto>()
                 .WithMany(p => p.Indicadores)
                 .HasForeignKey(i => i.ProjetoId)
-                .HasPrincipalKey(p => p.Id)
-                .IsRequired(false);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
