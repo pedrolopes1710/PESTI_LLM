@@ -5,24 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
+import { MoreHorizontal, Plus, Search, Trash2, Edit2, Filter } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import {
-  Calendar,
-  Clock,
-  Filter,
-  MoreHorizontal,
-  Plus,
-  Search,
-  Trash2,
-  Edit2,
-} from "lucide-react"
 import { fetchProjetos, createProjeto, deleteProjeto, updateProjeto } from "./projetoAPI"
 
 export default function ProjectsPage() {
@@ -34,7 +23,6 @@ export default function ProjectsPage() {
   const [nome, setNome] = useState("")
   const [descricao, setDescricao] = useState("")
 
-  // Para edição inline
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null)
   const [editNome, setEditNome] = useState("")
   const [editDescricao, setEditDescricao] = useState("")
@@ -54,21 +42,6 @@ export default function ProjectsPage() {
     loadProjects()
   }, [])
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "In Progress":
-        return "bg-blue-500/20 text-blue-700 hover:bg-blue-500/30"
-      case "On Hold":
-        return "bg-amber-500/20 text-amber-700 hover:bg-amber-500/30"
-      case "Completed":
-        return "bg-green-500/20 text-green-700 hover:bg-green-500/30"
-      case "Not Started":
-        return "bg-slate-500/20 text-slate-700 hover:bg-slate-500/30"
-      default:
-        return "bg-gray-500/20 text-gray-700 hover:bg-gray-500/30"
-    }
-  }
-
   async function handleCreateProject() {
     if (!nome.trim() || !descricao.trim()) {
       alert("Por favor, preencha nome e descrição.")
@@ -87,8 +60,7 @@ export default function ProjectsPage() {
   }
 
   async function handleDeleteProject(id: string) {
-    if (!confirm("Tem certeza que quer deletar este projeto?")) return
-
+    if (!confirm("Tem certeza que quer apagar este projeto?")) return
     try {
       const success = await deleteProjeto(id)
       if (success) {
@@ -96,7 +68,7 @@ export default function ProjectsPage() {
       }
     } catch (error) {
       console.error("Erro ao deletar projeto:", error)
-      alert("Erro ao deletar projeto")
+      alert("Erro ao apagar projeto")
     }
   }
 
@@ -114,9 +86,7 @@ export default function ProjectsPage() {
     try {
       const updated = await updateProjeto(id, { nome: editNome, descricao: editDescricao })
       if (updated) {
-        setProjects((prev) =>
-            prev.map((p) => (p.id === id ? updated : p))
-        )
+        setProjects((prev) => prev.map((p) => (p.id === id ? updated : p)))
         setEditingProjectId(null)
       }
     } catch (error) {
@@ -125,141 +95,125 @@ export default function ProjectsPage() {
     }
   }
 
-  if (loading) return <p>Carregando projetos...</p>
+  if (loading) return <p>🔄 A carregar projetos...</p>
   if (error) return <p className="text-red-500">{error}</p>
 
   return (
       <div className="space-y-6">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
-          <p className="text-muted-foreground">Manage and track all your projects</p>
-        </div>
+        <header className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight text-primary">📁 Projetos</h1>
+          <p className="text-muted-foreground">Acompanha, edita e organiza os teus projetos facilmente</p>
+        </header>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center w-full max-w-sm gap-2 relative">
-            <Search className="h-4 w-4 text-muted-foreground absolute ml-3 pointer-events-none" />
-            <Input placeholder="Search projects..." className="pl-9" />
+          <div className="relative w-full max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="    Procurar projetos..." className="pl-9" />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline">
-              <Filter className="h-4 w-4 mr-2" />
-              Filter
+            <Button variant="outline" className="flex items-center gap-1">
+              <Filter className="w-4 h-4" />
+              Filtro
             </Button>
-            <Button onClick={() => setShowForm(true)} className="flex items-center">
-              <Plus className="h-4 w-4 mr-2" />
-              New Project
+            <Button
+                onClick={() => setShowForm(true)}
+                className="flex items-center gap-1 bg-blue-600 text-white hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+              Novo Projeto
             </Button>
           </div>
         </div>
 
         {showForm && (
-            <div className="border border-gray-300 rounded-md p-4 bg-gray-50 max-w-md w-full space-y-4 shadow-sm">
-              <h2 className="text-xl font-semibold text-gray-900">Criar Novo Projeto</h2>
+            <Card className="max-w-md p-6 shadow-lg">
+              <h2 className="text-lg font-semibold mb-4">🆕 Criar Novo Projeto</h2>
               <Input
-                  type="text"
                   placeholder="Nome do projeto"
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
-                  className="w-full"
+                  className="mb-3"
               />
               <Input
-                  type="text"
                   placeholder="Descrição do projeto"
                   value={descricao}
                   onChange={(e) => setDescricao(e.target.value)}
-                  className="w-full"
+                  className="mb-6"
               />
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setShowForm(false)}>
+              <div className="flex justify-end gap-3">
+                <Button variant="ghost" onClick={() => setShowForm(false)}>
                   Cancelar
                 </Button>
                 <Button onClick={handleCreateProject}>Criar</Button>
               </div>
-            </div>
+            </Card>
         )}
 
         <Tabs defaultValue="grid" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="grid">Grid View</TabsTrigger>
-            <TabsTrigger value="list">List View</TabsTrigger>
+            <TabsTrigger value="grid">🧱 Visualização em Grid</TabsTrigger>
+            <TabsTrigger value="list">📄 Lista</TabsTrigger>
           </TabsList>
 
           {/* Grid View */}
-          <TabsContent value="grid" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <TabsContent value="grid">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {projects.map((project) => (
-                  <Card key={project.id}>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          {editingProjectId === project.id ? (
-                              <>
-                                <Input
-                                    value={editNome}
-                                    onChange={(e) => setEditNome(e.target.value)}
-                                    className="mb-1"
-                                />
-                                <Input
-                                    value={editDescricao}
-                                    onChange={(e) => setEditDescricao(e.target.value)}
-                                />
-                              </>
-                          ) : (
-                              <>
-                                <CardTitle>{project.nome}</CardTitle>
-                                <CardDescription className="mt-1">ID: {project.id}</CardDescription>
-                              </>
-                          )}
-                        </div>
-
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Actions</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {editingProjectId === project.id ? (
-                                <>
-                                  <DropdownMenuItem onClick={() => handleSaveEdit(project.id)}>
-                                    Save
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => setEditingProjectId(null)}>
-                                    Cancel
-                                  </DropdownMenuItem>
-                                </>
-                            ) : (
-                                <>
-                                  <DropdownMenuItem onClick={() => startEditing(project)}>
-                                    <Edit2 className="mr-2 h-4 w-4" /> Edit Project
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleDeleteProject(project.id)}>
-                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Project
-                                  </DropdownMenuItem>
-                                </>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {editingProjectId === project.id ? null : (
+                  <Card
+                      key={project.id}
+                      className="shadow-md hover:shadow-lg transition-all duration-200"
+                  >
+                    <CardHeader>
+                      {editingProjectId === project.id ? (
                           <>
-                            <p className="text-sm text-muted-foreground">{project.descricao}</p>
-
-                            <div className="flex items-center justify-between text-sm">
-                              <Badge variant="outline" className={getStatusColor("Not Started")}>
-                                Not Started
-                              </Badge>
-                              <div className="flex items-center gap-1 text-muted-foreground">
-                                <Clock className="h-3 w-3" />
-                                <span>--</span>
-                              </div>
+                            <Input
+                                value={editNome}
+                                onChange={(e) => setEditNome(e.target.value)}
+                                className="mb-2"
+                            />
+                            <Input
+                                value={editDescricao}
+                                onChange={(e) => setEditDescricao(e.target.value)}
+                                className="mb-2"
+                            />
+                            <div className="flex justify-end gap-2">
+                              <Button variant="outline" onClick={() => setEditingProjectId(null)}>
+                                ❌ Cancelar
+                              </Button>
+                              <Button onClick={() => handleSaveEdit(project.id)}>Salvar</Button>
                             </div>
                           </>
+                      ) : (
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <CardTitle className="text-lg font-semibold text-primary">
+                                {project.nome}
+                              </CardTitle>
+                              <CardDescription className="text-sm text-muted-foreground">
+                                ID: {project.id}
+                              </CardDescription>
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => startEditing(project)}>
+                                  <Edit2 className="w-4 h-4 mr-2" /> Editar
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDeleteProject(project.id)}>
+                                  <Trash2 className="w-4 h-4 mr-2" /> Apagar
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
                       )}
-                    </CardContent>
+                    </CardHeader>
+                    {!editingProjectId || editingProjectId !== project.id ? (
+                        <CardContent className="text-sm text-muted-foreground">{project.descricao}</CardContent>
+                    ) : null}
                   </Card>
               ))}
             </div>
@@ -291,13 +245,8 @@ export default function ProjectsPage() {
                           ) : (
                               <>
                                 <div className="flex items-start justify-between">
-                                  <div>
-                                    <h3 className="font-medium">{project.nome}</h3>
-                                    <p className="text-sm text-muted-foreground">ID: {project.id}</p>
-                                  </div>
-                                  <Badge variant="outline" className={getStatusColor("Not Started")}>
-                                    Not Started
-                                  </Badge>
+                                  <h3 className="font-medium">{project.nome}</h3>
+                                  {/* No status badge */}
                                 </div>
                                 <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
                                   {project.descricao}
@@ -306,12 +255,7 @@ export default function ProjectsPage() {
                           )}
                         </div>
 
-                        <div className="flex items-center gap-6">
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Calendar className="h-3 w-3" />
-                            <span>--</span>
-                          </div>
-
+                        <div className="flex items-center gap-2">
                           {editingProjectId === project.id ? (
                               <>
                                 <Button
@@ -320,26 +264,26 @@ export default function ProjectsPage() {
                                     onClick={() => setEditingProjectId(null)}
                                     className="mr-2"
                                 >
-                                  Cancel
+                                  Cancelar
                                 </Button>
                                 <Button size="sm" onClick={() => handleSaveEdit(project.id)}>
-                                  Save
+                                  Salvar
                                 </Button>
                               </>
                           ) : (
                               <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                   <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                    <span className="sr-only">Actions</span>
+                                    <MoreHorizontal className="w-4 h-4" />
+                                    <span className="sr-only">Ações</span>
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuItem onClick={() => startEditing(project)}>
-                                    <Edit2 className="mr-2 h-4 w-4" /> Edit Project
+                                    <Edit2 className="mr-2 w-4 h-4" /> Editar
                                   </DropdownMenuItem>
                                   <DropdownMenuItem onClick={() => handleDeleteProject(project.id)}>
-                                    <Trash2 className="mr-2 h-4 w-4" /> Delete Project
+                                    <Trash2 className="mr-2 w-4 h-4" /> Apagar
                                   </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
