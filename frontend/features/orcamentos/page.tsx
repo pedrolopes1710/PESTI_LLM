@@ -1,11 +1,12 @@
 "use client"
 
+import React from "react"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, RefreshCw, Filter } from "lucide-react"
+import { Search, RefreshCw, Filter, ChevronDown, ChevronRight } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,9 +14,11 @@ import { Toaster } from "@/components/ui/toaster"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { fetchOrcamentos } from "./api"
 import { fetchAtividades } from "@/features/atividades/api"
-import type { Orcamento } from "./types"
+import type { Orcamento, Despesa } from "./types"
 import type { Atividade } from "@/features/atividades/types"
 import { EditOrcamentoDialog } from "./components/edit-orcamento-dialog"
+import { CreateDespesaDialog } from "./components/create-despesa-dialog"
+import { cn } from "@/lib/utils"
 
 export default function OrcamentosPage() {
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([])
@@ -25,6 +28,15 @@ export default function OrcamentosPage() {
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedAtividadeId, setSelectedAtividadeId] = useState<string | undefined>(undefined)
+  const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({})
+
+  // Function to toggle row expansion
+  const toggleRowExpansion = (orcamentoId: string) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [orcamentoId]: !prev[orcamentoId],
+    }))
+  }
 
   // Function to load atividades
   const fetchAtividadesData = async () => {
@@ -83,6 +95,12 @@ export default function OrcamentosPage() {
 
   // Calculate total budget
   const totalBudget = filteredOrcamentos.reduce((total, orcamento) => total + orcamento.gastoPlaneado, 0)
+
+  // Calculate total expenses for a budget
+  const calculateTotalExpenses = (despesas?: Despesa[]) => {
+    if (!despesas || despesas.length === 0) return 0
+    return despesas.reduce((total, despesa) => total + despesa.valor, 0)
+  }
 
   // Loading skeleton component
   const LoadingSkeleton = () => (
@@ -149,7 +167,7 @@ export default function OrcamentosPage() {
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Erro</AlertTitle>
+          <AlertTitle>Error</AlertTitle>
           <AlertDescription className="flex justify-between items-center">
             {error}
             <Button variant="outline" size="sm" onClick={handleRefresh} className="ml-2">
@@ -183,33 +201,108 @@ export default function OrcamentosPage() {
           {loading ? (
             <LoadingSkeleton />
           ) : filteredOrcamentos.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-left">Category</TableHead>
-                  <TableHead className="text-left">Planned Expense</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredOrcamentos.map((orcamento) => (
-                  <TableRow key={orcamento.id}>
-                    <TableCell className="font-medium">{orcamento.rubrica.nome}</TableCell>
-                    <TableCell className="text-left">
-                      {orcamento.gastoPlaneado.toLocaleString("pt-PT", {
-                        style: "currency",
-                        currency: "EUR",
-                      })}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end">
-                        <EditOrcamentoDialog orcamento={orcamento} onOrcamentoAtualizado={handleRefresh} />
-                      </div>
-                    </TableCell>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-10"></TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Planned Expense</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredOrcamentos.map((orcamento) => (
+                    <React.Fragment key={orcamento.id}>
+                      <TableRow
+                        className={cn("cursor-pointer hover:bg-muted/50", expandedRows[orcamento.id] && "bg-muted/30")}
+                        onClick={() => toggleRowExpansion(orcamento.id)}
+                      >
+                        <TableCell className="p-2">
+                          <Button variant="ghost" size="icon" className="h-6 w-6 p-0">
+                            {expandedRows[orcamento.id] ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </TableCell>
+                        <TableCell className="font-medium">{orcamento.rubrica.nome}</TableCell>
+                        <TableCell>
+                          {orcamento.gastoPlaneado.toLocaleString("pt-PT", {
+                            style: "currency",
+                            currency: "EUR",
+                          })}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                            <EditOrcamentoDialog orcamento={orcamento} onOrcamentoAtualizado={handleRefresh} />
+                            <CreateDespesaDialog orcamento={orcamento} onDespesaCreated={handleRefresh} />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                      {expandedRows[orcamento.id] && (
+                        <TableRow key={`${orcamento.id}-expenses`} className="bg-muted/10">
+                          <TableCell colSpan={4} className="p-0">
+                            <div className="p-4 pl-10">
+                              <div className="flex justify-between items-center mb-2">
+                                <h4 className="text-sm font-semibold">Associated Expenses</h4>
+                              </div>
+                              {orcamento.despesas && orcamento.despesas.length > 0 ? (
+                                <div className="space-y-2">
+                                  <div className="grid grid-cols-3 text-xs font-medium text-muted-foreground mb-1">
+                                    <div>Description</div>
+                                    <div>Value</div>
+                                    <div className="text-right">% of Budget</div>
+                                  </div>
+                                  {orcamento.despesas.map((despesa) => (
+                                    <div
+                                      key={despesa.id}
+                                      className="grid grid-cols-3 text-sm py-1 border-b border-muted"
+                                    >
+                                      <div>{despesa.descricao}</div>
+                                      <div>
+                                        {despesa.valor.toLocaleString("pt-PT", {
+                                          style: "currency",
+                                          currency: "EUR",
+                                        })}
+                                      </div>
+                                      <div className="text-right">
+                                        {((despesa.valor / orcamento.gastoPlaneado) * 100).toFixed(1)}%
+                                      </div>
+                                    </div>
+                                  ))}
+                                  <div className="grid grid-cols-3 text-sm font-medium pt-2">
+                                    <div>Total Expenses</div>
+                                    <div>
+                                      {calculateTotalExpenses(orcamento.despesas).toLocaleString("pt-PT", {
+                                        style: "currency",
+                                        currency: "EUR",
+                                      })}
+                                    </div>
+                                    <div className="text-right">
+                                      {(
+                                        (calculateTotalExpenses(orcamento.despesas) / orcamento.gastoPlaneado) *
+                                        100
+                                      ).toFixed(1)}
+                                      %
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="text-sm text-muted-foreground py-2">
+                                  No expenses associated with this budget.
+                                </div>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <div className="text-center py-6 text-muted-foreground">
               {searchTerm

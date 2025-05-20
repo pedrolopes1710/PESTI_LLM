@@ -1,4 +1,5 @@
 import type { Orcamento, CreatingOrcamentoDto, EditingOrcamentoDto } from "./types"
+import type { CreatingDespesaDto } from "../despesas/types"
 
 // Base URL for the API
 const API_BASE_URL = "http://localhost:5225/api"
@@ -94,6 +95,28 @@ export async function deleteOrcamento(id: string): Promise<void> {
     }
   } catch (error) {
     console.error(`Error deleting orcamento ${id}:`, error)
+    throw error
+  }
+}
+
+// Create a new despesa (expense) for an orcamento
+export async function createDespesa(data: CreatingDespesaDto): Promise<any> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/Despesas`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Error creating despesa: ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Error creating despesa:", error)
     throw error
   }
 }
