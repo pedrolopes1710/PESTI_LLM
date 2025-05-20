@@ -54,8 +54,8 @@ export function CreateRubricaDialog({ onRubricaCreated }: CreateRubricaDialogPro
 
       // Show success message
       toast({
-        title: "Rubrica criada com sucesso!",
-        description: `A rubrica "${values.nome}" foi criada.`,
+        title: "Category created successfully!",
+        description: `The category "${values.nome}" has been created.`,
       })
 
       // Reset the form
@@ -70,8 +70,8 @@ export function CreateRubricaDialog({ onRubricaCreated }: CreateRubricaDialogPro
       console.error("Erro ao criar rubrica:", error)
       toast({
         variant: "destructive",
-        title: "Erro ao criar rubrica",
-        description: "Ocorreu um erro ao tentar criar a rubrica. Tente novamente.",
+        title: "Error creating category",
+        description: "An error occurred while creating the category. Please try again.",
       })
     } finally {
       setIsSubmitting(false)
@@ -83,13 +83,13 @@ export function CreateRubricaDialog({ onRubricaCreated }: CreateRubricaDialogPro
       <DialogTrigger asChild>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
-          Nova Rubrica
+          New Category
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Criar Nova Rubrica</DialogTitle>
-          <DialogDescription>Preencha o campo abaixo para criar uma nova rubrica.</DialogDescription>
+          <DialogTitle>Create New Category</DialogTitle>
+          <DialogDescription>Fill in the field below to create a new budget category.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
@@ -98,9 +98,9 @@ export function CreateRubricaDialog({ onRubricaCreated }: CreateRubricaDialogPro
               name="nome"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome da Rubrica</FormLabel>
+                  <FormLabel>Category Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite o nome da rubrica" {...field} />
+                    <Input placeholder="Enter category name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,10 +108,10 @@ export function CreateRubricaDialog({ onRubricaCreated }: CreateRubricaDialogPro
             />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setIsOpen(false)} disabled={isSubmitting}>
-                Cancelar
+                Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Criando..." : "Criar Rubrica"}
+                {isSubmitting ? "Creating..." : "Create Category"}
               </Button>
             </DialogFooter>
           </form>

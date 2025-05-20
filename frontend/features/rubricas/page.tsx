@@ -31,7 +31,7 @@ export default function RubricasPage() {
       setRubricas(data)
     } catch (error) {
       console.error("Error fetching rubricas:", error)
-      setError("Não foi possível carregar as rubricas. Verifique se a API está em execução.")
+      setError("Could not load categories. Please check if the API is running.")
     } finally {
       setLoading(false)
     }
@@ -64,15 +64,15 @@ export default function RubricasPage() {
     <div className="space-y-6">
       <Toaster />
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">Rubricas</h1>
-        <p className="text-muted-foreground">Gerencie as rubricas do seu projeto</p>
+        <h1 className="text-3xl font-bold tracking-tight">Budget Categories</h1>
+        <p className="text-muted-foreground">Manage your project's budget categories</p>
       </div>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center w-full max-w-sm gap-2">
           <Search className="h-4 w-4 text-muted-foreground absolute ml-3 pointer-events-none" />
           <Input
-            placeholder="Pesquisar rubricas..."
+            placeholder="Search categories..."
             className="pl-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -81,7 +81,7 @@ export default function RubricasPage() {
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={fetchData} disabled={loading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-            Atualizar
+            Refresh
           </Button>
           <CreateRubricaDialog onRubricaCreated={fetchData} />
         </div>
@@ -95,7 +95,7 @@ export default function RubricasPage() {
             {error}
             <Button variant="outline" size="sm" onClick={fetchData} className="ml-2">
               <RefreshCw className="h-4 w-4 mr-2" />
-              Tentar novamente
+              Try again
             </Button>
           </AlertDescription>
         </Alert>
@@ -103,7 +103,7 @@ export default function RubricasPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Lista de Rubricas</CardTitle>
+          <CardTitle>Budget Categories List</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -112,8 +112,8 @@ export default function RubricasPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Nome da Rubrica</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
+                  <TableHead className="text-left">Category Name</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -135,7 +135,7 @@ export default function RubricasPage() {
             </Table>
           ) : (
             <div className="text-center py-6 text-muted-foreground">
-              {searchTerm ? "Nenhuma rubrica encontrada para a pesquisa." : "Nenhuma rubrica disponível."}
+              {searchTerm ? "No categories found for this search." : "No categories available."}
             </div>
           )}
         </CardContent>
