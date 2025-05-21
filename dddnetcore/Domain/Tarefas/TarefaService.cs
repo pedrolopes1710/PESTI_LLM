@@ -53,7 +53,7 @@ namespace dddnetcore.Domain.Tarefas
                 return null;   
 
             // change all field
-            tarefa.ChangeDescricao(new DescricaoTarefa(dto.DescricaoTarefa));
+            tarefa.ChangeDescricao(new DescricaoTarefa(dto.Descricao));
             tarefa.ChangeNome(new NomeTarefa(dto.Nome));
             tarefa.ChangeStatus(Enum.Parse<StatusTarefa>(dto.Status));
             

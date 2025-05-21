@@ -6,7 +6,7 @@ export interface Assignee {
 export interface Task {
   id: string | number
   title: string
-  description: string
+  descricao: string
   project: string
   status: "In Progress" | "Not Started" | "Completed"
   dataInicio: string

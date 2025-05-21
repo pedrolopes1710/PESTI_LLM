@@ -12,7 +12,7 @@ namespace dddnetcore.Domain.Tarefas
 
         public string Status{get;set;}
         
-        public string DescricaoTarefa{get;set;}
+        public string Descricao{get;set;}
 
         public Guid? AtividadeId { get; set; } // já existe no DB
 
@@ -23,7 +23,7 @@ namespace dddnetcore.Domain.Tarefas
             this.Id = tarefa.Id.AsGuid();
             this.Nome = tarefa.NomeTarefa.Nome;
             this.Status=tarefa.StatusTarefa.ToString();
-            this.DescricaoTarefa=tarefa.DescricaoTarefa.Descricao;
+            this.Descricao=tarefa.DescricaoTarefa.Descricao;
             this.AtividadeId = tarefa.AtividadeId?.AsGuid();
         }   
     }
