@@ -4,9 +4,8 @@ import React from "react"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Search, RefreshCw, Filter, ChevronDown, ChevronRight } from "lucide-react"
+import { RefreshCw, Filter, ChevronDown, ChevronRight } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -26,9 +25,9 @@ export default function OrcamentosPage() {
   const [loading, setLoading] = useState(true)
   const [loadingAtividades, setLoadingAtividades] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState("")
   const [selectedAtividadeId, setSelectedAtividadeId] = useState<string | undefined>(undefined)
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({})
+  const [searchTerm, setSearchTerm] = useState<string>("")
 
   // Function to toggle row expansion
   const toggleRowExpansion = (orcamentoId: string) => {
@@ -88,10 +87,8 @@ export default function OrcamentosPage() {
     fetchOrcamentosData(selectedAtividadeId)
   }
 
-  // Filter orcamentos based on search term
-  const filteredOrcamentos = orcamentos.filter((orcamento) =>
-    orcamento.rubrica.nome.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  // Use all orcamentos or filtered by atividade
+  const filteredOrcamentos = orcamentos
 
   // Calculate total budget
   const totalBudget = filteredOrcamentos.reduce((total, orcamento) => total + orcamento.gastoPlaneado, 0)
@@ -127,41 +124,30 @@ export default function OrcamentosPage() {
       </div>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center w-full max-w-sm gap-2">
-          <Search className="h-4 w-4 text-muted-foreground absolute ml-3 pointer-events-none" />
-          <Input
-            placeholder="Search by category..."
-            className="pl-9"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="flex items-center w-full gap-2">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <Select
+            value={selectedAtividadeId || "all"}
+            onValueChange={handleAtividadeChange}
+            disabled={loadingAtividades}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={loadingAtividades ? "Loading..." : "Filter by activity"} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All activities</SelectItem>
+              {atividades.map((atividade) => (
+                <SelectItem key={atividade.id} value={atividade.id}>
+                  {atividade.nomeAtividade}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 min-w-[250px]">
-            <Filter className="h-4 w-4 text-muted-foreground" />
-            <Select
-              value={selectedAtividadeId || "all"}
-              onValueChange={handleAtividadeChange}
-              disabled={loadingAtividades}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={loadingAtividades ? "Loading..." : "Filter by activity"} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All activities</SelectItem>
-                {atividades.map((atividade) => (
-                  <SelectItem key={atividade.id} value={atividade.id}>
-                    {atividade.nomeAtividade}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Button variant="outline" onClick={handleRefresh} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
-        </div>
+        <Button variant="outline" onClick={handleRefresh} disabled={loading}>
+          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+          Refresh
+        </Button>
       </div>
 
       {error && (
