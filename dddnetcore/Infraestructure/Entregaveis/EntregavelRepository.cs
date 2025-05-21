@@ -27,5 +27,16 @@ namespace dddnetcore.Infraestructure.Entregaveis
 
             return entregavel;
         }
+        public new async Task<List<Entregavel>> GetAllAsync() {
+            return await _context.Entregaveis
+                .Include(e => e.TipoEntregavel)
+                .ToListAsync();
+        }
+
+        public new async Task<Entregavel> GetByIdAsync(EntregavelId id) {
+            return await _context.Entregaveis
+                .Include(e => e.TipoEntregavel)
+                .FirstOrDefaultAsync(e => e.Id == id);
+        }
     }
 }
