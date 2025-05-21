@@ -1,7 +1,19 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { BarChart3,BarChart2, Calendar, ChevronLeft, ClipboardList, Home, Menu, Settings, Users, DollarSign } from "lucide-react"
+import {
+  BarChart3,
+  BarChart2,
+  Calendar,
+  ChevronLeft,
+  ClipboardList,
+  Home,
+  Menu,
+  Settings,
+  Users,
+  DollarSign,
+  Wallet
+} from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -41,14 +53,24 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       icon: Calendar,
     },
     {
+      name: "Indicadores",
+      path: "/Indicadores",
+      icon: BarChart2,
+    },
+    {
       name: "Settings",
       path: "/settings",
       icon: Settings,
     },
     {
-      name: "Indicadores",
-      path: "/indicadores",
-      icon: BarChart2,
+      name: "Budget Categories",
+      path: "/rubricas",
+      icon: DollarSign,
+    },
+    {
+      name: "Budgets",
+      path: "/orcamentos",
+      icon: Wallet,
     },
     {
       name: "Rubricas",

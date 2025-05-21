@@ -53,6 +53,11 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       icon: Calendar,
     },
     {
+      name: "Indicadores",
+      path: "/Indicadores",
+      icon: BarChart2,
+    },
+    {
       name: "Budget Categories",
       path: "/rubricas",
       icon: DollarSign,
@@ -61,11 +66,6 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       name: "Budgets",
       path: "/orcamentos",
       icon: Wallet,
-    },
-    {
-      name: "Indicadores",
-      path: "/indicadores",
-      icon: BarChart2,
     },
     {
       name: "Settings",
