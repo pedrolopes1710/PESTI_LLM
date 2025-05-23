@@ -28,7 +28,7 @@ namespace dddnetcore.Infraestructure.Pessoas
                 .HasConversion(
                     email => email.Value,
                     email => new EmailPessoa(email))
-                .IsRequired();    
+                .IsRequired();
 
             builder.Property(p => p.CienciaId)
                 .HasConversion(
@@ -40,7 +40,7 @@ namespace dddnetcore.Infraestructure.Pessoas
                 .HasConversion(
                     u => u.Value,
                     u => new PessoaUltimoPedPagam(u))
-                .IsRequired();      
+                .IsRequired();
 
             // Relação 1:N entre Pessoa e CargaMensal
             builder.HasMany(p => p.CargasMensais)
@@ -50,7 +50,17 @@ namespace dddnetcore.Infraestructure.Pessoas
             builder.HasOne(p => p.Contrato)
                 .WithOne()
                 .HasForeignKey<Pessoa>(p => p.ContratoId)
-                .IsRequired(false);      
+                .IsRequired(false);
+
+            builder.Property(p => p.Ativo)
+                .IsRequired()
+                .HasDefaultValue(true);
+    
+
+            // Garante que apenas uma pessoa pode ter um contrato
+            builder.HasIndex(p => p.ContratoId).IsUnique();
+            
+            builder.HasIndex(p => p.CienciaId).IsUnique();
 
 
    

@@ -15,6 +15,8 @@ namespace dddnetcore.Domain.Pessoas
         public PessoaUltimoPedPagam UltimoPedidoPagamento { get; private set; }
         public Contrato? Contrato { get; private set; }
         public ContratoId? ContratoId { get; private set; }
+        public bool Ativo { get; private set; } = true;
+
 
         public List<CargaMensal> CargasMensais { get; private set; } = new List<CargaMensal>();
          public ICollection<Projeto> Projetos { get; set; } = new List<Projeto>();
@@ -65,6 +67,30 @@ namespace dddnetcore.Domain.Pessoas
             ContratoId = novoContrato.Id;
 
         }
+
+        public void RemoverContrato()
+        {
+            this.Contrato = null;
+            this.ContratoId = null;
+        }
+
+        public void AssociarContrato(Contrato contrato)
+        {
+            this.Contrato = contrato;
+            this.ContratoId = contrato.Id;
+        }
+
+        public void Desativar()
+        {
+            Ativo = false;
+        }
+
+        public void Reativar()
+        {
+            Ativo = true;
+        }
+
+
 
         public void AdicionarCargaMensal(CargaMensal cargaMensal)
         {

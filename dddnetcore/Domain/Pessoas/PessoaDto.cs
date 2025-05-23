@@ -16,6 +16,7 @@ namespace dddnetcore.Domain.Pessoas
         public string Email { get; set; }
         public string PessoaCienciaId { get; set; }
         public DateTime PessoaUltimoPedPagam { get; set; }
+        public bool Ativo { get; set; }
         public ContratoDto? Contrato { get; set; }
         public List<ProjetoDTO> Projetos { get; set; } = new();
         public List<CargaMensalDto> CargasMensais { get; set; } = new();
