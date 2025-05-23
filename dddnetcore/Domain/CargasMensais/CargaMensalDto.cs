@@ -11,6 +11,7 @@ namespace dddnetcore.Domain.CargasMensais
         public DateTime? MesAno { get; set; } 
         public double SalarioBase { get; set; }
         public double TaxaSocialUnica { get; set; }
+        public string PessoaId { get; set; }
 
 
 
@@ -25,6 +26,7 @@ namespace dddnetcore.Domain.CargasMensais
             MesAno = cargaMensal.MesAno.Valor;
             SalarioBase = cargaMensal.SalarioBase.Valor;
             TaxaSocialUnica = cargaMensal.TSU.Valor;
+            PessoaId = cargaMensal.PessoaId.AsString();
         }
     }
 }

@@ -27,13 +27,14 @@ namespace dddnetcore.Domain.CargasMensais
 
             List<CargaMensalDto> listDto = list.ConvertAll<CargaMensalDto>(c => new CargaMensalDto
             {
-            Id = c.Id.AsString(),
-            JornadaDiaria = c.JornadaDiaria.Valor,        //
-            DiasUteisTrabalhaveis = c.DiasUteis.Valor,
-            FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
-            MesAno = c.MesAno.Valor,
-            SalarioBase = c.SalarioBase.Valor,
-            TaxaSocialUnica = c.TSU.Valor
+                Id = c.Id.AsString(),
+                JornadaDiaria = c.JornadaDiaria.Valor,        //
+                DiasUteisTrabalhaveis = c.DiasUteis.Valor,
+                FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
+                MesAno = c.MesAno.Valor,
+                SalarioBase = c.SalarioBase.Valor,
+                TaxaSocialUnica = c.TSU.Valor,
+                PessoaId = c.PessoaId.AsString()
             });
 
             return listDto;
@@ -75,7 +76,8 @@ namespace dddnetcore.Domain.CargasMensais
                 FeriasBaixasLicencasFaltas = c.Ausencias.Dias,
                 MesAno = c.MesAno.Valor,
                 SalarioBase = c.SalarioBase.Valor,
-                TaxaSocialUnica = c.TSU.Valor
+                TaxaSocialUnica = c.TSU.Valor,
+                PessoaId = c.PessoaId.AsString()
             };
         }
 
@@ -102,7 +104,8 @@ namespace dddnetcore.Domain.CargasMensais
                 FeriasBaixasLicencasFaltas = cargaMensal.Ausencias.Dias,
                 MesAno = cargaMensal.MesAno.Valor,
                 SalarioBase = cargaMensal.SalarioBase.Valor,
-                TaxaSocialUnica = cargaMensal.TSU.Valor
+                TaxaSocialUnica = cargaMensal.TSU.Valor,
+                PessoaId = cargaMensal.PessoaId.AsString()
             };
         }
 
@@ -125,7 +128,8 @@ namespace dddnetcore.Domain.CargasMensais
                 FeriasBaixasLicencasFaltas = cargaMensal.Ausencias.Dias,
                 MesAno = cargaMensal.MesAno.Valor,
                 SalarioBase = cargaMensal.SalarioBase.Valor,
-                TaxaSocialUnica = cargaMensal.TSU.Valor
+                TaxaSocialUnica = cargaMensal.TSU.Valor,
+                PessoaId = cargaMensal.PessoaId.AsString()
             };
         }
     }
