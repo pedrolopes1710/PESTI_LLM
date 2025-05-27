@@ -32,6 +32,7 @@ Service --> Controller : IndicadorDTO
 deactivate Service
 Controller --> UI : Indicador criado com sucesso
 deactivate Controller
+UI --> Admin : Indicador criado com sucesso
 deactivate UI
 
 == Obter Todos ==
@@ -52,6 +53,7 @@ Service --> Controller : lista DTOs
 deactivate Service
 Controller --> UI : lista de indicadores
 deactivate Controller
+UI --> Admin : lista apresentada
 deactivate UI
 
 == Atualizar Indicador ==
@@ -72,6 +74,7 @@ Service --> Controller : IndicadorDTO
 deactivate Service
 Controller --> UI : Indicador atualizado
 deactivate Controller
+UI --> Admin : valor atualizado com sucesso
 deactivate UI
 
 == Remover Indicador ==
@@ -92,6 +95,7 @@ Service --> Controller : true
 deactivate Service
 Controller --> UI : sucesso remoção
 deactivate Controller
+UI --> Admin : indicador removido com sucesso
 deactivate UI
 
 @enduml
