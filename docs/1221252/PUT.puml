@@ -1,4 +1,4 @@
-﻿@startuml ObterIndicadores
+﻿@startuml AtualizarIndicador
 autonumber
 skinparam DefaultTextAlignment center
 actor Admin as "Admin"
@@ -14,24 +14,24 @@ box "<<system (C4)>>\nBackend"
     participant DB as "Backend Data Management" <<component>>
 end box
 
-Admin -> UI : solicita lista de indicadores
+Admin -> UI : solicita alteração valor atual
 activate UI
-UI -> Controller : GET /api/indicador
+UI -> Controller : PUT /api/indicador/{id} {novoValor}
 activate Controller
-Controller -> Service : GetAllAsync()
+Controller -> Service : AtualizarAsync(id, novoValor)
 activate Service
-Service -> HTTP : GET /indicadores
+Service -> HTTP : PUT /indicadores/{id}
 activate HTTP
-HTTP -> DB : consulta todos
+HTTP -> DB : atualiza valor
 activate DB
-DB --> HTTP : lista indicadores
+DB --> HTTP : 200 OK
 deactivate DB
-HTTP --> Service : lista DTOs
+HTTP --> Service : Indicador atualizado
 deactivate HTTP
-Service --> Controller : lista DTOs
+Service --> Controller : IndicadorDTO
 deactivate Service
-Controller --> UI : lista de indicadores
+Controller --> UI : Indicador atualizado
 deactivate Controller
-UI --> Admin : apresenta indicadores
+UI --> Admin : confirmação de atualização
 deactivate UI
 @enduml

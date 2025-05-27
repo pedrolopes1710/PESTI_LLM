@@ -1,4 +1,4 @@
-﻿@startuml ObterIndicadores
+﻿@startuml RemoverIndicador
 autonumber
 skinparam DefaultTextAlignment center
 actor Admin as "Admin"
@@ -14,24 +14,24 @@ box "<<system (C4)>>\nBackend"
     participant DB as "Backend Data Management" <<component>>
 end box
 
-Admin -> UI : solicita lista de indicadores
+Admin -> UI : solicita remoção de indicador
 activate UI
-UI -> Controller : GET /api/indicador
+UI -> Controller : DELETE /api/indicador/{id}
 activate Controller
-Controller -> Service : GetAllAsync()
+Controller -> Service : DeleteAsync(id)
 activate Service
-Service -> HTTP : GET /indicadores
+Service -> HTTP : DELETE /indicadores/{id}
 activate HTTP
-HTTP -> DB : consulta todos
+HTTP -> DB : remove indicador
 activate DB
-DB --> HTTP : lista indicadores
+DB --> HTTP : 204 No Content
 deactivate DB
-HTTP --> Service : lista DTOs
+HTTP --> Service : eliminado
 deactivate HTTP
-Service --> Controller : lista DTOs
+Service --> Controller : true
 deactivate Service
-Controller --> UI : lista de indicadores
+Controller --> UI : sucesso remoção
 deactivate Controller
-UI --> Admin : apresenta indicadores
+UI --> Admin : confirmação de remoção
 deactivate UI
 @enduml
