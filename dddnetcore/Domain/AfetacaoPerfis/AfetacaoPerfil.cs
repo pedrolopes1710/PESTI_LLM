@@ -12,11 +12,13 @@ namespace dddnetcore.Domain.AfetacaoPerfis
         public PMsAprovados PMsAprovados {get;private set;}
 
         public Perfil Perfil {get;private set;}
+        public PerfilId PerfilId { get; private set; }
 
-        public Pessoa Pessoa {get;private set;} 
+        public Pessoa Pessoa { get; private set; } 
+        public PessoaId PessoaId { get; private set; }
 
         
-        private AfetacaoPerfil() {}
+        private AfetacaoPerfil() { }
 
         public AfetacaoPerfil(
             DuracaoMes duracaoMes,

@@ -42,16 +42,9 @@ namespace DDDSample1.Domain.AfetacaoPerfis
 
         public async Task<AfetacaoPerfilDto> AddAsync(CreatingAfetacaoPerfilDto dto)
         {
-            Perfil? perfil = null;
-            if (dto.PerfilId.HasValue)
-            {
-                perfil = await _repoPerfil.GetByIdAsync(new PerfilId(dto.PerfilId.Value));
-            }            
-            Pessoa? pessoa = null;
-            if (dto.PerfilId.HasValue)
-            {
-                perfil = await _repoPerfil.GetByIdAsync(new PerfilId(dto.PerfilId.Value));
-            }  
+            Perfil perfil = await this._repoPerfil.GetByIdAsync(new PerfilId(dto.PerfilId)) ?? throw new BusinessRuleValidationException("Perfil not found.");
+            Pessoa pessoa = await this._repoPessoa.GetByIdAsync(new PessoaId(dto.PessoaId)) ?? throw new BusinessRuleValidationException("Pessoa not found.");
+
             var afetacaoPerfil = new AfetacaoPerfil(new DuracaoMes(dto.DuracaoMes), new PMsAprovados(dto.PMsAprovados), perfil, pessoa);
 
             await this._repo.AddAsync(afetacaoPerfil);

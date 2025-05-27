@@ -12,7 +12,8 @@ import {
   Settings,
   Users,
   DollarSign,
-  Wallet
+  Wallet,
+  UserCheck,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -58,11 +59,6 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       icon: BarChart2,
     },
     {
-      name: "Settings",
-      path: "/settings",
-      icon: Settings,
-    },
-    {
       name: "Budget Categories",
       path: "/rubricas",
       icon: DollarSign,
@@ -76,6 +72,16 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       name: "Rubricas",
       path: "/rubricas",
       icon: DollarSign,
+    },
+    {
+      name: "Allocations",
+      path: "/afetacoes",
+      icon: UserCheck,
+    },
+    {
+      name: "Settings",
+      path: "/settings",
+      icon: Settings,
     },
   ]
 

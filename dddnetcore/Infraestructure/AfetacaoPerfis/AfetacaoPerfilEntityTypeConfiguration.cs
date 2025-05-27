@@ -28,13 +28,11 @@ namespace dddnetcore.Infraestructure.AfetacaoPerfis
 
             builder.HasOne(b => b.Perfil)
                 .WithMany()
-                .HasForeignKey("PerfilId")
-                .IsRequired(false);
-            
+                .HasForeignKey("PerfilId");
+
             builder.HasOne(b => b.Pessoa)
                 .WithMany()
-                .HasForeignKey("PessoaId")
-                .IsRequired(false);
+                .HasForeignKey("PessoaId");
                 
         }
     }
