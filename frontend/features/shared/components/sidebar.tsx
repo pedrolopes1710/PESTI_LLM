@@ -48,6 +48,11 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       path: "/team",
       icon: Users,
     },
+        {
+      name: "Pessoas",
+      path: "/pessoas",
+      icon: Users,
+    },
     {
       name: "Calendar",
       path: "/calendar",

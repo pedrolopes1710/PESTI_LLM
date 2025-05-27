@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -22,8 +21,10 @@ export default function ClientLayout({
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
       <div className="flex h-screen overflow-hidden">
         <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
-        <div className="flex-1 overflow-auto">
-          <main className={cn("p-4 md:p-6", sidebarOpen ? "md:ml-64" : "")}>{children}</main>
+        <div className="flex-1 overflow-auto min-h-0">
+          <main className={cn("p-4 md:p-6", sidebarOpen ? "md:ml-64" : "")}>
+            <div className="min-h-full">{children}</div>
+          </main>
         </div>
       </div>
     </ThemeProvider>
