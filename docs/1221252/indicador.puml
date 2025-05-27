@@ -1,0 +1,97 @@
+﻿@startuml process-view
+autonumber
+skinparam DefaultTextAlignment center
+actor Admin as "Admin"
+
+box "<<system (C4)>>\nFrontend" #LightBlue
+    participant UI as "Indicador UI" <<component>>
+    participant Controller as "IndicadorController" <<component>>
+    participant Service as "IndicadorService" <<component>>
+    participant HTTP as "HTTPClient" <<component>>
+end box
+
+box "<<system (C4)>>\nBackend"
+    participant DB as "Backend Data Management" <<component>>
+end box
+
+== Criar Indicador ==
+Admin -> UI : solicita criação de Indicador
+activate UI
+UI -> Controller : POST /api/indicador {dto}
+activate Controller
+Controller -> Service : CriarAsync(dto)
+activate Service
+Service -> HTTP : POST /indicadores
+activate HTTP
+HTTP -> DB : grava indicador
+DB --> HTTP : 201 Created
+deactivate DB
+HTTP --> Service : Indicador criado
+deactivate HTTP
+Service --> Controller : IndicadorDTO
+deactivate Service
+Controller --> UI : Indicador criado com sucesso
+deactivate Controller
+deactivate UI
+
+== Obter Todos ==
+Admin -> UI : solicita lista de indicadores
+activate UI
+UI -> Controller : GET /api/indicador
+activate Controller
+Controller -> Service : GetAllAsync()
+activate Service
+Service -> HTTP : GET /indicadores
+activate HTTP
+HTTP -> DB : consulta todos
+DB --> HTTP : lista indicadores
+deactivate DB
+HTTP --> Service : lista DTOs
+deactivate HTTP
+Service --> Controller : lista DTOs
+deactivate Service
+Controller --> UI : lista de indicadores
+deactivate Controller
+deactivate UI
+
+== Atualizar Indicador ==
+Admin -> UI : solicita alteração valor atual
+activate UI
+UI -> Controller : PUT /api/indicador/{id} {novoValor}
+activate Controller
+Controller -> Service : AtualizarAsync(id, novoValor)
+activate Service
+Service -> HTTP : PUT /indicadores/{id}
+activate HTTP
+HTTP -> DB : atualiza valor
+DB --> HTTP : 200 OK
+deactivate DB
+HTTP --> Service : Indicador atualizado
+deactivate HTTP
+Service --> Controller : IndicadorDTO
+deactivate Service
+Controller --> UI : Indicador atualizado
+deactivate Controller
+deactivate UI
+
+== Remover Indicador ==
+Admin -> UI : solicita remoção de indicador
+activate UI
+UI -> Controller : DELETE /api/indicador/{id}
+activate Controller
+Controller -> Service : DeleteAsync(id)
+activate Service
+Service -> HTTP : DELETE /indicadores/{id}
+activate HTTP
+HTTP -> DB : remove indicador
+DB --> HTTP : 204 No Content
+deactivate DB
+HTTP --> Service : eliminado
+deactivate HTTP
+Service --> Controller : true
+deactivate Service
+Controller --> UI : sucesso remoção
+deactivate Controller
+deactivate UI
+
+@enduml
