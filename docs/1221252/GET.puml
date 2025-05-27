@@ -1,0 +1,38 @@
+﻿@startuml ObterIndicadores
+autonumber
+skinparam DefaultTextAlignment center
+actor Admin as "Admin"
+
+box "<<system (C4)>>\nFrontend" #LightBlue
+    participant UI as "Indicador UI" <<component>>
+    participant Controller as "IndicadorController" <<component>>
+    participant Service as "IndicadorService" <<component>>
+    participant HTTP as "HTTPClient" <<component>>
+end box
+
+box "<<system (C4)>>\nBackend"
+    participant DB as "Backend Data Management" <<component>>
+end box
+
+== Obter Todos ==
+Admin -> UI : solicita lista de indicadores
+activate UI
+UI -> Controller : GET /api/indicador
+activate Controller
+Controller -> Service : GetAllAsync()
+activate Service
+Service -> HTTP : GET /indicadores
+activate HTTP
+HTTP -> DB : consulta todos
+activate DB
+DB --> HTTP : lista indicadores
+deactivate DB
+HTTP --> Service : lista DTOs
+deactivate HTTP
+Service --> Controller : lista DTOs
+deactivate Service
+Controller --> UI : lista de indicadores
+deactivate Controller
+UI --> Admin : apresenta indicadores
+deactivate UI
+@enduml
