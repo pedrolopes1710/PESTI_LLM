@@ -54,6 +54,8 @@ namespace dddnetcore.Domain.CargasMensais
         {
             var pessoa = await _pessoaRepo.GetByIdAsync(new PessoaId(Guid.Parse(dto.PessoaId)))
             ?? throw new NullReferenceException("Pessoa não encontrada.");
+
+            //TODO: não deixar criar se já existir outra
             
             var c = new CargaMensal(
                 new JornadaDiaria(dto.JornadaDiaria),
@@ -79,6 +81,30 @@ namespace dddnetcore.Domain.CargasMensais
                 TaxaSocialUnica = c.TSU.Valor,
                 PessoaId = c.PessoaId.AsString()
             };
+        }
+
+        public async Task<List<CargaMensalDto>> AddBulkAsync(CreatingBulkCargaMensalDto dto)
+        {
+            if (dto.MesAnoInicio > dto.MesAnoFim)
+                throw new BusinessRuleValidationException("Start date cannot be after end date.");
+
+            List<CargaMensalDto> cargasMensais = [];
+
+            for (var date = dto.MesAnoInicio; date <= dto.MesAnoFim; date = date.AddMonths(1))
+            {
+                CreatingCargaMensalDto cargaMensalDto = new CreatingCargaMensalDto
+                {
+                    JornadaDiaria = dto.JornadaDiaria,
+                    DiasUteisTrabalhaveis = dto.DiasUteisTrabalhaveis,
+                    FeriasBaixasLicencasFaltas = dto.FeriasBaixasLicencasFaltas,
+                    MesAno = date,
+                    SalarioBase = dto.SalarioBase,
+                    TaxaSocialUnica = dto.TaxaSocialUnica,
+                    PessoaId = dto.PessoaId
+                };
+                cargasMensais.Add(await AddAsync(cargaMensalDto));
+            }
+            return cargasMensais;
         }
 
         public async Task<CargaMensalDto> UpdateAsync(EditingCargaMensalDto dto)

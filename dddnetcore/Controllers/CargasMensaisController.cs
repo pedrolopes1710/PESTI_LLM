@@ -61,6 +61,30 @@ namespace DDDSample1.Controllers
             return CreatedAtAction(nameof(GetById), new { id = cargaMensal.Id }, cargaMensal);
         }
 
+        [HttpPost("bulk")]
+        public async Task<ActionResult<IEnumerable<CargaMensalDto>>> CreateBulk([FromBody] CreatingBulkCargaMensalDto dto)
+        {
+            if (dto == null)
+            {
+                return BadRequest("Dados de carga mensal inválidos.");
+            }
+
+            try
+            {
+                var cargasMensais = await _service.AddBulkAsync(dto);
+                return CreatedAtAction(nameof(GetAll), cargasMensais);
+            }
+            catch (BusinessRuleValidationException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Ocorreu um erro ao criar as cargas mensais.", Details = ex.Message });
+            }
+
+        }
+
         // PUT: api/cargasMensais/{id}
         [HttpPut("{id}")]
         public async Task<ActionResult<CargaMensalDto>> Update(string id, [FromBody] EditingCargaMensalDto dto)
