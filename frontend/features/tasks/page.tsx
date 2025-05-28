@@ -48,16 +48,19 @@ import { cn } from "@/lib/utils"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { createActivity } from "../activities/api"
 import type { CreateActivityDto } from "../activities/types"
-import { fetchDeliverables } from "../deliverables/api"
+import { fetchEntregaveis } from "../deliverables/api"
 import { fetchProfiles } from "../profiles/api"
 import type { ApiTask } from "../tasks/api"
-import type { Deliverable } from "../deliverables/types"
+import type { Entregavel } from "../deliverables/types"
 import type { Profile } from "../profiles/types"
 import { toast } from "@/components/ui/use-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { EditTaskDialog } from "./components/edit-task-dialog"
 import { DeleteTaskDialog } from "./components/delete-task-dialog"
 import { useRouter } from "next/navigation"
+import { CreateTarefaInline } from "../activities/components/create-tarefa-inline"
+import { CreateEntregavelInline } from "../activities/components/create-entregavel-inline"
+import { CreateProfileInline } from "../activities/components/create-profile-inline"
 
 export default function TasksPage() {
   const router = useRouter()
@@ -91,7 +94,7 @@ export default function TasksPage() {
 
   // Estados para os dados das listas
   const [activityTarefas, setActivityTarefas] = useState<ApiTask[]>([])
-  const [entregaveis, setEntregaveis] = useState<Deliverable[]>([])
+  const [entregaveis, setEntregaveis] = useState<Entregavel[]>([])
   const [perfis, setPerfis] = useState<Profile[]>([])
 
   // Estados para busca
@@ -103,6 +106,11 @@ export default function TasksPage() {
   const [loadingTarefas, setLoadingTarefas] = useState(false)
   const [loadingEntregaveis, setLoadingEntregaveis] = useState(false)
   const [loadingPerfis, setLoadingPerfis] = useState(false)
+
+  // Estados para controlar a criação inline
+  const [showCreateTarefa, setShowCreateTarefa] = useState(false)
+  const [showCreateEntregavel, setShowCreateEntregavel] = useState(false)
+  const [showCreatePerfil, setShowCreatePerfil] = useState(false)
 
   // Função para carregar os dados da API
   const fetchData = async () => {
@@ -156,10 +164,11 @@ export default function TasksPage() {
         // Carregar entregáveis
         setLoadingEntregaveis(true)
         try {
-          const entregaveisData = await fetchDeliverables()
+          const entregaveisData = await fetchEntregaveis()
           setEntregaveis(entregaveisData)
         } catch (error) {
           console.error("Erro ao carregar entregáveis:", error)
+          setEntregaveis([]) // Definir array vazio em caso de erro
         }
         setLoadingEntregaveis(false)
 
@@ -170,6 +179,7 @@ export default function TasksPage() {
           setPerfis(perfisData)
         } catch (error) {
           console.error("Erro ao carregar perfis:", error)
+          setPerfis([]) // Definir array vazio em caso de erro
         }
         setLoadingPerfis(false)
       } catch (error) {
@@ -335,6 +345,57 @@ export default function TasksPage() {
 
   const filteredPerfis = perfis.filter((perfil) => perfil.descricao?.toLowerCase().includes(perfisSearch.toLowerCase()))
 
+  // Função para lidar com a criação de tarefa inline
+  const handleTarefaCreatedInline = async (tarefaId: string) => {
+    // Adicionar a nova tarefa à lista de selecionados
+    setTarefasIds([...tarefasIds, tarefaId])
+
+    // Recarregar a lista de tarefas
+    try {
+      const tarefasData = await fetchTasks()
+      setActivityTarefas(tarefasData)
+    } catch (error) {
+      console.error("Erro ao recarregar tarefas:", error)
+    }
+
+    // Esconder o formulário
+    setShowCreateTarefa(false)
+  }
+
+  // Função para lidar com a criação de entregável inline
+  const handleEntregavelCreatedInline = async (entregavelId: string) => {
+    // Adicionar o novo entregável à lista de selecionados
+    setEntregaveisIds([...entregaveisIds, entregavelId])
+
+    // Recarregar a lista de entregáveis
+    try {
+      const entregaveisData = await fetchEntregaveis()
+      setEntregaveis(entregaveisData)
+    } catch (error) {
+      console.error("Erro ao recarregar entregáveis:", error)
+    }
+
+    // Esconder o formulário
+    setShowCreateEntregavel(false)
+  }
+
+  // Função para lidar com a criação de perfil inline
+  const handlePerfilCreatedInline = async (perfilId: string) => {
+    // Adicionar o novo perfil à lista de selecionados
+    setPerfisIds([...perfisIds, perfilId])
+
+    // Recarregar a lista de perfis
+    try {
+      const perfisData = await fetchProfiles()
+      setPerfis(perfisData)
+    } catch (error) {
+      console.error("Erro ao recarregar perfis:", error)
+    }
+
+    // Esconder o formulário
+    setShowCreatePerfil(false)
+  }
+
   // Função para lidar com o envio do formulário de atividade
   async function handleCreateActivity() {
     // Validar campos obrigatórios
@@ -387,15 +448,27 @@ export default function TasksPage() {
     try {
       setIsSubmitting(true)
 
+      // Log dos dados antes de enviar
+      console.log("Dados da atividade:", {
+        nomeAtividade,
+        descricaoAtividade,
+        dataInicio: dataInicio.toISOString(),
+        dataFim: dataFim.toISOString(),
+        orcamentoId,
+        tarefasIds,
+        entregaveisIds,
+        perfisIds,
+      })
+
       // Preparar os dados para envio
       const activityData: CreateActivityDto = {
         nomeAtividade,
         descricaoAtividade,
         dataInicioAtividade: dataInicio.toISOString(),
         dataFimAtividade: dataFim.toISOString(),
-        entregaveisIds: [],
-        perfisIds: [],
-        tarefasIds: [],
+        entregaveisIds: entregaveisIds.length > 0 ? entregaveisIds : [],
+        perfisIds: perfisIds.length > 0 ? perfisIds : [],
+        tarefasIds: tarefasIds.length > 0 ? tarefasIds : [],
       }
 
       // Adicionar orcamentoId se fornecido
@@ -403,18 +476,7 @@ export default function TasksPage() {
         activityData.orcamentoId = orcamentoId
       }
 
-      // Adicionar arrays de IDs se fornecidos
-      if (tarefasIds.length > 0) {
-        activityData.tarefasIds = tarefasIds
-      }
-
-      if (entregaveisIds.length > 0) {
-        activityData.entregaveisIds = entregaveisIds
-      }
-
-      if (perfisIds.length > 0) {
-        activityData.perfisIds = perfisIds
-      }
+      console.log("Dados finais para envio:", activityData)
 
       // Criar a atividade
       const newActivity = await createActivity(activityData)
@@ -431,8 +493,8 @@ export default function TasksPage() {
       // Recarregar os dados
       fetchData()
 
-      // Navegar para a página de detalhes da atividade
-      router.push(`/activities/${newActivity.id}`)
+      // Navegar para a página de atividades
+      router.push("/tasks")
     } catch (error) {
       console.error("Erro ao criar atividade:", error)
       toast({
@@ -458,6 +520,9 @@ export default function TasksPage() {
     setTarefasSearch("")
     setEntregaveisSearch("")
     setPerfisSearch("")
+    setShowCreateTarefa(false)
+    setShowCreateEntregavel(false)
+    setShowCreatePerfil(false)
   }
 
   // Função para abrir o diálogo de edição de tarefa
@@ -472,10 +537,10 @@ export default function TasksPage() {
     setShowDeleteTaskDialog(true)
   }
 
-  // Função para navegar para a página de detalhes da atividade
+  // Função para navegar para a página de atividades
   const handleViewActivity = (activityId: string) => {
     if (activityId === "no-activity") return
-    router.push(`/activities/${activityId}`)
+    router.push("/activities")
   }
 
   // Renderizar o formulário de criação de atividade
@@ -594,6 +659,107 @@ export default function TasksPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Card de Entregáveis */}
+            <Card className="h-full">
+              <CardHeader className="pb-3">
+                <div className="flex justify-between items-center">
+                  <CardTitle>Entregáveis</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{entregaveisIds.length} selecionados</Badge>
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="sm"
+                      onClick={() => setShowCreateEntregavel(!showCreateEntregavel)}
+                      className="h-7 text-xs bg-green-600 hover:bg-green-700 text-black"
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Criar Entregável
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={selectAllEntregaveis}
+                    disabled={loadingEntregaveis || filteredEntregaveis.length === 0}
+                    className="h-8 text-xs"
+                  >
+                    Selecionar Todos
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={deselectAllEntregaveis}
+                    disabled={entregaveisIds.length === 0}
+                    className="h-8 text-xs"
+                  >
+                    Limpar
+                  </Button>
+                </div>
+
+                {showCreateEntregavel && (
+                  <CreateEntregavelInline
+                    onEntregavelCreated={handleEntregavelCreatedInline}
+                    onCancel={() => setShowCreateEntregavel(false)}
+                  />
+                )}
+
+                <div className="relative">
+                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar entregáveis..."
+                    value={entregaveisSearch}
+                    onChange={(e) => setEntregaveisSearch(e.target.value)}
+                    className="pl-8"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px] overflow-y-auto pr-2">
+                  {loadingEntregaveis ? (
+                    <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+                      Carregando entregáveis...
+                    </div>
+                  ) : filteredEntregaveis.length > 0 ? (
+                    <div className="space-y-2">
+                      {filteredEntregaveis.map((entregavel) => (
+                        <div
+                          key={entregavel.id}
+                          className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted/50 transition-colors"
+                        >
+                          <Checkbox
+                            id={`entregavel-${entregavel.id}`}
+                            checked={entregaveisIds.includes(entregavel.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setEntregaveisIds([...entregaveisIds, entregavel.id])
+                              } else {
+                                setEntregaveisIds(entregaveisIds.filter((id) => id !== entregavel.id))
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor={`entregavel-${entregavel.id}`}
+                            className="text-sm leading-none cursor-pointer flex-1"
+                          >
+                            {entregavel.nome || `Entregável ${entregavel.id.substring(0, 8)}...`}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-sm text-muted-foreground">
+                      Nenhum entregável encontrado.
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Coluna 2: Tarefas */}
@@ -602,7 +768,19 @@ export default function TasksPage() {
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
                   <CardTitle>Tarefas</CardTitle>
-                  <Badge variant="outline">{tarefasIds.length} selecionadas</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{tarefasIds.length} selecionadas</Badge>
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="sm"
+                      onClick={() => setShowCreateTarefa(!showCreateTarefa)}
+                      className="h-7 text-xs bg-green-600 hover:bg-green-700 text-black"
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Criar Tarefa
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -626,6 +804,14 @@ export default function TasksPage() {
                     Limpar
                   </Button>
                 </div>
+
+                {showCreateTarefa && (
+                  <CreateTarefaInline
+                    onTarefaCreated={handleTarefaCreatedInline}
+                    onCancel={() => setShowCreateTarefa(false)}
+                  />
+                )}
+
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -676,13 +862,25 @@ export default function TasksPage() {
             </Card>
           </div>
 
-          {/* Coluna 3: Tabs para Entregáveis e Perfis */}
+          {/* Coluna 3: Perfis */}
           <div>
             <Card className="h-full">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
                   <CardTitle>Perfis</CardTitle>
-                  <Badge variant="outline">{perfisIds.length} selecionadas</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">{perfisIds.length} selecionados</Badge>
+                    <Button
+                      type="button"
+                      variant="default"
+                      size="sm"
+                      onClick={() => setShowCreatePerfil(!showCreatePerfil)}
+                      className="h-7 text-xs bg-green-600 hover:bg-green-700 text-black"
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Criar Perfil
+                    </Button>
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -706,10 +904,18 @@ export default function TasksPage() {
                     Limpar
                   </Button>
                 </div>
+
+                {showCreatePerfil && (
+                  <CreateProfileInline
+                    onProfileCreated={handlePerfilCreatedInline}
+                    onCancel={() => setShowCreatePerfil(false)}
+                  />
+                )}
+
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Buscar Perfiss..."
+                    placeholder="Buscar Perfis..."
                     value={perfisSearch}
                     onChange={(e) => setPerfisSearch(e.target.value)}
                     className="pl-8"
@@ -730,7 +936,7 @@ export default function TasksPage() {
                           className="flex items-center space-x-2 p-2 rounded-md hover:bg-muted/50 transition-colors"
                         >
                           <Checkbox
-                            id={`tarefa-${perfil.id}`}
+                            id={`perfil-${perfil.id}`}
                             checked={perfisIds.includes(perfil.id)}
                             onCheckedChange={(checked) => {
                               if (checked) {
@@ -740,7 +946,7 @@ export default function TasksPage() {
                               }
                             }}
                           />
-                          <label htmlFor={`tarefa-${perfil.id}`} className="text-sm leading-none cursor-pointer flex-1">
+                          <label htmlFor={`perfil-${perfil.id}`} className="text-sm leading-none cursor-pointer flex-1">
                             {perfil.descricao || `Perfil ${perfil.id.substring(0, 8)}...`}
                           </label>
                         </div>
@@ -818,13 +1024,7 @@ export default function TasksPage() {
               <DropdownMenuItem>Project</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button
-            onClick={() => setShowTaskForm(true)}
-            className="flex items-center gap-1 bg-blue-600 text-white hover:bg-blue-700"
-          >
-            <Plus className="w-4 h-4" />
-            Nova Tarefa
-          </Button>
+
           <Button
             onClick={() => setIsCreatingActivity(true)}
             className="flex items-center gap-1 bg-green-600 text-white hover:bg-green-700"
@@ -963,34 +1163,6 @@ export default function TasksPage() {
                               <Badge variant="outline" className={getStatusColor(task.status)}>
                                 {task.status}
                               </Badge>
-
-                              {/* Botões para mudar status */}
-                              <div className="flex gap-2 ml-2">
-                                {task.status !== "Completed" && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="bg-green-500/20 text-green-700 hover:bg-green-500/30"
-                                    onClick={() => handleUpdateStatus(task.id.toString(), "Terminado")}
-                                    disabled={updatingTaskId === task.id.toString()}
-                                  >
-                                    <CheckCircle className="h-4 w-4 mr-1" />
-                                    Terminado
-                                  </Button>
-                                )}
-
-                                {task.status !== "In Progress" && (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    className="bg-blue-500/20 text-blue-700 hover:bg-blue-500/30"
-                                    onClick={() => handleUpdateStatus(task.id.toString(), "A_Decorrer")}
-                                    disabled={updatingTaskId === task.id.toString()}
-                                  >
-                                    <Play className="h-4 w-4 mr-1" />A Decorrer
-                                  </Button>
-                                )}
-                              </div>
                             </div>
                           </div>
                           <p className="text-sm text-muted-foreground mt-2">{task.descricao}</p>
@@ -1000,6 +1172,33 @@ export default function TasksPage() {
                               <AvatarFallback>{task.assignee.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div className="flex items-center gap-2">
+                              {/* Botões de Status */}
+                              {task.status !== "Completed" && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="bg-green-500/20 text-green-700 hover:bg-green-500/30 border-green-300"
+                                  onClick={() => handleUpdateStatus(task.id.toString(), "Terminado")}
+                                  disabled={updatingTaskId === task.id.toString()}
+                                >
+                                  <CheckCircle className="h-4 w-4 mr-1" />
+                                  Terminado
+                                </Button>
+                              )}
+
+                              {task.status !== "In Progress" && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="bg-blue-500/20 text-blue-700 hover:bg-blue-500/30 border-blue-300"
+                                  onClick={() => handleUpdateStatus(task.id.toString(), "A_Decorrer")}
+                                  disabled={updatingTaskId === task.id.toString()}
+                                >
+                                  <Play className="h-4 w-4 mr-1" />A Decorrer
+                                </Button>
+                              )}
+
+                              {/* Botões de Ação */}
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -1017,7 +1216,7 @@ export default function TasksPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="text-red-600"
+                                className="text-red-600 hover:bg-red-50 border-red-300"
                                 onClick={() => handleDeleteTask(task.id.toString(), task.title)}
                               >
                                 <Trash className="h-4 w-4 mr-1" />
