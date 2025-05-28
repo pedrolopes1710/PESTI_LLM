@@ -79,6 +79,12 @@ export default function AfetacoesPage() {
     }
   }
 
+  function handleAfetacaoUpdated() {
+    if (selectedPessoaId) {
+      loadTabelaAfetacoes(selectedPessoaId)
+    }
+  }
+
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -125,7 +131,7 @@ export default function AfetacoesPage() {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
               </div>
             ) : tabelaAfetacoes ? (
-              <TabelaAfetacoes tabelaAfetacoes={tabelaAfetacoes} />
+              <TabelaAfetacoes tabelaAfetacoes={tabelaAfetacoes} onAfetacaoUpdated={handleAfetacaoUpdated} />
             ) : (
               <div className="text-center py-12 text-gray-500">No data available</div>
             )}

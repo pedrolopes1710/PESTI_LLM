@@ -88,3 +88,14 @@ export interface CreatingBulkCargaMensalDto {
   taxaSocialUnica: number
   pessoaId: string
 }
+
+// DTOs para afetações mensais
+export interface CreatingAfetacaoMensalDto {
+  pMs: number
+  afetacaoPerfilId: string
+  mesAno: string
+}
+
+export interface EditingAfetacaoMensalDto {
+  pMs: number
+}

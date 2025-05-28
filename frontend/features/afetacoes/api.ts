@@ -1,4 +1,10 @@
-import type { TabelaAfetacoesDto, PessoaDto, CreatingBulkCargaMensalDto } from "./types"
+import type {
+  TabelaAfetacoesDto,
+  PessoaDto,
+  CreatingBulkCargaMensalDto,
+  CreatingAfetacaoMensalDto,
+  EditingAfetacaoMensalDto,
+} from "./types"
 
 // Configuração da base URL da API
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://localhost:7284"
@@ -58,6 +64,52 @@ export async function createCargasMensaisBulk(dto: CreatingBulkCargaMensalDto): 
     }
   } catch (error) {
     console.error("Error creating cargas mensais:", error)
+    throw error
+  }
+}
+
+// Função para criar uma afetação mensal
+export async function createAfetacaoMensal(dto: CreatingAfetacaoMensalDto): Promise<void> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/afetacaomensais`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        PMs: dto.pMs,
+        AfetacaoPerfilId: dto.afetacaoPerfilId,
+        MesAno: dto.mesAno,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to create afetacao mensal: ${response.status} ${response.statusText}`)
+    }
+  } catch (error) {
+    console.error("Error creating afetacao mensal:", error)
+    throw error
+  }
+}
+
+// Função para atualizar uma afetação mensal
+export async function updateAfetacaoMensal(id: string, dto: EditingAfetacaoMensalDto): Promise<void> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/afetacaomensais/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        PMs: dto.pMs,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to update afetacao mensal: ${response.status} ${response.statusText}`)
+    }
+  } catch (error) {
+    console.error("Error updating afetacao mensal:", error)
     throw error
   }
 }

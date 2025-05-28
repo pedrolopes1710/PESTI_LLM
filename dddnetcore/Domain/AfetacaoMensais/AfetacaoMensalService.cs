@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using dddnetcore.Domain.AfetacaoPerfis;
 using dddnetcore.Domain.CargasMensais;
 using dddnetcore.Domain.Pessoas;
+using dddnetcore.Infraestructure.Pessoas;
 using DDDSample1.Domain.Shared;
 
 namespace dddnetcore.Domain.AfetacaoMensais
@@ -17,11 +18,13 @@ namespace dddnetcore.Domain.AfetacaoMensais
         public readonly ICargaMensalRepository _cargaMensalRepo;
         public readonly IPessoaRepository _pessoaRepo;
 
-        public AfetacaoMensalService(IUnitOfWork unitOfWork, IAfetacaoMensalRepository repo, IAfetacaoPerfilRepository afetacaoPerfilRepo, ICargaMensalRepository cargaMensalRepo) {
+        public AfetacaoMensalService(IUnitOfWork unitOfWork, IAfetacaoMensalRepository repo, IAfetacaoPerfilRepository afetacaoPerfilRepo, ICargaMensalRepository cargaMensalRepo, IPessoaRepository pessoaRepo)
+        {
             this._unitOfWork = unitOfWork;
             this._repo = repo;
             this._afetacaoPerfilRepo = afetacaoPerfilRepo;
             this._cargaMensalRepo = cargaMensalRepo;
+            this._pessoaRepo = pessoaRepo;
         }
 
         public async Task<List<AfetacaoMensalDto>> GetAllAsync() {
@@ -37,11 +40,11 @@ namespace dddnetcore.Domain.AfetacaoMensais
         //TODO: testar quando possível
         public async Task<AfetacaoMensalDto> AddAsync(CreatingAfetacaoMensalDto dto) {
             AfetacaoPerfil afetacaoPerfil = await this._afetacaoPerfilRepo.GetByIdAsync(new AfetacaoPerfilId(dto.AfetacaoPerfilId)) ?? throw new NullReferenceException("Not Found AfetacaoPerfil: " + dto.AfetacaoPerfilId);
-            
+
             MesAno mesAno = new MesAno(dto.MesAno);
-            Pessoa pessoa = await this._pessoaRepo.GetByIdAsync(afetacaoPerfil.Pessoa.Id) ?? throw new NullReferenceException("Not Found Person: " + afetacaoPerfil.Pessoa.Id);
+            Pessoa pessoa = await this._pessoaRepo.GetByIdAsync(afetacaoPerfil.PessoaId) ?? throw new NullReferenceException("Not Found Person: " + afetacaoPerfil.Pessoa.Id);
+
             CargaMensal cargaMensal = await this._cargaMensalRepo.GetByMesAnoAndPessoaAsync(mesAno, pessoa.Id) ?? throw new NullReferenceException("Not Found Month Schedule for month " + mesAno + " for person ID:" + pessoa.Id);
-            
             if (!IsUnlocked(cargaMensal, pessoa)) {
                 throw new Exception("The monthly schedule is locked for the person " + pessoa.Id + " for the month " + mesAno + "(payment already requested)");
             }
