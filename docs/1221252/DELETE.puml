@@ -1,0 +1,37 @@
+﻿@startuml RemoverIndicador
+autonumber
+skinparam DefaultTextAlignment center
+actor Admin as "Admin"
+
+box "<<system (C4)>>\nFrontend" #LightBlue
+    participant UI as "Indicador UI" <<component>>
+    participant Controller as "IndicadorController" <<component>>
+    participant Service as "IndicadorService" <<component>>
+    participant HTTP as "HTTPClient" <<component>>
+end box
+
+box "<<system (C4)>>\nBackend"
+    participant DB as "Backend Data Management" <<component>>
+end box
+
+Admin -> UI : solicita remoção de indicador
+activate UI
+UI -> Controller : DELETE /api/indicador/{id}
+activate Controller
+Controller -> Service : DeleteAsync(id)
+activate Service
+Service -> HTTP : DELETE /indicadores/{id}
+activate HTTP
+HTTP -> DB : remove indicador
+activate DB
+DB --> HTTP : 204 No Content
+deactivate DB
+HTTP --> Service : eliminado
+deactivate HTTP
+Service --> Controller : true
+deactivate Service
+Controller --> UI : sucesso remoção
+deactivate Controller
+UI --> Admin : confirmação de remoção
+deactivate UI
+@enduml

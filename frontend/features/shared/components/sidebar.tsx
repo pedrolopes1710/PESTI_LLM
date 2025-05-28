@@ -13,11 +13,11 @@ import {
   Users,
   DollarSign,
   Wallet,
-  UserCheck,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import path from "path"
 
 interface SidebarProps {
   open: boolean
@@ -48,11 +48,6 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       path: "/team",
       icon: Users,
     },
-        {
-      name: "Pessoas",
-      path: "/pessoas",
-      icon: Users,
-    },
     {
       name: "Calendar",
       path: "/calendar",
@@ -74,9 +69,9 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       icon: Wallet,
     },
     {
-      name: "Allocations",
-      path: "/afetacoes",
-      icon: UserCheck,
+      name: "Entregáveis",
+      path: "/entregaveis",
+      icon: ClipboardList,
     },
     {
       name: "Settings",

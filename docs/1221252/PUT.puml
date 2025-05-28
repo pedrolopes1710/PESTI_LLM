@@ -1,0 +1,37 @@
+﻿@startuml AtualizarIndicador
+autonumber
+skinparam DefaultTextAlignment center
+actor Admin as "Admin"
+
+box "<<system (C4)>>\nFrontend" #LightBlue
+    participant UI as "Indicador UI" <<component>>
+    participant Controller as "IndicadorController" <<component>>
+    participant Service as "IndicadorService" <<component>>
+    participant HTTP as "HTTPClient" <<component>>
+end box
+
+box "<<system (C4)>>\nBackend"
+    participant DB as "Backend Data Management" <<component>>
+end box
+
+Admin -> UI : solicita alteração valor atual
+activate UI
+UI -> Controller : PUT /api/indicador/{id} {novoValor}
+activate Controller
+Controller -> Service : AtualizarAsync(id, novoValor)
+activate Service
+Service -> HTTP : PUT /indicadores/{id}
+activate HTTP
+HTTP -> DB : atualiza valor
+activate DB
+DB --> HTTP : 200 OK
+deactivate DB
+HTTP --> Service : Indicador atualizado
+deactivate HTTP
+Service --> Controller : IndicadorDTO
+deactivate Service
+Controller --> UI : Indicador atualizado
+deactivate Controller
+UI --> Admin : confirmação de atualização
+deactivate UI
+@enduml
