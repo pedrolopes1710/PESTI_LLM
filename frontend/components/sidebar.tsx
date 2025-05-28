@@ -12,12 +12,12 @@ import {
   Settings,
   Users,
   DollarSign,
-  Wallet,
-  UserCheck,
+  Wallet
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import path from "path"
 
 interface SidebarProps {
   open: boolean
@@ -59,6 +59,11 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       icon: BarChart2,
     },
     {
+      name: "Settings",
+      path: "/settings",
+      icon: Settings,
+    },
+    {
       name: "Budget Categories",
       path: "/rubricas",
       icon: DollarSign,
@@ -74,15 +79,10 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       icon: DollarSign,
     },
     {
-      name: "Allocations",
-      path: "/afetacoes",
-      icon: UserCheck,
-    },
-    {
-      name: "Settings",
-      path: "/settings",
-      icon: Settings,
-    },
+      name: "Entregáveis",
+      path: "/entregaveis",
+      icon: ClipboardList,
+    }
   ]
 
   return (
