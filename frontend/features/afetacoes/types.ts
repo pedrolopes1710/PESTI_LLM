@@ -99,3 +99,12 @@ export interface CreatingAfetacaoMensalDto {
 export interface EditingAfetacaoMensalDto {
   pMs: number
 }
+
+// DTO para editar carga mensal
+export interface EditingCargaMensalDto {
+  jornadaDiaria: number
+  diasUteisTrabalhaveis: number
+  feriasBaixasLicencasFaltas: number
+  salarioBase: number
+  taxaSocialUnica: number
+}

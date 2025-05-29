@@ -86,17 +86,12 @@ namespace DDDSample1.Controllers
         }
 
         // PUT: api/cargasMensais/{id}
-        [HttpPut("{id}")]
-        public async Task<ActionResult<CargaMensalDto>> Update(string id, [FromBody] EditingCargaMensalDto dto)
+        [HttpPatch("{id}")]
+        public async Task<ActionResult<CargaMensalDto>> Update(Guid id, [FromBody] EditingCargaMensalDto dto)
         {
-            if (id != dto.Id)
-            {
-                return BadRequest("IDs não coincidem.");
-            }
-
             try
             {
-                var updatedCargaMensal = await _service.UpdateAsync(dto);
+                var updatedCargaMensal = await _service.UpdateAsync(new CargaMensalId(id), dto);
 
                 if (updatedCargaMensal == null)
                 {

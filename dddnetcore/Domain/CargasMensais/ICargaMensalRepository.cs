@@ -11,6 +11,6 @@ namespace dddnetcore.Domain.CargasMensais
     {
         Task<CargaMensal> GetByMesAnoAndPessoaAsync(MesAno mesAno, PessoaId pessoaId);
         Task<List<CargaMensal>> GetByPessoaIdAsync(PessoaId pessoaId);
-
+        Task<CargaMensal> UpdateAsync(CargaMensal cargaMensal);
     }
 }

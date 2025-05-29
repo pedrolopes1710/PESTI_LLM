@@ -4,6 +4,7 @@ import type {
   CreatingBulkCargaMensalDto,
   CreatingAfetacaoMensalDto,
   EditingAfetacaoMensalDto,
+  EditingCargaMensalDto,
 } from "./types"
 
 // Configuração da base URL da API
@@ -110,6 +111,32 @@ export async function updateAfetacaoMensal(id: string, dto: EditingAfetacaoMensa
     }
   } catch (error) {
     console.error("Error updating afetacao mensal:", error)
+    throw error
+  }
+}
+
+// Função para atualizar uma carga mensal
+export async function updateCargaMensal(id: string, dto: EditingCargaMensalDto): Promise<void> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/cargasmensais/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        JornadaDiaria: dto.jornadaDiaria,
+        DiasUteisTrabalhaveis: dto.diasUteisTrabalhaveis,
+        FeriasBaixasLicencasFaltas: dto.feriasBaixasLicencasFaltas,
+        SalarioBase: dto.salarioBase,
+        TaxaSocialUnica: dto.taxaSocialUnica,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to update carga mensal: ${response.status} ${response.statusText}`)
+    }
+  } catch (error) {
+    console.error("Error updating carga mensal:", error)
     throw error
   }
 }

@@ -39,7 +39,7 @@ namespace dddnetcore.Infraestructure.AfetacaoPerfis
                 .ToListAsync();
         }
 
-        public async Task<AfetacaoMensal> GetByIdAsync(AfetacaoMensalId id) {
+        public new async Task<AfetacaoMensal> GetByIdAsync(AfetacaoMensalId id) {
             var query = _context.AfetacaoMensais.AsQueryable();
 
             query = query.Where(af => af.Id.Equals(id));

@@ -8,6 +8,7 @@ import { enUS } from "date-fns/locale"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import EditAfetacaoDialog from "./edit-afetacao-dialog"
+import EditCargaMensalDialog from "./edit-carga-mensal-dialog"
 
 interface TabelaAfetacoesProps {
   tabelaAfetacoes: TabelaAfetacoesDto
@@ -17,9 +18,17 @@ interface TabelaAfetacoesProps {
 export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: TabelaAfetacoesProps) {
   const [showHours, setShowHours] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [editCargaMensalDialogOpen, setEditCargaMensalDialogOpen] = useState(false)
   const [selectedAfetacaoPerfil, setSelectedAfetacaoPerfil] = useState<AfetacaoPerfilDto | null>(null)
   const [selectedCargaMensal, setSelectedCargaMensal] = useState<CargaMensalDto | null>(null)
   const [selectedAfetacaoMensal, setSelectedAfetacaoMensal] = useState<AfetacaoMensalDto | null>(null)
+  const [selectedEditField, setSelectedEditField] = useState<
+    "jornadaDiaria" | "diasUteisTrabalhaveis" | "feriasBaixasLicencasFaltas" | "salarioBase" | "taxaSocialUnica" | null
+  >(null)
+
+  // Estilos inline para garantir que funcionam
+  const nonEditableStyle = { backgroundColor: "#e2e8f0" } // slate-200
+  const nonEditableDarkerStyle = { backgroundColor: "#cbd5e1" } // slate-300
 
   // Verificar se há dados
   if (!tabelaAfetacoes.cargasMensais || tabelaAfetacoes.cargasMensais.length === 0) {
@@ -67,7 +76,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
     return pm * calcularHorasPotenciais(cargaMensal)
   }
 
-  // Função para abrir o diálogo de edição
+  // Função para abrir o diálogo de edição de afetação
   const handleOpenEditDialog = (
     afetacaoPerfil: AfetacaoPerfilDto,
     cargaMensal: CargaMensalDto,
@@ -79,12 +88,29 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
     setEditDialogOpen(true)
   }
 
-  // Função para fechar o diálogo de edição
+  // Função para fechar o diálogo de edição de afetação
   const handleCloseEditDialog = () => {
     setEditDialogOpen(false)
     setSelectedAfetacaoPerfil(null)
     setSelectedCargaMensal(null)
     setSelectedAfetacaoMensal(null)
+  }
+
+  // Função para abrir o diálogo de edição de carga mensal
+  const handleOpenEditCargaMensalDialog = (
+    cargaMensal: CargaMensalDto,
+    field: "jornadaDiaria" | "diasUteisTrabalhaveis" | "feriasBaixasLicencasFaltas" | "salarioBase" | "taxaSocialUnica",
+  ) => {
+    setSelectedCargaMensal(cargaMensal)
+    setSelectedEditField(field)
+    setEditCargaMensalDialogOpen(true)
+  }
+
+  // Função para fechar o diálogo de edição de carga mensal
+  const handleCloseEditCargaMensalDialog = () => {
+    setEditCargaMensalDialogOpen(false)
+    setSelectedCargaMensal(null)
+    setSelectedEditField(null)
   }
 
   return (
@@ -107,6 +133,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
               <TableHead className="border font-bold bg-gray-100 sticky left-[270px] z-10">
                 {showHours ? "Total Hours Used" : "Total PMs Used"}
               </TableHead>
+              <TableHead className="border font-bold bg-gray-100 sticky left-[390px] z-10">Duration (Months)</TableHead>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
                 <TableHead key={cargaMensal.id} className="border font-bold text-center bg-gray-100 min-w-[100px]">
                   {formatarData(cargaMensal.mesAno)}
@@ -120,8 +147,13 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">Daily Workday</TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
               <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[390px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
-                <TableCell key={`daily-${cargaMensal.id}`} className="border text-center bg-blue-50">
+                <TableCell
+                  key={`daily-${cargaMensal.id}`}
+                  className="border text-center bg-blue-50 hover:bg-blue-100 cursor-pointer"
+                  onClick={() => handleOpenEditCargaMensalDialog(cargaMensal, "jornadaDiaria")}
+                >
                   {cargaMensal.jornadaDiaria.toFixed(1)}h
                 </TableCell>
               ))}
@@ -132,22 +164,28 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">Working Days</TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
               <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[390px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
-                <TableCell key={`days-${cargaMensal.id}`} className="border text-center bg-blue-50">
+                <TableCell
+                  key={`days-${cargaMensal.id}`}
+                  className="border text-center bg-blue-50 hover:bg-blue-100 cursor-pointer"
+                  onClick={() => handleOpenEditCargaMensalDialog(cargaMensal, "diasUteisTrabalhaveis")}
+                >
                   {cargaMensal.diasUteisTrabalhaveis.toFixed(0)} days
                 </TableCell>
               ))}
             </TableRow>
 
-            {/* Linha: Potential Working Hours */}
+            {/* Linha: Potential Working Hours - NÃO EDITÁVEL */}
             <TableRow className="bg-blue-50 text-sm">
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">
                 Potential Working Hours
               </TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
               <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[390px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
-                <TableCell key={`potential-${cargaMensal.id}`} className="border text-center bg-blue-50">
+                <TableCell key={`potential-${cargaMensal.id}`} className="border text-center" style={nonEditableStyle}>
                   {calcularHorasPotenciais(cargaMensal).toFixed(1)}h
                 </TableCell>
               ))}
@@ -158,8 +196,13 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">Vacation Days</TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
               <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[390px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
-                <TableCell key={`vacation-days-${cargaMensal.id}`} className="border text-center bg-blue-50">
+                <TableCell
+                  key={`vacation-days-${cargaMensal.id}`}
+                  className="border text-center bg-blue-50 hover:bg-blue-100 cursor-pointer"
+                  onClick={() => handleOpenEditCargaMensalDialog(cargaMensal, "feriasBaixasLicencasFaltas")}
+                >
                   {cargaMensal.feriasBaixasLicencasFaltas.toFixed(0)} days
                 </TableCell>
               ))}
@@ -170,20 +213,30 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">Base Salary</TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
               <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[390px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
-                <TableCell key={`salary-${cargaMensal.id}`} className="border text-center bg-blue-50">
+                <TableCell
+                  key={`salary-${cargaMensal.id}`}
+                  className="border text-center bg-blue-50 hover:bg-blue-100 cursor-pointer"
+                  onClick={() => handleOpenEditCargaMensalDialog(cargaMensal, "salarioBase")}
+                >
                   €{cargaMensal.salarioBase.toFixed(2)}
                 </TableCell>
               ))}
             </TableRow>
 
-            {/* Linha: Vacation Hours */}
+            {/* Linha: Vacation Hours - NÃO EDITÁVEL */}
             <TableRow className="bg-blue-50 text-sm">
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">Vacation Hours</TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
               <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[390px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
-                <TableCell key={`vacation-hours-${cargaMensal.id}`} className="border text-center bg-blue-50">
+                <TableCell
+                  key={`vacation-hours-${cargaMensal.id}`}
+                  className="border text-center"
+                  style={nonEditableStyle}
+                >
                   {(cargaMensal.feriasBaixasLicencasFaltas * cargaMensal.jornadaDiaria).toFixed(1)}h
                 </TableCell>
               ))}
@@ -195,12 +248,18 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                 <TableCell className="border font-medium sticky left-0 bg-white z-10 min-w-[150px]">
                   {afetacaoPerfil.perfilDto?.descricao || "Unknown Profile"}
                 </TableCell>
-                <TableCell className="border text-center sticky left-[150px] bg-white z-10 min-w-[120px]">
+                <TableCell
+                  className="border text-center sticky left-[150px] z-10 min-w-[120px]"
+                  style={nonEditableStyle}
+                >
                   {showHours
                     ? `${(afetacaoPerfil.pMsAprovados * 160).toFixed(1)}h` // Assumindo 160h como padrão para PMs aprovados
                     : afetacaoPerfil.pMsAprovados.toFixed(2)}
                 </TableCell>
-                <TableCell className="border text-center sticky left-[270px] bg-white z-10 min-w-[120px]">
+                <TableCell
+                  className="border text-center sticky left-[270px] z-10 min-w-[120px]"
+                  style={nonEditableStyle}
+                >
                   {(() => {
                     // Calculate total PMs used for this profile across all months
                     const totalPMsUsed = tabelaAfetacoes.afetacoesMensais
@@ -209,10 +268,27 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                           .reduce((total, am) => total + am.pMs, 0)
                       : 0
 
-                    return showHours
-                      ? `${(totalPMsUsed * 160).toFixed(1)}h` // Assuming 160h as standard for total PMs used
-                      : totalPMsUsed.toFixed(2)
+                    const isOverAllocated = totalPMsUsed > afetacaoPerfil.pMsAprovados
+
+                    return (
+                      <span
+                        style={{
+                          color: isOverAllocated ? "#dc2626" : "inherit", // red-600
+                          fontWeight: isOverAllocated ? "bold" : "normal",
+                        }}
+                      >
+                        {showHours
+                          ? `${(totalPMsUsed * 160).toFixed(1)}h` // Assuming 160h as standard for total PMs used
+                          : totalPMsUsed.toFixed(2)}
+                      </span>
+                    )
                   })()}
+                </TableCell>
+                <TableCell
+                  className="border text-center sticky left-[390px] z-10 min-w-[120px]"
+                  style={nonEditableStyle}
+                >
+                  {afetacaoPerfil.duracaoMes}
                 </TableCell>
                 {cargasMensaisOrdenadas.map((cargaMensal) => {
                   const afetacaoMensal = encontrarAfetacaoMensal(afetacaoPerfil, cargaMensal)
@@ -220,7 +296,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                     <TableCell
                       key={cargaMensal.id}
                       className={`border text-center ${
-                        afetacaoMensal ? "bg-blue-50" : ""
+                        afetacaoMensal ? "bg-blue-50" : "bg-white"
                       } hover:bg-blue-100 cursor-pointer`}
                       onClick={() => handleOpenEditDialog(afetacaoPerfil, cargaMensal, afetacaoMensal)}
                     >
@@ -235,17 +311,17 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
               </TableRow>
             ))}
 
-            {/* Linha de totais */}
+            {/* Linha de totais - NÃO EDITÁVEL */}
             <TableRow className="bg-gray-50 font-bold">
               <TableCell className="border sticky left-0 bg-gray-50 z-10">Total</TableCell>
-              <TableCell className="border text-center sticky left-[150px] bg-gray-50 z-10">
+              <TableCell className="border text-center sticky left-[150px] z-10" style={nonEditableDarkerStyle}>
                 {showHours
                   ? `${(
                       tabelaAfetacoes.afetacoesPerfis.reduce((total, ap) => total + ap.pMsAprovados, 0) * 160
                     ).toFixed(1)}h`
                   : tabelaAfetacoes.afetacoesPerfis.reduce((total, ap) => total + ap.pMsAprovados, 0).toFixed(2)}
               </TableCell>
-              <TableCell className="border text-center sticky left-[270px] bg-gray-50 z-10">
+              <TableCell className="border text-center sticky left-[270px] z-10" style={nonEditableDarkerStyle}>
                 {(() => {
                   const grandTotal = tabelaAfetacoes.afetacoesMensais
                     ? tabelaAfetacoes.afetacoesMensais.reduce((total, am) => total + am.pMs, 0)
@@ -254,6 +330,9 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                   return showHours ? `${(grandTotal * 160).toFixed(1)}h` : grandTotal.toFixed(2)
                 })()}
               </TableCell>
+              <TableCell className="border text-center sticky left-[390px] z-10" style={nonEditableDarkerStyle}>
+                -
+              </TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => {
                 const totalMensal = tabelaAfetacoes.afetacoesMensais
                   ? tabelaAfetacoes.afetacoesMensais
@@ -261,7 +340,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                       .reduce((total, am) => total + am.pMs, 0)
                   : 0
                 return (
-                  <TableCell key={cargaMensal.id} className="border text-center font-bold">
+                  <TableCell key={cargaMensal.id} className="border text-center font-bold" style={nonEditableStyle}>
                     {totalMensal > 0
                       ? showHours
                         ? `${pmParaHoras(totalMensal, cargaMensal).toFixed(1)}h`
@@ -272,11 +351,12 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
               })}
             </TableRow>
 
-            {/* Linha: Work + Absences */}
+            {/* Linha: Work + Absences - NÃO EDITÁVEL */}
             <TableRow className="bg-yellow-50 text-sm font-medium">
               <TableCell className="border font-medium sticky left-0 bg-yellow-50 z-10">Work + Absences</TableCell>
               <TableCell className="border sticky left-[150px] bg-yellow-50 z-10"></TableCell>
               <TableCell className="border sticky left-[270px] bg-yellow-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[390px] bg-yellow-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => {
                 // Calculate total work hours for this month
                 const totalWorkPMs = tabelaAfetacoes.afetacoesMensais
@@ -292,9 +372,18 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                     : 0
 
                 const totalPMs = totalWorkPMs + vacationPMs
+                const isOverAllocated = totalPMs > 1
 
                 return (
-                  <TableCell key={`work-absences-${cargaMensal.id}`} className="border text-center bg-yellow-50">
+                  <TableCell
+                    key={`work-absences-${cargaMensal.id}`}
+                    className="border text-center"
+                    style={{
+                      ...nonEditableStyle,
+                      color: isOverAllocated ? "#dc2626" : "inherit", // red-600
+                      fontWeight: isOverAllocated ? "bold" : "normal",
+                    }}
+                  >
                     {showHours ? `${pmParaHoras(totalPMs, cargaMensal).toFixed(1)}h` : totalPMs.toFixed(2)}
                   </TableCell>
                 )
@@ -306,22 +395,28 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
               <TableCell className="border font-medium sticky left-0 bg-orange-50 z-10">TSU (%)</TableCell>
               <TableCell className="border sticky left-[150px] bg-orange-50 z-10"></TableCell>
               <TableCell className="border sticky left-[270px] bg-orange-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[390px] bg-orange-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
-                <TableCell key={`tsu-${cargaMensal.id}`} className="border text-center bg-orange-50">
+                <TableCell
+                  key={`tsu-${cargaMensal.id}`}
+                  className="border text-center bg-orange-50 hover:bg-orange-100 cursor-pointer"
+                  onClick={() => handleOpenEditCargaMensalDialog(cargaMensal, "taxaSocialUnica")}
+                >
                   {cargaMensal.taxaSocialUnica.toFixed(2)}%
                 </TableCell>
               ))}
             </TableRow>
 
-            {/* Linha: FTE Cost */}
+            {/* Linha: FTE Cost - NÃO EDITÁVEL */}
             <TableRow className="bg-green-50 text-sm font-medium">
               <TableCell className="border font-medium sticky left-0 bg-green-50 z-10">FTE Cost</TableCell>
               <TableCell className="border sticky left-[150px] bg-green-50 z-10"></TableCell>
               <TableCell className="border sticky left-[270px] bg-green-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[390px] bg-green-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => {
                 const fteCost = cargaMensal.salarioBase * (1 + cargaMensal.taxaSocialUnica / 100)
                 return (
-                  <TableCell key={`fte-cost-${cargaMensal.id}`} className="border text-center bg-green-50">
+                  <TableCell key={`fte-cost-${cargaMensal.id}`} className="border text-center" style={nonEditableStyle}>
                     €{fteCost.toFixed(2)}
                   </TableCell>
                 )
@@ -331,7 +426,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
         </Table>
       </div>
 
-      {/* Diálogo de edição */}
+      {/* Diálogo de edição de afetação */}
       {editDialogOpen && selectedAfetacaoPerfil && selectedCargaMensal && (
         <EditAfetacaoDialog
           isOpen={editDialogOpen}
@@ -341,6 +436,17 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
           afetacaoMensal={selectedAfetacaoMensal || undefined}
           onSuccess={onAfetacaoUpdated}
           showHours={showHours}
+        />
+      )}
+
+      {/* Diálogo de edição de carga mensal */}
+      {editCargaMensalDialogOpen && selectedCargaMensal && selectedEditField && (
+        <EditCargaMensalDialog
+          isOpen={editCargaMensalDialogOpen}
+          onClose={handleCloseEditCargaMensalDialog}
+          cargaMensal={selectedCargaMensal}
+          onSuccess={onAfetacaoUpdated}
+          editField={selectedEditField}
         />
       )}
     </div>
