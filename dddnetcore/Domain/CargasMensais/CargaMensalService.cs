@@ -107,32 +107,26 @@ namespace dddnetcore.Domain.CargasMensais
             return cargasMensais;
         }
 
-        public async Task<CargaMensalDto> UpdateAsync(EditingCargaMensalDto dto)
+        public async Task<CargaMensalDto> UpdateAsync(CargaMensalId Id, EditingCargaMensalDto dto)
         {
-            var cargaMensal = await this._repo.GetByIdAsync(new CargaMensalId(dto.Id));
 
-            if (cargaMensal == null)
-                return null;
+            CargaMensal cargaMensal = await this._repo.GetByIdAsync(Id) ?? throw new NullReferenceException("Carga mensal não encontrada: " + Id);
 
-            cargaMensal.AlterarJornada(new JornadaDiaria(dto.JornadaDiaria));
-            cargaMensal.AlterarDiasUteis(new DiasUteisTrabalhaveis(dto.DiasUteisTrabalhaveis));
-            cargaMensal.AlterarAusencias(new FeriasBaixasLicencasFaltas(dto.FeriasBaixasLicencasFaltas));
-            cargaMensal.AlterarSalarioBase(new SalarioBase(dto.SalarioBase));
-            cargaMensal.AlterarTSU(new TaxaSocialUnica(dto.TaxaSocialUnica));
+            if (dto.JornadaDiaria != null)
+                cargaMensal.AlterarJornada(new JornadaDiaria((double) dto.JornadaDiaria));
+            if (dto.DiasUteisTrabalhaveis != null)
+                cargaMensal.AlterarDiasUteis(new DiasUteisTrabalhaveis((double) dto.DiasUteisTrabalhaveis));
+            if (dto.FeriasBaixasLicencasFaltas != null)
+                cargaMensal.AlterarAusencias(new FeriasBaixasLicencasFaltas((double) dto.FeriasBaixasLicencasFaltas));
+            if (dto.SalarioBase != null)
+                cargaMensal.AlterarSalarioBase(new SalarioBase((double) dto.SalarioBase));
+            if (dto.TaxaSocialUnica != null)
+                cargaMensal.AlterarTSU(new TaxaSocialUnica((double) dto.TaxaSocialUnica));
 
+            await this._repo.UpdateAsync(cargaMensal);
             await this._unitOfWork.CommitAsync();
 
-            return new CargaMensalDto
-            {
-                Id = cargaMensal.Id.AsString(),
-                JornadaDiaria = cargaMensal.JornadaDiaria.Valor,        //
-                DiasUteisTrabalhaveis = cargaMensal.DiasUteis.Valor,
-                FeriasBaixasLicencasFaltas = cargaMensal.Ausencias.Dias,
-                MesAno = cargaMensal.MesAno.Valor,
-                SalarioBase = cargaMensal.SalarioBase.Valor,
-                TaxaSocialUnica = cargaMensal.TSU.Valor,
-                PessoaId = cargaMensal.PessoaId.AsString()
-            };
+            return new CargaMensalDto(cargaMensal);
         }
 
         public async Task<CargaMensalDto> DeleteAsync(CargaMensalId id)

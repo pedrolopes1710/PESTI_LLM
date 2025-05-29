@@ -27,5 +27,14 @@ namespace dddnetcore.Domain.AfetacaoMensais
             this.CargaMensal = cargaMensal; 
         }
 
+        public void ChangePMs(PMs pms)
+        {
+            if (pms == null)
+            {
+                throw new BusinessRuleValidationException("PMs cannot be null.");
+            }
+            this.PMs = pms;
+        }
+
     }
 }

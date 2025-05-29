@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ArrowUpRight, CheckCircle2, Clock, ClipboardList, Users } from "lucide-react"
 import ProjectList from "@/features/projects/components/project-list"
 import TaskSummary from "@/features/tasks/components/task-summary"
-import TeamActivity from "@/features/team/components/team-activity"
 
 export default function Dashboard() {
   return (
@@ -71,9 +70,6 @@ export default function Dashboard() {
         </TabsContent>
         <TabsContent value="tasks" className="space-y-4">
           <TaskSummary />
-        </TabsContent>
-        <TabsContent value="team" className="space-y-4">
-          <TeamActivity />
         </TabsContent>
       </Tabs>
     </div>

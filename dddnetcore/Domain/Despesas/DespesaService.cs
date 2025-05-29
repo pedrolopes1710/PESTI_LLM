@@ -137,7 +137,7 @@ namespace dddnetcore.Domain.Despesas
             return new DespesaDto(despesa);
         }
 
-        private static Orcamento? GetSalarial(List<Orcamento> orcamentos) {
+        private static Orcamento GetSalarial(List<Orcamento> orcamentos) {
             return orcamentos.FirstOrDefault(o => o.Rubrica.Nome.Nome.Equals(NomeRubrica.NomeSalarial)) ?? null;
         }
     }

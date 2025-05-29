@@ -126,6 +126,7 @@ export default function CreateCargasMensaisDialog({ pessoa, onSuccess }: CreateC
               <Input
                 id="mesAnoInicial"
                 type="month"
+                lang="en"
                 value={mesAnoInicial}
                 onChange={(e) => setMesAnoInicial(e.target.value)}
                 disabled={!hasContract || loading}
@@ -137,6 +138,7 @@ export default function CreateCargasMensaisDialog({ pessoa, onSuccess }: CreateC
               <Input
                 id="mesAnoFinal"
                 type="month"
+                lang="en"
                 value={mesAnoFinal}
                 onChange={(e) => setMesAnoFinal(e.target.value)}
                 disabled={!hasContract || loading}

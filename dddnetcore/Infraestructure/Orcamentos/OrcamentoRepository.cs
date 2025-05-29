@@ -25,7 +25,9 @@ namespace dddnetcore.Infraestructure.Orcamentos
 
             var query = _context.Orcamentos.AsQueryable();
 
-            query = query.Where(orcamento => orcamento.Rubrica.Id.Equals(new RubricaId(rubricaId.Value)));
+            query = query.Where(orcamento => orcamento.Rubrica.Id.Equals(new RubricaId(rubricaId.Value)))
+                .Include(o => o.Rubrica)
+                .Include(o => o.Despesas);
 
             return await query.ToListAsync();
         }
@@ -36,7 +38,9 @@ namespace dddnetcore.Infraestructure.Orcamentos
 
             var query = _context.Orcamentos.AsQueryable();
 
-            query = query.Where(orcamento => orcamento.AtividadeId.Equals(new AtividadeId(atividadeId.Value)));
+            query = query.Where(orcamento => orcamento.AtividadeId.Equals(new AtividadeId(atividadeId.Value)))
+                .Include(o => o.Rubrica)
+                .Include(o => o.Despesas);;
 
             return await query.ToListAsync();
         }

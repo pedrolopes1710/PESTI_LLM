@@ -175,12 +175,34 @@ export default function OrcamentosPage() {
               </span>
             )}
           </CardTitle>
-          <div className="text-lg font-semibold">
-            Total:{" "}
-            {totalBudget.toLocaleString("pt-PT", {
-              style: "currency",
-              currency: "EUR",
-            })}
+          <div className="text-right">
+            <div className="text-lg font-semibold">
+              Total Budget:{" "}
+              {totalBudget.toLocaleString("pt-PT", {
+                style: "currency",
+                currency: "EUR",
+              })}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Total Expenses: {(() => {
+                const totalExpenses = filteredOrcamentos.reduce(
+                  (total, orcamento) => total + calculateTotalExpenses(orcamento.despesas),
+                  0,
+                )
+                const percentage = totalBudget > 0 ? (totalExpenses / totalBudget) * 100 : 0
+                const isOverBudget = percentage > 100
+
+                return (
+                  <span className={isOverBudget ? "text-red-600 font-medium" : ""}>
+                    {totalExpenses.toLocaleString("pt-PT", {
+                      style: "currency",
+                      currency: "EUR",
+                    })}{" "}
+                    ({percentage.toFixed(1)}%)
+                  </span>
+                )
+              })()}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -194,6 +216,7 @@ export default function OrcamentosPage() {
                     <TableHead className="w-10"></TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Planned Expense</TableHead>
+                    <TableHead>Current Expenses</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -219,6 +242,28 @@ export default function OrcamentosPage() {
                             style: "currency",
                             currency: "EUR",
                           })}
+                        </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const totalExpenses = calculateTotalExpenses(orcamento.despesas)
+                            const percentage =
+                              orcamento.gastoPlaneado > 0 ? (totalExpenses / orcamento.gastoPlaneado) * 100 : 0
+                            const isOverBudget = percentage > 100
+
+                            return (
+                              <div className="flex flex-col">
+                                <span className={isOverBudget ? "text-red-600 font-medium" : ""}>
+                                  {totalExpenses.toLocaleString("pt-PT", {
+                                    style: "currency",
+                                    currency: "EUR",
+                                  })}
+                                </span>
+                                <span className={`text-xs ${isOverBudget ? "text-red-500" : "text-muted-foreground"}`}>
+                                  {percentage.toFixed(1)}% of budget
+                                </span>
+                              </div>
+                            )
+                          })()}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
