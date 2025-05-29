@@ -3,7 +3,7 @@ export interface CreateActivityDto {
   dataFimAtividade: string
   descricaoAtividade: string
   nomeAtividade: string
-  orcamentoId?: string
+  orcamentoIds?: string[]
   tarefasIds?: string[]
   entregaveisIds?: string[]
   perfisIds?: string[]
@@ -15,7 +15,7 @@ export interface Activity {
   dataFimAtividade: string
   descricaoAtividade: string
   nomeAtividade: string
-  orcamentoId?: string
+  orcamentoIds?: string[]
   tarefasIds?: string[]
   entregaveisIds?: string[]
   perfisIds?: string[]

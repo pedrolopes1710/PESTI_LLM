@@ -61,6 +61,7 @@ import { useRouter } from "next/navigation"
 import { CreateTarefaInline } from "../activities/components/create-tarefa-inline"
 import { CreateEntregavelInline } from "../activities/components/create-entregavel-inline"
 import { CreateProfileInline } from "../activities/components/create-profile-inline"
+import { CreateOrcamentoDialog } from "../orcamentos/components/create-orcamento-dialog"
 
 export default function TasksPage() {
   const router = useRouter()
@@ -72,6 +73,7 @@ export default function TasksPage() {
   const [showTaskForm, setShowTaskForm] = useState(false)
   const [isCreatingActivity, setIsCreatingActivity] = useState(false)
   const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null)
+  const [showCreateOrcamento, setShowCreateOrcamento] = useState(false)
 
   // Estados para edição e exclusão de tarefas
   const [editingTask, setEditingTask] = useState<ApiTask | null>(null)
@@ -84,7 +86,7 @@ export default function TasksPage() {
   const [descricaoAtividade, setDescricaoAtividade] = useState("")
   const [dataInicio, setDataInicio] = useState<Date | undefined>(new Date())
   const [dataFim, setDataFim] = useState<Date | undefined>(new Date())
-  const [orcamentoId, setOrcamentoId] = useState("")
+  const [orcamentoIds, setOrcamentoIds] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Estados para as listas de seleção múltipla
@@ -396,6 +398,17 @@ export default function TasksPage() {
     setShowCreatePerfil(false)
   }
 
+  // Função para lidar com a criação de orçamento
+  const handleOrcamentoCriado = (orcamentoId: string) => {
+    // Adicionar o novo orçamento à lista
+    setOrcamentoIds([...orcamentoIds, orcamentoId])
+
+    toast({
+      title: "Orçamento criado com sucesso!",
+      description: "O orçamento foi criado e adicionado à atividade.",
+    })
+  }
+
   // Função para lidar com o envio do formulário de atividade
   async function handleCreateActivity() {
     // Validar campos obrigatórios
@@ -454,7 +467,7 @@ export default function TasksPage() {
         descricaoAtividade,
         dataInicio: dataInicio.toISOString(),
         dataFim: dataFim.toISOString(),
-        orcamentoId,
+        orcamentoIds,
         tarefasIds,
         entregaveisIds,
         perfisIds,
@@ -472,8 +485,8 @@ export default function TasksPage() {
       }
 
       // Adicionar orcamentoId se fornecido
-      if (orcamentoId.trim()) {
-        activityData.orcamentoId = orcamentoId
+      if (orcamentoIds.length > 0) {
+        activityData.orcamentoIds = orcamentoIds
       }
 
       console.log("Dados finais para envio:", activityData)
@@ -513,7 +526,7 @@ export default function TasksPage() {
     setDescricaoAtividade("")
     setDataInicio(new Date())
     setDataFim(new Date())
-    setOrcamentoId("")
+    setOrcamentoIds([])
     setTarefasIds([])
     setEntregaveisIds([])
     setPerfisIds([])
@@ -540,7 +553,7 @@ export default function TasksPage() {
   // Função para navegar para a página de atividades
   const handleViewActivity = (activityId: string) => {
     if (activityId === "no-activity") return
-    router.push("/activities")
+    router.push("/tasks")
   }
 
   // Renderizar o formulário de criação de atividade
@@ -646,16 +659,27 @@ export default function TasksPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="orcamentoId" className="text-sm font-medium">
-                    ID do Orçamento (opcional)
-                  </label>
-                  <Input
+                  <div className="flex items-center justify-between">
+                    <label htmlFor="orcamentoIds" className="text-sm font-medium">
+                      IDs dos Orçamentos (opcional)
+                    </label>
+                    <CreateOrcamentoDialog onOrcamentoCriado={handleOrcamentoCriado} />
+                  </div>
+                   <Input
                     id="orcamentoId"
-                    placeholder="Digite o ID do orçamento"
-                    value={orcamentoId}
-                    onChange={(e) => setOrcamentoId(e.target.value)}
+                    placeholder="Digite os IDs dos orçamentos separados por vírgula"
+                    value={orcamentoIds.join(", ")}
+                    onChange={(e) => {
+                      const ids = e.target.value
+                        .split(",")
+                        .map((id) => id.trim())
+                        .filter((id) => id.length > 0)    
+                      setOrcamentoIds(ids)
+                    }}
                   />
-                  <p className="text-xs text-muted-foreground">Exemplo: 65EE3418-24F1-4A8A-9A03-095DAC5CB9F9</p>
+                  <p className="text-xs text-muted-foreground">
+                    Exemplo: 44A0B6BA-8EA5-48C3-B674-F00273DA06F8, 78FF5629-35G2-5B9B-AB14-106EBD6DC0G0
+                  </p>
                 </div>
               </CardContent>
             </Card>

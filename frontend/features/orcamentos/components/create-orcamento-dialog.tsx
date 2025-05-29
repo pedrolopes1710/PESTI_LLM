@@ -21,9 +21,10 @@ import * as z from "zod"
 import { toast } from "@/components/ui/use-toast"
 import { createOrcamento } from "../api"
 import { fetchRubricas } from "@/features/rubricas/api"
-import { fetchAtividades } from "@/features/atividades/api"
+import { fetchActivities } from "@/features/activities/api"
 import type { Rubrica } from "@/features/rubricas/types"
-import type { Atividade } from "@/features/atividades/types"
+import type { Activity } from "@/features/activities/types"
+import { CreateRubricaDialog } from "@/features/rubricas/components/create-rubrica-dialog"
 
 // Define the form validation schema
 const formSchema = z.object({
@@ -32,8 +33,8 @@ const formSchema = z.object({
       required_error: "O valor do gasto planeado é obrigatório.",
       invalid_type_error: "O valor deve ser um número.",
     })
-    .positive({
-      message: "O valor deve ser positivo.",
+    .min(0.01, {
+      message: "O valor deve ser maior que zero.",
     }),
   rubricaId: z.string({
     required_error: "Por favor selecione uma rubrica.",
@@ -44,24 +45,25 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>
 
 interface CreateOrcamentoDialogProps {
-  onOrcamentoCriado: () => void
+  onOrcamentoCriado: (orcamentoId: string) => void
 }
 
 export function CreateOrcamentoDialog({ onOrcamentoCriado }: CreateOrcamentoDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [rubricas, setRubricas] = useState<Rubrica[]>([])
-  const [atividades, setAtividades] = useState<Atividade[]>([])
+  const [atividades, setAtividades] = useState<Activity[]>([])
   const [loadingRubricas, setLoadingRubricas] = useState(false)
   const [loadingAtividades, setLoadingAtividades] = useState(false)
+  const [showCreateRubrica, setShowCreateRubrica] = useState(false)
 
   // Initialize the form with react-hook-form
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      gastoPlaneado: undefined,
-      rubricaId: "",
-      atividadeId: undefined,
+      gastoPlaneado: 0,
+      rubricaId: "defaultRubricaId", // Updated default value to be a non-empty string
+      atividadeId: "none",
     },
   })
 
@@ -78,7 +80,7 @@ export function CreateOrcamentoDialog({ onOrcamentoCriado }: CreateOrcamentoDial
           setRubricas(rubricasData)
 
           // Load atividades
-          const atividadesData = await fetchAtividades()
+          const atividadesData = await fetchActivities()
           setAtividades(atividadesData)
         } catch (error) {
           console.error("Error loading data:", error)
@@ -106,11 +108,13 @@ export function CreateOrcamentoDialog({ onOrcamentoCriado }: CreateOrcamentoDial
       const createDto = {
         gastoPlaneado: values.gastoPlaneado,
         rubricaId: values.rubricaId,
-        // Only include atividadeId if it's defined and not empty
-        ...(values.atividadeId && { atividadeId: values.atividadeId }),
+        // Only include atividadeId if it's defined and not empty and not "none"
+        ...(values.atividadeId &&
+          values.atividadeId !== "" &&
+          values.atividadeId !== "none" && { atividadeId: values.atividadeId }),
       }
 
-      await createOrcamento(createDto)
+      const createdOrcamento = await createOrcamento(createDto)
 
       // Show success message
       toast({
@@ -122,13 +126,17 @@ export function CreateOrcamentoDialog({ onOrcamentoCriado }: CreateOrcamentoDial
       })
 
       // Reset the form
-      form.reset()
+      form.reset({
+        gastoPlaneado: 0,
+        rubricaId: "defaultRubricaId",
+        atividadeId: "none",
+      })
 
       // Close the dialog
       setIsOpen(false)
 
       // Notify the parent component to update the list
-      onOrcamentoCriado()
+      onOrcamentoCriado(createdOrcamento.id)
     } catch (error) {
       console.error("Erro ao criar orçamento:", error)
       toast({
@@ -141,105 +149,137 @@ export function CreateOrcamentoDialog({ onOrcamentoCriado }: CreateOrcamentoDial
     }
   }
 
+  // Handle rubrica creation
+  const handleRubricaCreated = async () => {
+    setShowCreateRubrica(false)
+
+    // Reload rubricas
+    try {
+      setLoadingRubricas(true)
+      const rubricasData = await fetchRubricas()
+      setRubricas(rubricasData)
+    } catch (error) {
+      console.error("Error reloading rubricas:", error)
+    } finally {
+      setLoadingRubricas(false)
+    }
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          New Budget
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Create New Budget</DialogTitle>
-          <DialogDescription>Fill in the fields below to create a new budget.</DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-            <FormField
-              control={form.control}
-              name="gastoPlaneado"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Planned Expense (€)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="Enter planned amount"
-                      {...field}
-                      onChange={(e) => {
-                        const value = e.target.value === "" ? undefined : Number.parseFloat(e.target.value)
-                        field.onChange(value)
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="rubricaId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+    <>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            New Budget
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Create New Budget</DialogTitle>
+            <DialogDescription>Fill in the fields below to create a new budget.</DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+              <FormField
+                control={form.control}
+                name="gastoPlaneado"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Planned Expense (€)</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={loadingRubricas ? "Loading categories..." : "Select a category"} />
-                      </SelectTrigger>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="Enter planned amount"
+                        {...field}
+                        value={field.value === 0 ? "0" : field.value.toString()}
+                        onChange={(e) => {
+                          const value = e.target.value === "" ? 0 : Number(e.target.value)
+                          field.onChange(value)
+                        }}
+                      />
                     </FormControl>
-                    <SelectContent>
-                      {rubricas.map((rubrica) => (
-                        <SelectItem key={rubrica.id} value={rubrica.id}>
-                          {rubrica.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="atividadeId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Activity (Optional)</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue
-                          placeholder={loadingAtividades ? "Loading activities..." : "Select an activity (optional)"}
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="none">No activity</SelectItem>
-                      {atividades.map((atividade) => (
-                        <SelectItem key={atividade.id} value={atividade.id}>
-                          {atividade.nomeAtividade}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsOpen(false)} disabled={isSubmitting}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Creating..." : "Create Budget"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex items-center justify-between">
+                <FormField
+                  control={form.control}
+                  name="rubricaId"
+                  render={({ field }) => (
+                    <FormItem className="flex-1 mr-2">
+                      <FormLabel>Category</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={loadingRubricas ? "Loading categories..." : "Select a category"}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {rubricas.map((rubrica) => (
+                            <SelectItem key={rubrica.id} value={rubrica.id}>
+                              {rubrica.nome}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="mt-6">
+                  <Button type="button" variant="outline" size="sm" onClick={() => setShowCreateRubrica(true)}>
+                    <Plus className="h-3 w-3 mr-1" />
+                    New
+                  </Button>
+                </div>
+              </div>
+              <FormField
+                control={form.control}
+                name="atividadeId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Activity (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={loadingAtividades ? "Loading activities..." : "Select an activity (optional)"}
+                          />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">No activity</SelectItem>
+                        {atividades.map((atividade) => (
+                          <SelectItem key={atividade.id} value={atividade.id}>
+                            {atividade.nomeAtividade}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)} disabled={isSubmitting}>
+                  Cancel
+                </Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Creating..." : "Create Budget"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog for creating a new rubrica */}
+      {showCreateRubrica && <CreateRubricaDialog onRubricaCreated={handleRubricaCreated} />}
+    </>
   )
 }
