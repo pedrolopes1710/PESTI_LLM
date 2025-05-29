@@ -37,7 +37,6 @@ namespace dddnetcore.Domain.AfetacaoMensais
             return afetacaoMensal == null ? null : new AfetacaoMensalDto(afetacaoMensal);
         }
 
-        //TODO: testar quando possível
         public async Task<AfetacaoMensalDto> AddAsync(CreatingAfetacaoMensalDto dto) {
             AfetacaoPerfil afetacaoPerfil = await this._afetacaoPerfilRepo.GetByIdAsync(new AfetacaoPerfilId(dto.AfetacaoPerfilId)) ?? throw new NullReferenceException("Not Found AfetacaoPerfil: " + dto.AfetacaoPerfilId);
 
@@ -63,16 +62,17 @@ namespace dddnetcore.Domain.AfetacaoMensais
 
         public async Task<AfetacaoMensalDto> UpdateAsync(AfetacaoMensalId id, EditingAfetacaoMensalDto dto) {
             AfetacaoMensal afetacaoMensal = await this._repo.GetByIdAsync(id) ?? throw new NullReferenceException("Not Found AfetacaoMensal: " + id);
-            
-            Pessoa pessoa = await this._pessoaRepo.GetByIdAsync(afetacaoMensal.AfetacaoPerfil.Pessoa.Id) ?? throw new NullReferenceException("Not Found Person: " + afetacaoMensal.AfetacaoPerfil.Pessoa.Id);
+            Pessoa pessoa = await this._pessoaRepo.GetByIdAsync(afetacaoMensal.AfetacaoPerfil.PessoaId) ?? throw new NullReferenceException("Not Found Person: " + afetacaoMensal.AfetacaoPerfil.Pessoa.Id);
             CargaMensal cargaMensal = afetacaoMensal.CargaMensal;
-            
+
             if (!IsUnlocked(cargaMensal, pessoa)) {
                 throw new Exception("The monthly schedule is locked for the person " + pessoa.Id + " for the month " + cargaMensal.MesAno + "(payment already requested)");
             }
 
             if (dto.PMs == 0) 
                 return RemoveAsync(id).Result;
+
+            afetacaoMensal.ChangePMs(new PMs(dto.PMs));
 
             await this._repo.UpdateAsync(afetacaoMensal);
             await this._unitOfWork.CommitAsync();

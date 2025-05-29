@@ -39,6 +39,15 @@ namespace dddnetcore.Infraestructure.AfetacaoPerfis
                 .ToListAsync();
         }
 
+        public async Task<AfetacaoMensal> GetByIdAsync(AfetacaoMensalId id) {
+            var query = _context.AfetacaoMensais.AsQueryable();
+
+            query = query.Where(af => af.Id.Equals(id));
+            query = query.Include(af => af.AfetacaoPerfil);
+            query = query.Include(af => af.CargaMensal);
+
+            return await query.FirstOrDefaultAsync();
+        }
 
         public async Task<AfetacaoMensal> UpdateAsync(AfetacaoMensal afetacaoMensal) {
             _context.AfetacaoMensais.Update(afetacaoMensal);
