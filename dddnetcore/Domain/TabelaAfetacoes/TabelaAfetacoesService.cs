@@ -26,7 +26,6 @@ namespace dddnetcore.Domain.TabelaAfetacoes
             this._afetacaoPerfilRepo = afetacaoPerfilRepository;
         }
 
-        //! precisa de ser testado
         public async Task<TabelaAfetacoesDto> GenerateAsync(Guid pessoaId) {
 
             Pessoa pessoa = await this._pessoaRepo.GetByIdAsync(new PessoaId(pessoaId)) ?? throw new NullReferenceException("Not Found Person: " + pessoaId);

@@ -104,6 +104,9 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
               <TableHead className="border font-bold bg-gray-100 sticky left-[150px] z-10">
                 {showHours ? "Approved Hours" : "Approved PMs"}
               </TableHead>
+              <TableHead className="border font-bold bg-gray-100 sticky left-[270px] z-10">
+                {showHours ? "Total Hours Used" : "Total PMs Used"}
+              </TableHead>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
                 <TableHead key={cargaMensal.id} className="border font-bold text-center bg-gray-100 min-w-[100px]">
                   {formatarData(cargaMensal.mesAno)}
@@ -116,6 +119,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
             <TableRow className="bg-blue-50 text-sm">
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">Daily Workday</TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
                 <TableCell key={`daily-${cargaMensal.id}`} className="border text-center bg-blue-50">
                   {cargaMensal.jornadaDiaria.toFixed(1)}h
@@ -127,6 +131,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
             <TableRow className="bg-blue-50 text-sm">
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">Working Days</TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
                 <TableCell key={`days-${cargaMensal.id}`} className="border text-center bg-blue-50">
                   {cargaMensal.diasUteisTrabalhaveis.toFixed(0)} days
@@ -140,6 +145,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                 Potential Working Hours
               </TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
                 <TableCell key={`potential-${cargaMensal.id}`} className="border text-center bg-blue-50">
                   {calcularHorasPotenciais(cargaMensal).toFixed(1)}h
@@ -151,6 +157,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
             <TableRow className="bg-blue-50 text-sm">
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">Vacation Days</TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
                 <TableCell key={`vacation-days-${cargaMensal.id}`} className="border text-center bg-blue-50">
                   {cargaMensal.feriasBaixasLicencasFaltas.toFixed(0)} days
@@ -162,6 +169,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
             <TableRow className="bg-blue-50 text-sm">
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">Base Salary</TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
                 <TableCell key={`salary-${cargaMensal.id}`} className="border text-center bg-blue-50">
                   €{cargaMensal.salarioBase.toFixed(2)}
@@ -173,6 +181,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
             <TableRow className="bg-blue-50 text-sm">
               <TableCell className="border font-medium sticky left-0 bg-blue-50 z-10">Vacation Hours</TableCell>
               <TableCell className="border sticky left-[150px] bg-blue-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[270px] bg-blue-50 z-10"></TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
                 <TableCell key={`vacation-hours-${cargaMensal.id}`} className="border text-center bg-blue-50">
                   {(cargaMensal.feriasBaixasLicencasFaltas * cargaMensal.jornadaDiaria).toFixed(1)}h
@@ -186,17 +195,31 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                 <TableCell className="border font-medium sticky left-0 bg-white z-10 min-w-[150px]">
                   {afetacaoPerfil.perfilDto?.descricao || "Unknown Profile"}
                 </TableCell>
-                <TableCell className="border text-right sticky left-[150px] bg-white z-10 min-w-[120px]">
+                <TableCell className="border text-center sticky left-[150px] bg-white z-10 min-w-[120px]">
                   {showHours
                     ? `${(afetacaoPerfil.pMsAprovados * 160).toFixed(1)}h` // Assumindo 160h como padrão para PMs aprovados
                     : afetacaoPerfil.pMsAprovados.toFixed(2)}
+                </TableCell>
+                <TableCell className="border text-center sticky left-[270px] bg-white z-10 min-w-[120px]">
+                  {(() => {
+                    // Calculate total PMs used for this profile across all months
+                    const totalPMsUsed = tabelaAfetacoes.afetacoesMensais
+                      ? tabelaAfetacoes.afetacoesMensais
+                          .filter((am) => am.afetacaoPerfil.id === afetacaoPerfil.id)
+                          .reduce((total, am) => total + am.pMs, 0)
+                      : 0
+
+                    return showHours
+                      ? `${(totalPMsUsed * 160).toFixed(1)}h` // Assuming 160h as standard for total PMs used
+                      : totalPMsUsed.toFixed(2)
+                  })()}
                 </TableCell>
                 {cargasMensaisOrdenadas.map((cargaMensal) => {
                   const afetacaoMensal = encontrarAfetacaoMensal(afetacaoPerfil, cargaMensal)
                   return (
                     <TableCell
                       key={cargaMensal.id}
-                      className={`border text-right ${
+                      className={`border text-center ${
                         afetacaoMensal ? "bg-blue-50" : ""
                       } hover:bg-blue-100 cursor-pointer`}
                       onClick={() => handleOpenEditDialog(afetacaoPerfil, cargaMensal, afetacaoMensal)}
@@ -215,12 +238,21 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
             {/* Linha de totais */}
             <TableRow className="bg-gray-50 font-bold">
               <TableCell className="border sticky left-0 bg-gray-50 z-10">Total</TableCell>
-              <TableCell className="border text-right sticky left-[150px] bg-gray-50 z-10">
+              <TableCell className="border text-center sticky left-[150px] bg-gray-50 z-10">
                 {showHours
                   ? `${(
                       tabelaAfetacoes.afetacoesPerfis.reduce((total, ap) => total + ap.pMsAprovados, 0) * 160
                     ).toFixed(1)}h`
                   : tabelaAfetacoes.afetacoesPerfis.reduce((total, ap) => total + ap.pMsAprovados, 0).toFixed(2)}
+              </TableCell>
+              <TableCell className="border text-center sticky left-[270px] bg-gray-50 z-10">
+                {(() => {
+                  const grandTotal = tabelaAfetacoes.afetacoesMensais
+                    ? tabelaAfetacoes.afetacoesMensais.reduce((total, am) => total + am.pMs, 0)
+                    : 0
+
+                  return showHours ? `${(grandTotal * 160).toFixed(1)}h` : grandTotal.toFixed(2)
+                })()}
               </TableCell>
               {cargasMensaisOrdenadas.map((cargaMensal) => {
                 const totalMensal = tabelaAfetacoes.afetacoesMensais
@@ -229,12 +261,68 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                       .reduce((total, am) => total + am.pMs, 0)
                   : 0
                 return (
-                  <TableCell key={cargaMensal.id} className="border text-right font-bold">
+                  <TableCell key={cargaMensal.id} className="border text-center font-bold">
                     {totalMensal > 0
                       ? showHours
                         ? `${pmParaHoras(totalMensal, cargaMensal).toFixed(1)}h`
                         : totalMensal.toFixed(2)
                       : "-"}
+                  </TableCell>
+                )
+              })}
+            </TableRow>
+
+            {/* Linha: Work + Absences */}
+            <TableRow className="bg-yellow-50 text-sm font-medium">
+              <TableCell className="border font-medium sticky left-0 bg-yellow-50 z-10">Work + Absences</TableCell>
+              <TableCell className="border sticky left-[150px] bg-yellow-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[270px] bg-yellow-50 z-10"></TableCell>
+              {cargasMensaisOrdenadas.map((cargaMensal) => {
+                // Calculate total work hours for this month
+                const totalWorkPMs = tabelaAfetacoes.afetacoesMensais
+                  ? tabelaAfetacoes.afetacoesMensais
+                      .filter((am) => am.cargaMensal.id === cargaMensal.id)
+                      .reduce((total, am) => total + am.pMs, 0)
+                  : 0
+
+                // Calculate vacation PMs (vacation days / working days)
+                const vacationPMs =
+                  cargaMensal.diasUteisTrabalhaveis > 0
+                    ? cargaMensal.feriasBaixasLicencasFaltas / cargaMensal.diasUteisTrabalhaveis
+                    : 0
+
+                const totalPMs = totalWorkPMs + vacationPMs
+
+                return (
+                  <TableCell key={`work-absences-${cargaMensal.id}`} className="border text-center bg-yellow-50">
+                    {showHours ? `${pmParaHoras(totalPMs, cargaMensal).toFixed(1)}h` : totalPMs.toFixed(2)}
+                  </TableCell>
+                )
+              })}
+            </TableRow>
+
+            {/* Linha: TSU */}
+            <TableRow className="bg-orange-50 text-sm font-medium">
+              <TableCell className="border font-medium sticky left-0 bg-orange-50 z-10">TSU (%)</TableCell>
+              <TableCell className="border sticky left-[150px] bg-orange-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[270px] bg-orange-50 z-10"></TableCell>
+              {cargasMensaisOrdenadas.map((cargaMensal) => (
+                <TableCell key={`tsu-${cargaMensal.id}`} className="border text-center bg-orange-50">
+                  {cargaMensal.taxaSocialUnica.toFixed(2)}%
+                </TableCell>
+              ))}
+            </TableRow>
+
+            {/* Linha: FTE Cost */}
+            <TableRow className="bg-green-50 text-sm font-medium">
+              <TableCell className="border font-medium sticky left-0 bg-green-50 z-10">FTE Cost</TableCell>
+              <TableCell className="border sticky left-[150px] bg-green-50 z-10"></TableCell>
+              <TableCell className="border sticky left-[270px] bg-green-50 z-10"></TableCell>
+              {cargasMensaisOrdenadas.map((cargaMensal) => {
+                const fteCost = cargaMensal.salarioBase * (1 + cargaMensal.taxaSocialUnica / 100)
+                return (
+                  <TableCell key={`fte-cost-${cargaMensal.id}`} className="border text-center bg-green-50">
+                    €{fteCost.toFixed(2)}
                   </TableCell>
                 )
               })}
