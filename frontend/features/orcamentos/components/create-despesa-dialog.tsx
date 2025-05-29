@@ -27,14 +27,18 @@ const formSchema = z.object({
   descricao: z.string().min(3, {
     message: "Description must be at least 3 characters.",
   }),
-  valor: z.coerce
-    .number({
-      required_error: "Amount is required.",
-      invalid_type_error: "Amount must be a number.",
-    })
-    .positive({
-      message: "Amount must be positive.",
-    }),
+  valor: z
+    .string()
+    .min(1, "Amount is required")
+    .refine(
+      (val) => {
+        const num = Number.parseFloat(val)
+        return !isNaN(num) && num > 0
+      },
+      {
+        message: "Amount must be a positive number.",
+      },
+    ),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -53,7 +57,7 @@ export function CreateDespesaDialog({ orcamento, onDespesaCreated }: CreateDespe
     resolver: zodResolver(formSchema),
     defaultValues: {
       descricao: "",
-      valor: undefined,
+      valor: "",
     },
   })
 
@@ -65,7 +69,7 @@ export function CreateDespesaDialog({ orcamento, onDespesaCreated }: CreateDespe
       // Create the DTO to send to the API
       const createDto: CreatingDespesaDto = {
         descricao: values.descricao,
-        valor: values.valor,
+        valor: Number.parseFloat(values.valor),
         orcamentoId: orcamento.id,
       }
 
@@ -74,13 +78,12 @@ export function CreateDespesaDialog({ orcamento, onDespesaCreated }: CreateDespe
       // Show success message
       toast({
         title: "Expense created successfully!",
-        description: `The expense "${values.descricao}" has been created with the amount of ${values.valor.toLocaleString(
-          "en-US",
-          {
-            style: "currency",
-            currency: "EUR",
-          },
-        )}.`,
+        description: `The expense "${values.descricao}" has been created with the amount of ${Number.parseFloat(
+          values.valor,
+        ).toLocaleString("en-US", {
+          style: "currency",
+          currency: "EUR",
+        })}.`,
       })
 
       // Reset the form
@@ -151,7 +154,7 @@ export function CreateDespesaDialog({ orcamento, onDespesaCreated }: CreateDespe
                       placeholder="Enter expense amount"
                       {...field}
                       onChange={(e) => {
-                        const value = e.target.value === "" ? undefined : Number.parseFloat(e.target.value)
+                        const value = e.target.value === "" ? "" : e.target.value
                         field.onChange(value)
                       }}
                     />
