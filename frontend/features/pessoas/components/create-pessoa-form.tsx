@@ -13,7 +13,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { toast } from "@/components/ui/use-toast"
-import { CalendarIcon, User, Briefcase, Mail, CreditCard, Loader2 } from 'lucide-react'
+import { CalendarIcon, User, Briefcase, Mail, CreditCard, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { createContrato, createPessoa } from "../api"
@@ -67,10 +67,13 @@ interface CreatePessoaFormProps {
   onCancel: () => void
 }
 
+// Tipos de contrato em português
 const TIPOS_CONTRATO = [
-  { value: "InvestigadorDocente", label: "Teaching Researcher" },
-  { value: "Investigador", label: "Researcher" },
-  { value: "Bolseiro", label: "Scholarship Holder" },
+  { value: "InvestigadorDocente", label: "Investigador Docente" },
+  { value: "Investigador", label: "Investigador" },
+  { value: "Bolseiro", label: "Bolseiro" },
+  { value: "TecnicoSuperior", label: "Técnico Superior" },
+  { value: "Assistente", label: "Assistente" },
 ]
 
 export function CreatePessoaForm({ onPessoaCreated, onCancel }: CreatePessoaFormProps) {
@@ -217,7 +220,7 @@ export function CreatePessoaForm({ onPessoaCreated, onCancel }: CreatePessoaForm
                       <FormControl>
                         <div className="relative">
                           <CreditCard className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input placeholder="SID-2024-001" className="pl-10" {...field} />
+                          <Input placeholder="xxxx-xxxx-xxxx  x:digit or number" className="pl-10" {...field} />
                         </div>
                       </FormControl>
                       <FormDescription>Unique identifier in the science system.</FormDescription>
@@ -262,8 +265,6 @@ export function CreatePessoaForm({ onPessoaCreated, onCancel }: CreatePessoaForm
                     </FormItem>
                   )}
                 />
-
-                {/* Removido o campo "Active Person" já que a API cria por defeito como ativo */}
               </CardContent>
             </Card>
 
@@ -286,7 +287,7 @@ export function CreatePessoaForm({ onPessoaCreated, onCancel }: CreatePessoaForm
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select contract type" />
+                            <SelectValue placeholder="Selecione o tipo de contrato" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -313,8 +314,10 @@ export function CreatePessoaForm({ onPessoaCreated, onCancel }: CreatePessoaForm
                         <Input
                           type="number"
                           placeholder="3500.00"
-                          {...field}
-                          onChange={(e) => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                          value={field.value === 0 ? "" : field.value}
+                          onChange={(e) =>
+                            field.onChange(e.target.value === "" ? 0 : Number.parseFloat(e.target.value))
+                          }
                         />
                       </FormControl>
                       <FormDescription>Salary amount in euros.</FormDescription>

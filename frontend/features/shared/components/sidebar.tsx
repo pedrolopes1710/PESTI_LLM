@@ -45,11 +45,6 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       icon: BarChart3,
     },
     {
-      name: "Team",
-      path: "/team",
-      icon: Users,
-    },
-    {
       name: "People",
       path: "/pessoas",
       icon: Users,

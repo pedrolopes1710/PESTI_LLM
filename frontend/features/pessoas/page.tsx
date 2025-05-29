@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -22,6 +21,7 @@ import {
   Edit,
   Trash2,
   ArrowLeft,
+  User,
 } from "lucide-react"
 import { fetchPessoas } from "./api"
 import type { Pessoa } from "./types"
@@ -32,6 +32,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, RefreshCw } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CreatePessoaForm } from "./components/create-pessoa-form"
+import { DeletePessoaDialog } from "./components/delete-pessoa-dialog"
+import { ToggleStatusDialog } from "./components/toggle-status-dialog"
 
 export default function PessoasPage() {
   const [pessoas, setPessoas] = useState<Pessoa[]>([])
@@ -43,6 +45,10 @@ export default function PessoasPage() {
   const [sortBy, setSortBy] = useState<"name" | "email" | "salary" | "contractEnd">("name")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [isCreating, setIsCreating] = useState(false)
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [toggleStatusDialogOpen, setToggleStatusDialogOpen] = useState(false)
+  const [selectedPessoa, setSelectedPessoa] = useState<Pessoa | null>(null)
 
   // Carregar pessoas
   useEffect(() => {
@@ -69,6 +75,56 @@ export default function PessoasPage() {
   const handlePessoaCreated = () => {
     setIsCreating(false)
     // Os dados serão recarregados automaticamente pelo useEffect
+  }
+
+  // Função para abrir dialog de delete
+  const handleDeleteClick = (pessoa: Pessoa) => {
+    setSelectedPessoa(pessoa)
+    setDeleteDialogOpen(true)
+  }
+
+  // Função para abrir dialog de toggle status
+  const handleToggleStatusClick = (pessoa: Pessoa) => {
+    setSelectedPessoa(pessoa)
+    setToggleStatusDialogOpen(true)
+  }
+
+  // Função para lidar com pessoa deletada
+  const handlePessoaDeleted = async () => {
+    try {
+      const data = await fetchPessoas()
+      setPessoas(data)
+      toast({
+        title: "Person deleted",
+        description: "Person has been deleted successfully.",
+      })
+    } catch (error) {
+      console.error("Erro ao recarregar pessoas:", error)
+      toast({
+        title: "Error",
+        description: "Could not reload people data.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Função para lidar com status alterado
+  const handleStatusToggled = async () => {
+    try {
+      const data = await fetchPessoas()
+      setPessoas(data)
+      toast({
+        title: "Status updated",
+        description: "Person status has been updated successfully.",
+      })
+    } catch (error) {
+      console.error("Erro ao recarregar pessoas:", error)
+      toast({
+        title: "Error",
+        description: "Could not reload people data.",
+        variant: "destructive",
+      })
+    }
   }
 
   // Se estiver no modo de criação, mostrar o formulário
@@ -186,16 +242,9 @@ export default function PessoasPage() {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={`/placeholder.svg?height=48&width=48`} alt={pessoa.nome} />
-              <AvatarFallback>
-                {pessoa.nome
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .slice(0, 2)}
-              </AvatarFallback>
-            </Avatar>
+            <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+              <User className="h-6 w-6 text-muted-foreground" />
+            </div>
             <div>
               <CardTitle className="text-lg">{pessoa.nome}</CardTitle>
               <CardDescription className="flex items-center gap-1">
@@ -224,9 +273,22 @@ export default function PessoasPage() {
                 <Calendar className="h-4 w-4 mr-2" />
                 View Projects
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem onClick={() => handleToggleStatusClick(pessoa)}>
+                {pessoa.ativo ? (
+                  <>
+                    <UserX className="h-4 w-4 mr-2" />
+                    Deactivate
+                  </>
+                ) : (
+                  <>
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    Activate
+                  </>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteClick(pessoa)}>
                 <Trash2 className="h-4 w-4 mr-2" />
-                Remove
+                Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -287,16 +349,9 @@ export default function PessoasPage() {
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4 flex-1">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={`/placeholder.svg?height=40&width=40`} alt={pessoa.nome} />
-              <AvatarFallback>
-                {pessoa.nome
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .slice(0, 2)}
-              </AvatarFallback>
-            </Avatar>
+            <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+              <User className="h-5 w-5 text-muted-foreground" />
+            </div>
 
             <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
@@ -350,9 +405,22 @@ export default function PessoasPage() {
                 <Calendar className="h-4 w-4 mr-2" />
                 View Projects
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem onClick={() => handleToggleStatusClick(pessoa)}>
+                {pessoa.ativo ? (
+                  <>
+                    <UserX className="h-4 w-4 mr-2" />
+                    Deactivate
+                  </>
+                ) : (
+                  <>
+                    <UserCheck className="h-4 w-4 mr-2" />
+                    Activate
+                  </>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-600" onClick={() => handleDeleteClick(pessoa)}>
                 <Trash2 className="h-4 w-4 mr-2" />
-                Remove
+                Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -416,8 +484,8 @@ export default function PessoasPage() {
 
       {/* Controles */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center w-full max-w-sm gap-2">
-          <Search className="h-4 w-4 text-muted-foreground absolute ml-3 pointer-events-none" />
+        <div className="flex items-center w-full max-w-sm gap-2 relative">
+          <Search className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none z-10" />
           <Input
             placeholder="Search people..."
             className="pl-9"
@@ -552,6 +620,21 @@ export default function PessoasPage() {
           )}
         </TabsContent>
       </Tabs>
+
+      {/* Dialogs */}
+      <DeletePessoaDialog
+        pessoa={selectedPessoa}
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onPessoaDeleted={handlePessoaDeleted}
+      />
+
+      <ToggleStatusDialog
+        pessoa={selectedPessoa}
+        open={toggleStatusDialogOpen}
+        onOpenChange={setToggleStatusDialogOpen}
+        onStatusToggled={handleStatusToggled}
+      />
     </div>
   )
 }
