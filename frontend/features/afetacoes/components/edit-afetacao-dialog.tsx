@@ -143,6 +143,7 @@ export default function EditAfetacaoDialog({
                 id="valor"
                 type="number"
                 step="0.01"
+                min="0"
                 value={showHours ? pmParaHoras(Number.parseFloat(valor) || 0).toString() : valor}
                 onChange={handleValorChange}
                 placeholder={showHours ? "Enter hours" : "Enter PMs"}
