@@ -72,8 +72,6 @@ const TIPOS_CONTRATO = [
   { value: "InvestigadorDocente", label: "Investigador Docente" },
   { value: "Investigador", label: "Investigador" },
   { value: "Bolseiro", label: "Bolseiro" },
-  { value: "TecnicoSuperior", label: "Técnico Superior" },
-  { value: "Assistente", label: "Assistente" },
 ]
 
 export function CreatePessoaForm({ onPessoaCreated, onCancel }: CreatePessoaFormProps) {

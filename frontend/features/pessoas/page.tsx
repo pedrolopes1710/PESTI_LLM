@@ -262,10 +262,6 @@ export default function PessoasPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem>
-                <Eye className="h-4 w-4 mr-2" />
-                View Details
-              </DropdownMenuItem>
-              <DropdownMenuItem>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </DropdownMenuItem>
@@ -393,10 +389,6 @@ export default function PessoasPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Eye className="h-4 w-4 mr-2" />
-                View Details
-              </DropdownMenuItem>
               <DropdownMenuItem>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
