@@ -56,7 +56,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       icon: Calendar,
     },
     {
-      name: "Indicadores",
+      name: "Indicators",
       path: "/Indicadores",
       icon: BarChart2,
     },
