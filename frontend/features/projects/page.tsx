@@ -20,12 +20,15 @@ export default function ProjectsPage() {
   const [error, setError] = useState<string | null>(null)
 
   const [showForm, setShowForm] = useState(false)
-  const [nome, setNome] = useState("")
-  const [descricao, setDescricao] = useState("")
+  const [name, setName] = useState("")
+  const [description, setDescription] = useState("")
 
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null)
-  const [editNome, setEditNome] = useState("")
-  const [editDescricao, setEditDescricao] = useState("")
+  const [editName, setEditName] = useState("")
+  const [editDescription, setEditDescription] = useState("")
+
+  // State for search filter
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
     async function loadProjects() {
@@ -33,7 +36,7 @@ export default function ProjectsPage() {
         const data = await fetchProjetos()
         setProjects(data)
       } catch (err) {
-        setError("Erro ao carregar projetos.")
+        setError("Error loading projects.")
         console.error(err)
       } finally {
         setLoading(false)
@@ -43,122 +46,126 @@ export default function ProjectsPage() {
   }, [])
 
   async function handleCreateProject() {
-    if (!nome.trim() || !descricao.trim()) {
-      alert("Por favor, preencha nome e descrição.")
+    if (!name.trim() || !description.trim()) {
+      alert("Please fill in both name and description.")
       return
     }
     try {
-      const newProject = await createProjeto({ nome, descricao })
+      const newProject = await createProjeto({ nome: name, descricao: description })
       setProjects((prev) => [...prev, newProject])
-      setNome("")
-      setDescricao("")
+      setName("")
+      setDescription("")
       setShowForm(false)
     } catch (error) {
-      console.error("Erro ao criar projeto:", error)
-      alert("Erro ao criar projeto")
+      console.error("Error creating project:", error)
+      alert("Error creating project")
     }
   }
 
   async function handleDeleteProject(id: string) {
-    if (!confirm("Tem certeza que quer apagar este projeto?")) return
+    if (!confirm("Are you sure you want to delete this project?")) return
     try {
       const success = await deleteProjeto(id)
       if (success) {
         setProjects((prev) => prev.filter((p) => p.id !== id))
       }
     } catch (error) {
-      console.error("Erro ao deletar projeto:", error)
-      alert("Erro ao apagar projeto")
+      console.error("Error deleting project:", error)
+      alert("Error deleting project")
     }
   }
 
   function startEditing(project: any) {
     setEditingProjectId(project.id)
-    setEditNome(project.nome)
-    setEditDescricao(project.descricao)
+    setEditName(project.nome)
+    setEditDescription(project.descricao)
   }
 
   async function handleSaveEdit(id: string) {
-    if (!editNome.trim() || !editDescricao.trim()) {
-      alert("Preencha nome e descrição para editar.")
+    if (!editName.trim() || !editDescription.trim()) {
+      alert("Please fill in name and description to edit.")
       return
     }
     try {
-      const updated = await updateProjeto(id, { nome: editNome, descricao: editDescricao })
+      const updated = await updateProjeto(id, { nome: editName, descricao: editDescription })
       if (updated) {
         setProjects((prev) => prev.map((p) => (p.id === id ? updated : p)))
         setEditingProjectId(null)
       }
     } catch (error) {
-      console.error("Erro ao atualizar projeto:", error)
-      alert("Erro ao atualizar projeto")
+      console.error("Error updating project:", error)
+      alert("Error updating project")
     }
   }
 
-  if (loading) return <p>🔄 A carregar projetos...</p>
+  if (loading) return <p>Loading projects...</p>
   if (error) return <p className="text-red-500">{error}</p>
+
+  // Filter projects by name
+  const filteredProjects = projects.filter((project) =>
+      project.nome.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
       <div className="space-y-6">
         <header className="flex flex-col gap-2">
-          <h1 className="text-3xl font-bold tracking-tight text-primary">📁 Projetos</h1>
-          <p className="text-muted-foreground">Acompanha, edita e organiza os teus projetos facilmente</p>
+          <h1 className="text-3xl font-bold tracking-tight text-primary">Projects</h1>
         </header>
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="relative w-full max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-            <Input placeholder="    Procurar projetos..." className="pl-9" />
+            <Input
+                placeholder="    Search projects..."
+                className="pl-9"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" className="flex items-center gap-1">
               <Filter className="w-4 h-4" />
-              Filtro
+              Filter
             </Button>
             <Button
                 onClick={() => setShowForm(true)}
                 className="flex items-center gap-1 bg-blue-600 text-white hover:bg-blue-700"
             >
               <Plus className="w-4 h-4" />
-              Novo Projeto
+              New Project
             </Button>
           </div>
         </div>
 
         {showForm && (
             <Card className="max-w-md p-6 shadow-lg">
-              <h2 className="text-lg font-semibold mb-4">🆕 Criar Novo Projeto</h2>
+              <h2 className="text-lg font-semibold mb-4">Create New Project</h2>
               <Input
-                  placeholder="Nome do projeto"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
+                  placeholder="Project name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="mb-3"
               />
               <Input
-                  placeholder="Descrição do projeto"
-                  value={descricao}
-                  onChange={(e) => setDescricao(e.target.value)}
+                  placeholder="Project description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   className="mb-6"
               />
               <div className="flex justify-end gap-3">
                 <Button variant="ghost" onClick={() => setShowForm(false)}>
-                  Cancelar
+                  Cancel
                 </Button>
-                <Button onClick={handleCreateProject}>Criar</Button>
+                <Button onClick={handleCreateProject}>Create</Button>
               </div>
             </Card>
         )}
 
         <Tabs defaultValue="grid" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="grid">🧱 Visualização em Grid</TabsTrigger>
-            <TabsTrigger value="list">📄 Lista</TabsTrigger>
-          </TabsList>
-
           {/* Grid View */}
           <TabsContent value="grid">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {projects.map((project) => (
+              {filteredProjects.map((project) => (
                   <Card
                       key={project.id}
                       className="shadow-md hover:shadow-lg transition-all duration-200"
@@ -167,20 +174,20 @@ export default function ProjectsPage() {
                       {editingProjectId === project.id ? (
                           <>
                             <Input
-                                value={editNome}
-                                onChange={(e) => setEditNome(e.target.value)}
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
                                 className="mb-2"
                             />
                             <Input
-                                value={editDescricao}
-                                onChange={(e) => setEditDescricao(e.target.value)}
+                                value={editDescription}
+                                onChange={(e) => setEditDescription(e.target.value)}
                                 className="mb-2"
                             />
                             <div className="flex justify-end gap-2">
                               <Button variant="outline" onClick={() => setEditingProjectId(null)}>
-                                ❌ Cancelar
+                                ❌ Cancel
                               </Button>
-                              <Button onClick={() => handleSaveEdit(project.id)}>Salvar</Button>
+                              <Button onClick={() => handleSaveEdit(project.id)}>Save</Button>
                             </div>
                           </>
                       ) : (
@@ -201,10 +208,10 @@ export default function ProjectsPage() {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem onClick={() => startEditing(project)}>
-                                  <Edit2 className="w-4 h-4 mr-2" /> Editar
+                                  <Edit2 className="w-4 h-4 mr-2" /> Edit
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => handleDeleteProject(project.id)}>
-                                  <Trash2 className="w-4 h-4 mr-2" /> Apagar
+                                  <Trash2 className="w-4 h-4 mr-2" /> Delete
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -217,83 +224,6 @@ export default function ProjectsPage() {
                   </Card>
               ))}
             </div>
-          </TabsContent>
-
-          {/* List View */}
-          <TabsContent value="list" className="space-y-4">
-            <Card>
-              <CardContent className="p-0">
-                <div className="divide-y">
-                  {projects.map((project) => (
-                      <div
-                          key={project.id}
-                          className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 hover:bg-muted/50"
-                      >
-                        <div className="flex-1 min-w-0">
-                          {editingProjectId === project.id ? (
-                              <>
-                                <Input
-                                    value={editNome}
-                                    onChange={(e) => setEditNome(e.target.value)}
-                                    className="mb-1"
-                                />
-                                <Input
-                                    value={editDescricao}
-                                    onChange={(e) => setEditDescricao(e.target.value)}
-                                />
-                              </>
-                          ) : (
-                              <>
-                                <div className="flex items-start justify-between">
-                                  <h3 className="font-medium">{project.nome}</h3>
-                                  {/* No status badge */}
-                                </div>
-                                <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
-                                  {project.descricao}
-                                </p>
-                              </>
-                          )}
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          {editingProjectId === project.id ? (
-                              <>
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => setEditingProjectId(null)}
-                                    className="mr-2"
-                                >
-                                  Cancelar
-                                </Button>
-                                <Button size="sm" onClick={() => handleSaveEdit(project.id)}>
-                                  Salvar
-                                </Button>
-                              </>
-                          ) : (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="w-4 h-4" />
-                                    <span className="sr-only">Ações</span>
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => startEditing(project)}>
-                                    <Edit2 className="mr-2 w-4 h-4" /> Editar
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleDeleteProject(project.id)}>
-                                    <Trash2 className="mr-2 w-4 h-4" /> Apagar
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                          )}
-                        </div>
-                      </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
         </Tabs>
       </div>
