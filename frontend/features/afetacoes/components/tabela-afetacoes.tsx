@@ -127,12 +127,8 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
           <TableHeader>
             <TableRow>
               <TableHead className="border font-bold bg-gray-100 sticky left-0 z-10">Profile</TableHead>
-              <TableHead className="border font-bold bg-gray-100 sticky left-[150px] z-10">
-                {showHours ? "Approved Hours" : "Approved PMs"}
-              </TableHead>
-              <TableHead className="border font-bold bg-gray-100 sticky left-[270px] z-10">
-                {showHours ? "Total Hours Used" : "Total PMs Used"}
-              </TableHead>
+              <TableHead className="border font-bold bg-gray-100 sticky left-[150px] z-10">Approved PMs</TableHead>
+              <TableHead className="border font-bold bg-gray-100 sticky left-[270px] z-10">Total PMs Used</TableHead>
               <TableHead className="border font-bold bg-gray-100 sticky left-[390px] z-10">Duration (Months)</TableHead>
               {cargasMensaisOrdenadas.map((cargaMensal) => (
                 <TableHead key={cargaMensal.id} className="border font-bold text-center bg-gray-100 min-w-[100px]">
@@ -252,9 +248,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                   className="border text-center sticky left-[150px] z-10 min-w-[120px]"
                   style={nonEditableStyle}
                 >
-                  {showHours
-                    ? `${(afetacaoPerfil.pMsAprovados * 160).toFixed(1)}h` // Assumindo 160h como padrão para PMs aprovados
-                    : afetacaoPerfil.pMsAprovados.toFixed(2)}
+                  {afetacaoPerfil.pMsAprovados.toFixed(2)}
                 </TableCell>
                 <TableCell
                   className="border text-center sticky left-[270px] z-10 min-w-[120px]"
@@ -277,9 +271,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                           fontWeight: isOverAllocated ? "bold" : "normal",
                         }}
                       >
-                        {showHours
-                          ? `${(totalPMsUsed * 160).toFixed(1)}h` // Assuming 160h as standard for total PMs used
-                          : totalPMsUsed.toFixed(2)}
+                        {totalPMsUsed.toFixed(2)}
                       </span>
                     )
                   })()}
@@ -315,11 +307,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
             <TableRow className="bg-gray-50 font-bold">
               <TableCell className="border sticky left-0 bg-gray-50 z-10">Total</TableCell>
               <TableCell className="border text-center sticky left-[150px] z-10" style={nonEditableDarkerStyle}>
-                {showHours
-                  ? `${(
-                      tabelaAfetacoes.afetacoesPerfis.reduce((total, ap) => total + ap.pMsAprovados, 0) * 160
-                    ).toFixed(1)}h`
-                  : tabelaAfetacoes.afetacoesPerfis.reduce((total, ap) => total + ap.pMsAprovados, 0).toFixed(2)}
+                {tabelaAfetacoes.afetacoesPerfis.reduce((total, ap) => total + ap.pMsAprovados, 0).toFixed(2)}
               </TableCell>
               <TableCell className="border text-center sticky left-[270px] z-10" style={nonEditableDarkerStyle}>
                 {(() => {
@@ -327,7 +315,7 @@ export default function TabelaAfetacoes({ tabelaAfetacoes, onAfetacaoUpdated }: 
                     ? tabelaAfetacoes.afetacoesMensais.reduce((total, am) => total + am.pMs, 0)
                     : 0
 
-                  return showHours ? `${(grandTotal * 160).toFixed(1)}h` : grandTotal.toFixed(2)
+                  return grandTotal.toFixed(2)
                 })()}
               </TableCell>
               <TableCell className="border text-center sticky left-[390px] z-10" style={nonEditableDarkerStyle}>
