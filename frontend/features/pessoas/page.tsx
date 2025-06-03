@@ -12,18 +12,18 @@ import {
   MoreHorizontal,
   Plus,
   Search,
-  Calendar,
   DollarSign,
   Users,
   UserCheck,
   UserX,
-  Eye,
   Edit,
   Trash2,
   ArrowLeft,
   User,
+  FolderOpen,
+  FileText,
 } from "lucide-react"
-import { fetchPessoas } from "./api"
+import { fetchPessoas, fetchPessoa } from "./api"
 import type { Pessoa } from "./types"
 import { toast } from "@/components/ui/use-toast"
 import { Toaster } from "@/components/ui/toaster"
@@ -34,6 +34,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CreatePessoaForm } from "./components/create-pessoa-form"
 import { DeletePessoaDialog } from "./components/delete-pessoa-dialog"
 import { ToggleStatusDialog } from "./components/toggle-status-dialog"
+import { EditPessoaDialog } from "./components/edit-pessoa-dialog"
+import { ManageProjectsDialog } from "./components/manage-projects-dialog"
+import { ManageContractDialog } from "./components/manage-contracts-dialog"
 
 export default function PessoasPage() {
   const [pessoas, setPessoas] = useState<Pessoa[]>([])
@@ -48,6 +51,9 @@ export default function PessoasPage() {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [toggleStatusDialogOpen, setToggleStatusDialogOpen] = useState(false)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [manageProjectsDialogOpen, setManageProjectsDialogOpen] = useState(false)
+  const [manageContractDialogOpen, setManageContractDialogOpen] = useState(false)
   const [selectedPessoa, setSelectedPessoa] = useState<Pessoa | null>(null)
 
   // Carregar pessoas
@@ -89,6 +95,24 @@ export default function PessoasPage() {
     setToggleStatusDialogOpen(true)
   }
 
+  // Função para abrir dialog de edit
+  const handleEditClick = (pessoa: Pessoa) => {
+    setSelectedPessoa(pessoa)
+    setEditDialogOpen(true)
+  }
+
+  // Função para abrir dialog de manage projects
+  const handleManageProjectsClick = (pessoa: Pessoa) => {
+    setSelectedPessoa(pessoa)
+    setManageProjectsDialogOpen(true)
+  }
+
+  // Função para abrir dialog de manage contract
+  const handleManageContractClick = (pessoa: Pessoa) => {
+    setSelectedPessoa(pessoa)
+    setManageContractDialogOpen(true)
+  }
+
   // Função para lidar com pessoa deletada
   const handlePessoaDeleted = async () => {
     try {
@@ -117,6 +141,63 @@ export default function PessoasPage() {
         title: "Status updated",
         description: "Person status has been updated successfully.",
       })
+    } catch (error) {
+      console.error("Erro ao recarregar pessoas:", error)
+      toast({
+        title: "Error",
+        description: "Could not reload people data.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Função para lidar com pessoa editada
+  const handlePessoaUpdated = async () => {
+    try {
+      const data = await fetchPessoas()
+      setPessoas(data)
+    } catch (error) {
+      console.error("Erro ao recarregar pessoas:", error)
+      toast({
+        title: "Error",
+        description: "Could not reload people data.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Função para lidar com projetos atualizados
+  const handleProjectsUpdated = async () => {
+    try {
+      const data = await fetchPessoas()
+      setPessoas(data)
+
+      // Se há uma pessoa selecionada, atualizar os seus dados também
+      if (selectedPessoa) {
+        const updatedPessoa = await fetchPessoa(selectedPessoa.id)
+        setSelectedPessoa(updatedPessoa)
+      }
+    } catch (error) {
+      console.error("Erro ao recarregar pessoas:", error)
+      toast({
+        title: "Error",
+        description: "Could not reload people data.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Função para lidar com contrato atualizado
+  const handleContractUpdated = async () => {
+    try {
+      const data = await fetchPessoas()
+      setPessoas(data)
+
+      // Se há uma pessoa selecionada, atualizar os seus dados também
+      if (selectedPessoa) {
+        const updatedPessoa = await fetchPessoa(selectedPessoa.id)
+        setSelectedPessoa(updatedPessoa)
+      }
     } catch (error) {
       console.error("Erro ao recarregar pessoas:", error)
       toast({
@@ -261,13 +342,17 @@ export default function PessoasPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEditClick(pessoa)}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Calendar className="h-4 w-4 mr-2" />
-                View Projects
+              <DropdownMenuItem onClick={() => handleManageProjectsClick(pessoa)}>
+                <FolderOpen className="h-4 w-4 mr-2" />
+                Manage Projects
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleManageContractClick(pessoa)}>
+                <FileText className="h-4 w-4 mr-2" />
+                Manage Contract
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleToggleStatusClick(pessoa)}>
                 {pessoa.ativo ? (
@@ -313,6 +398,11 @@ export default function PessoasPage() {
           </div>
 
           <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Projects:</span>
+            <span className="font-medium">{Array.isArray(pessoa.projetos) ? pessoa.projetos.length : 0}</span>
+          </div>
+
+          <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Science ID:</span>
             <span className="font-mono text-xs">{pessoa.pessoaCienciaId}</span>
           </div>
@@ -349,7 +439,7 @@ export default function PessoasPage() {
               <User className="h-5 w-5 text-muted-foreground" />
             </div>
 
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4">
               <div>
                 <div className="font-medium">{pessoa.nome}</div>
                 <div className="text-sm text-muted-foreground">{pessoa.email}</div>
@@ -368,6 +458,13 @@ export default function PessoasPage() {
               <div className="text-sm">
                 <div className="font-medium">€{(pessoa.contrato?.salario || 0).toLocaleString()}</div>
                 <div className="text-muted-foreground">Salary</div>
+              </div>
+
+              <div className="text-sm">
+                <div className="font-medium">
+                  {Array.isArray(pessoa.projetos) ? pessoa.projetos.length : 0} projects
+                </div>
+                <div className="text-muted-foreground">Associated</div>
               </div>
 
               {pessoa.contrato && (
@@ -389,13 +486,17 @@ export default function PessoasPage() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEditClick(pessoa)}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Calendar className="h-4 w-4 mr-2" />
-                View Projects
+              <DropdownMenuItem onClick={() => handleManageProjectsClick(pessoa)}>
+                <FolderOpen className="h-4 w-4 mr-2" />
+                Manage Projects
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleManageContractClick(pessoa)}>
+                <FileText className="h-4 w-4 mr-2" />
+                Manage Contract
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleToggleStatusClick(pessoa)}>
                 {pessoa.ativo ? (
@@ -626,6 +727,27 @@ export default function PessoasPage() {
         open={toggleStatusDialogOpen}
         onOpenChange={setToggleStatusDialogOpen}
         onStatusToggled={handleStatusToggled}
+      />
+
+      <EditPessoaDialog
+        pessoa={selectedPessoa}
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        onPessoaUpdated={handlePessoaUpdated}
+      />
+
+      <ManageProjectsDialog
+        pessoa={selectedPessoa}
+        open={manageProjectsDialogOpen}
+        onOpenChange={setManageProjectsDialogOpen}
+        onProjectsUpdated={handleProjectsUpdated}
+      />
+
+      <ManageContractDialog
+        pessoa={selectedPessoa}
+        open={manageContractDialogOpen}
+        onOpenChange={setManageContractDialogOpen}
+        onContractUpdated={handleContractUpdated}
       />
     </div>
   )
