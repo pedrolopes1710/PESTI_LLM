@@ -1,5 +1,12 @@
-import type { Pessoa, CreatingPessoaDto, CreatingContratoDto, ContratoDto } from "./types"
-
+import type {
+  Pessoa,
+  CreatingPessoaDto,
+  CreatingContratoDto,
+  ContratoDto,
+  EditingPessoaDto,
+  EditingContratoDto,
+  Projeto,
+} from "./types"
 const PESSOAS_URL = "http://localhost:5225/api/pessoas"
 
 // Função para buscar todas as pessoas
@@ -9,8 +16,9 @@ export async function fetchPessoas(): Promise<Pessoa[]> {
     if (!response.ok) {
       throw new Error(`Erro ao buscar pessoas: ${response.status}`)
     }
-    return await response.json()
-  } catch (error) {
+    const data = await response.json()
+    console.log("Fetched pessoas data:", data) // Debug log
+    return data  } catch (error) {
     console.error("Erro ao buscar pessoas:", error)
     throw error
   }
@@ -23,8 +31,9 @@ export async function fetchPessoa(id: string): Promise<Pessoa> {
     if (!response.ok) {
       throw new Error(`Erro ao buscar pessoa: ${response.status}`)
     }
-    return await response.json()
-  } catch (error) {
+    const data = await response.json()
+    console.log("Fetched pessoas data:", data) // Debug log
+    return data  } catch (error) {
     console.error(`Erro ao buscar pessoa ${id}:`, error)
     throw error
   }
@@ -50,6 +59,30 @@ export async function createContrato(contratoData: CreatingContratoDto): Promise
     return await response.json()
   } catch (error) {
     console.error("Erro ao criar contrato:", error)
+    throw error
+  }
+}
+
+// Função para editar um contrato
+export async function updateContrato(contratoData: EditingContratoDto): Promise<ContratoDto> {
+  try {
+    const response = await fetch(`http://localhost:5225/api/contratos/${contratoData.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(contratoData),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error("Resposta da API de contratos:", errorText)
+      throw new Error(`Erro ao editar contrato: ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Erro ao editar contrato:", error)
     throw error
   }
 }
@@ -130,10 +163,10 @@ export async function removerContrato(pessoaId: string): Promise<Pessoa> {
   }
 }
 
-// Função para atualizar uma pessoa
-export async function updatePessoa(id: string, pessoaData: Partial<CreatingPessoaDto>): Promise<Pessoa> {
+// Função para editar uma pessoa
+export async function updatePessoa(pessoaData: EditingPessoaDto): Promise<Pessoa> {
   try {
-    const response = await fetch(`${PESSOAS_URL}/${id}`, {
+    const response = await fetch(`${PESSOAS_URL}/${pessoaData.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -142,12 +175,14 @@ export async function updatePessoa(id: string, pessoaData: Partial<CreatingPesso
     })
 
     if (!response.ok) {
-      throw new Error(`Erro ao atualizar pessoa: ${response.status}`)
+      const errorText = await response.text()
+      console.error("Resposta da API:", errorText)
+      throw new Error(`Erro ao editar pessoa: ${response.status}`)
     }
 
     return await response.json()
   } catch (error) {
-    console.error("Erro ao atualizar pessoa:", error)
+    console.error("Erro ao editar pessoa:", error)
     throw error
   }
 }
@@ -249,3 +284,4 @@ export async function fetchProjetos(): Promise<any[]> {
     throw error
   }
 }
+

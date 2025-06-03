@@ -13,6 +13,15 @@ export interface CreatingContratoDto {
   salario: number
   dataInicio: string
   dataFim: string
+}
+
+// DTO para editar contrato
+export interface EditingContratoDto {
+  id: string
+  tipo: string
+  salario: number
+  dataInicio: string
+  dataFim: string
   ativo: boolean
 }
 
@@ -26,6 +35,12 @@ export interface ContratoDto {
   ativo: boolean
 }
 
+export interface Projeto {
+  id: string
+  nome: string
+  descricao?: string
+}
+
 export interface Pessoa {
   id: string
   nome: string
@@ -34,7 +49,7 @@ export interface Pessoa {
   pessoaUltimoPedPagam: string
   ativo: boolean
   contrato: Contrato
-  projetos: any[]
+  projetos: Projeto[]
   cargasMensais: any[]
 }
 
@@ -45,6 +60,20 @@ export interface CreatingPessoaDto {
   pessoaCienciaId: string
   pessoaUltimoPedPagam: string
   contratoId: string
+}
+
+// DTO para editar pessoa
+export interface EditingPessoaDto {
+  id: string
+  nome: string
+  email: string
+  pessoaUltimoPedPagam: string
+}
+
+// DTO para associar projetos
+export interface AssociarProjetoDto {
+  pessoaId: string
+  projetosIds: string[]
 }
 
 export interface CreatePessoaDto {
