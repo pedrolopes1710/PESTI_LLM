@@ -1,24 +1,24 @@
-﻿// projetoApi.ts
-
-export interface ApiProjeto {
+﻿export interface ApiProjeto {
     id: string
     nome: string
     descricao: string
+    pessoaId?: string  
 }
 
 export interface CreateProjetoDto {
     nome: string
     descricao: string
+    pessoaId?: string; 
 }
 
 export interface UpdateProjetoDto {
     nome: string
     descricao: string
+    pessoaId?: string  
 }
 
 const BASE_URL = "http://localhost:5225/api/projetos"
 
-// Buscar todos os projetos
 export async function fetchProjetos(): Promise<ApiProjeto[]> {
     try {
         const response = await fetch(BASE_URL)
@@ -32,7 +32,6 @@ export async function fetchProjetos(): Promise<ApiProjeto[]> {
     }
 }
 
-// Buscar um projeto por ID
 export async function fetchProjetoById(id: string): Promise<ApiProjeto | null> {
     try {
         const response = await fetch(`${BASE_URL}/${id}`)
@@ -47,7 +46,6 @@ export async function fetchProjetoById(id: string): Promise<ApiProjeto | null> {
     }
 }
 
-// Criar um novo projeto
 export async function createProjeto(dto: CreateProjetoDto): Promise<ApiProjeto> {
     try {
         const response = await fetch(BASE_URL, {
@@ -101,12 +99,12 @@ export async function deleteProjeto(id: string): Promise<boolean> {
 
         if (response.status === 404) return false
         if (!response.ok) {
-            throw new Error(`Erro ao deletar projeto: ${response.status}`)
+            throw new Error(`Erro ao excluir projeto: ${response.status}`)
         }
 
         return true
     } catch (error) {
-        console.error("Erro ao deletar projeto:", error)
+        console.error("Erro ao excluir projeto:", error)
         throw error
     }
 }

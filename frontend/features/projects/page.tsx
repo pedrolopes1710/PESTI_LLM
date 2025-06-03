@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { MoreHorizontal, Plus, Search, Trash2, Edit2, Filter } from "lucide-react"
 import {
   DropdownMenu,
@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { fetchProjetos, createProjeto, deleteProjeto, updateProjeto } from "./projetoAPI"
+import { fetchPessoas } from "../pessoas/api" 
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([])
@@ -22,12 +23,14 @@ export default function ProjectsPage() {
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
+  const [pessoaId, setPessoaId] = useState("") 
+
+  const [pessoas, setPessoas] = useState<any[]>([]) 
 
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null)
   const [editName, setEditName] = useState("")
   const [editDescription, setEditDescription] = useState("")
 
-  // State for search filter
   const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
@@ -44,17 +47,30 @@ export default function ProjectsPage() {
     }
     loadProjects()
   }, [])
+  
+  useEffect(() => {
+    async function loadPessoas() {
+      try {
+        const data = await fetchPessoas()
+        setPessoas(data)
+      } catch (error) {
+        console.error("Erro ao carregar pessoas:", error)
+      }
+    }
+    loadPessoas()
+  }, [])
 
   async function handleCreateProject() {
-    if (!name.trim() || !description.trim()) {
-      alert("Please fill in both name and description.")
+    if (!name.trim() || !description.trim() || !pessoaId) {
+      alert("Please fill in name, description and select a person.")
       return
     }
     try {
-      const newProject = await createProjeto({ nome: name, descricao: description })
+      const newProject = await createProjeto({ nome: name, descricao: description, pessoaId })
       setProjects((prev) => [...prev, newProject])
       setName("")
       setDescription("")
+      setPessoaId("")
       setShowForm(false)
     } catch (error) {
       console.error("Error creating project:", error)
@@ -101,7 +117,6 @@ export default function ProjectsPage() {
   if (loading) return <p>Loading projects...</p>
   if (error) return <p className="text-red-500">{error}</p>
 
-  // Filter projects by name
   const filteredProjects = projects.filter((project) =>
       project.nome.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -150,8 +165,27 @@ export default function ProjectsPage() {
                   placeholder="Project description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="mb-6"
+                  className="mb-3"
               />
+
+              {/* Dropdown para escolher a pessoa */}
+              <label htmlFor="pessoa-select" className="block mb-1 font-medium">
+                Pessoa associada
+              </label>
+              <select
+                  id="pessoa-select"
+                  value={pessoaId}
+                  onChange={(e) => setPessoaId(e.target.value)}
+                  className="w-full border rounded-md p-2 mb-6"
+              >
+                <option value="">Selecione uma pessoa</option>
+                {pessoas.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.nome}
+                    </option>
+                ))}
+              </select>
+
               <div className="flex justify-end gap-3">
                 <Button variant="ghost" onClick={() => setShowForm(false)}>
                   Cancel
@@ -162,7 +196,6 @@ export default function ProjectsPage() {
         )}
 
         <Tabs defaultValue="grid" className="space-y-4">
-          {/* Grid View */}
           <TabsContent value="grid">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredProjects.map((project) => (

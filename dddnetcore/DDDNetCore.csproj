@@ -55,6 +55,14 @@
     <Compile Remove="Migrations\20250422111747_PerfilMigration.Designer.cs" />
     <Compile Remove="Migrations\20250422111236_IndicadoresMigration.cs" />
     <Compile Remove="Migrations\20250422111236_IndicadoresMigration.Designer.cs" />
+    <Compile Remove="Migrations\20250527140924_required some stuff.cs" />
+    <Compile Remove="Migrations\20250527140924_required some stuff.Designer.cs" />
+    <Compile Remove="Migrations\20250523164456_AddActivePessoa.cs" />
+    <Compile Remove="Migrations\20250523164456_AddActivePessoa.Designer.cs" />
+    <Compile Remove="Migrations\20250523144444_AddUniquesConstraint.cs" />
+    <Compile Remove="Migrations\20250523144444_AddUniquesConstraint.Designer.cs" />
+    <Compile Remove="Migrations\20250518184316_AjustesRelacionamentoIndicadorProjeto.cs" />
+    <Compile Remove="Migrations\20250518184316_AjustesRelacionamentoIndicadorProjeto.Designer.cs" />
   </ItemGroup>
 
 </Project>

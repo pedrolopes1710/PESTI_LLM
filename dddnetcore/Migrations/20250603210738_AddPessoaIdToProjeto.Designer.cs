@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DDDNetCore.Migrations
 {
     [DbContext(typeof(DDDSample1DbContext))]
-    [Migration("20250527140924_required some stuff")]
-    partial class requiredsomestuff
+    [Migration("20250603210738_AddPessoaIdToProjeto")]
+    partial class AddPessoaIdToProjeto
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -393,6 +393,10 @@ namespace DDDNetCore.Migrations
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
+
+                    b.Property<Guid>("PessoaId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("PessoaId");
 
                     b.HasKey("Id");
 

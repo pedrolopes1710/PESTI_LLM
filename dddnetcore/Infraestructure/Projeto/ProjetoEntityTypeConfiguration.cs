@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using dddnetcore.Domain.Pessoas;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using dddnetcore.Domain.Projetos;
 
@@ -14,6 +15,13 @@ namespace dddnetcore.Infrastructure.Projetos
                 .HasConversion(
                     id => id.AsGuid(),
                     guid => new ProjetoId(guid));
+
+            builder.Property(p => p.PessoaId)
+                .HasConversion(
+                    id => id.AsGuid(),
+                    guid => new PessoaId(guid))
+                .HasColumnName("PessoaId")
+                .IsRequired();
 
             builder.OwnsOne(p => p.NomeProjeto, np =>
             {

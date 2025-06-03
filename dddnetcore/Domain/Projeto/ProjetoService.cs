@@ -1,9 +1,10 @@
-﻿
-using System;
+﻿using System;
 using dddnetcore.Domain.Projetos;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using dddnetcore.Domain.Pessoas;
+using DDDSample1.Domain.Shared;
 using DDDSample1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,11 +12,13 @@ namespace dddnetcore.Services
 {
     public class ProjetoService
     {
+        private readonly IPessoaRepository _pessoaRepository;
         private readonly DDDSample1DbContext _context;
 
-        public ProjetoService(DDDSample1DbContext context)
+        public ProjetoService(DDDSample1DbContext context, IPessoaRepository pessoaRepository)
         {
             _context = context;
+            _pessoaRepository = pessoaRepository;
         }
 
         public async Task<List<ProjetoDTO>> GetAllAsync()
@@ -25,7 +28,8 @@ namespace dddnetcore.Services
                 {
                     Id = p.Id.AsGuid(),
                     Nome = p.NomeProjeto.Valor,
-                    Descricao = p.DescricaoProjeto.Valor
+                    Descricao = p.DescricaoProjeto.Valor,
+                    PessoaId = p.PessoaId.AsGuid()  
                 })
                 .ToListAsync();
         }
@@ -39,13 +43,21 @@ namespace dddnetcore.Services
             {
                 Id = projeto.Id.AsGuid(),
                 Nome = projeto.NomeProjeto.Valor,
-                Descricao = projeto.DescricaoProjeto.Valor
+                Descricao = projeto.DescricaoProjeto.Valor,
+                PessoaId = projeto.PessoaId.AsGuid() 
             };
         }
 
-        public async Task<ProjetoDTO> CreateAsync(string nome, string descricao)
+        public async Task<ProjetoDTO> CreateAsync(CreateProjetoDto dto)
         {
-            var projeto = new Projeto(nome, descricao);
+            var pessoa = await _pessoaRepository.GetByIdAsync(new PessoaId(dto.PessoaId));
+            if (pessoa == null)
+            {
+                throw new BusinessRuleValidationException("Pessoa de ciência não encontrada.");
+            }
+
+            var projeto = new Projeto(dto.Nome, dto.Descricao, new PessoaId(dto.PessoaId));
+
             _context.Set<Projeto>().Add(projeto);
             await _context.SaveChangesAsync();
 
@@ -53,7 +65,8 @@ namespace dddnetcore.Services
             {
                 Id = projeto.Id.AsGuid(),
                 Nome = projeto.NomeProjeto.Valor,
-                Descricao = projeto.DescricaoProjeto.Valor
+                Descricao = projeto.DescricaoProjeto.Valor,
+                PessoaId = projeto.PessoaId.AsGuid() 
             };
         }
 
@@ -72,7 +85,6 @@ namespace dddnetcore.Services
             var projeto = await _context.Set<Projeto>().FindAsync(new ProjetoId(id));
             if (projeto == null) return null;
 
-            // Atualiza os campos necessários
             if (!string.IsNullOrWhiteSpace(nome))
                 projeto.AlterarNome(nome);
 
@@ -86,11 +98,9 @@ namespace dddnetcore.Services
             {
                 Id = projeto.Id.AsGuid(),
                 Nome = projeto.NomeProjeto.Valor,
-                Descricao = projeto.DescricaoProjeto.Valor
+                Descricao = projeto.DescricaoProjeto.Valor,
+                PessoaId = projeto.PessoaId.AsGuid() 
             };
         }
-
     }
-
-    }
-
+}

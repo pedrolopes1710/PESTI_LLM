@@ -18,12 +18,11 @@ namespace dddnetcore.Domain.Projetos
         public List<Indicador> Indicadores { get; private set; }
         public ICollection<Pessoa> Pessoas { get; set; } = new List<Pessoa>();
 
+        public PessoaId PessoaId { get; private set; } 
 
-        private Projeto()
-        {
-        }
+        private Projeto() { }
 
-        public Projeto(string nome, string descricao)
+        public Projeto(string nome, string descricao, PessoaId pessoaId)
         {
             Id = new ProjetoId(Guid.NewGuid());
             NomeProjeto = new NomeProjeto(nome);
@@ -31,6 +30,7 @@ namespace dddnetcore.Domain.Projetos
             Atividades = new List<Atividade>();
             Perfis = new List<Perfil>();
             Indicadores = new List<Indicador>();
+            PessoaId = pessoaId;
         }
 
         public void AlterarNome(string novoNome)

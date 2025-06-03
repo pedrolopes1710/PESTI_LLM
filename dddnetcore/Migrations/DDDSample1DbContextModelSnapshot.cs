@@ -391,6 +391,10 @@ namespace DDDNetCore.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid>("PessoaId")
+                        .HasColumnType("TEXT")
+                        .HasColumnName("PessoaId");
+
                     b.HasKey("Id");
 
                     b.ToTable("Projetos");

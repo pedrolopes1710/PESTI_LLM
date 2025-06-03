@@ -27,8 +27,8 @@ namespace dddnetcore.Controllers
         [HttpPost]
         public async Task<ActionResult<ProjetoDTO>> Create([FromBody] CreateProjetoDto dto)
         {
-            var projeto = await _service.CreateAsync(dto.Nome, dto.Descricao);
-            return CreatedAtAction(nameof(GetAll), new { id = projeto.Id }, projeto);
+            var projeto = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id = projeto.Id }, projeto);
         }
 
         [HttpGet("{id}")]
@@ -54,7 +54,5 @@ namespace dddnetcore.Controllers
             if (projeto == null) return NotFound();
             return Ok(projeto);
         }
-
     }
-
 }
