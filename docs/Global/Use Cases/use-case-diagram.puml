@@ -9,7 +9,7 @@ left to right direction
 actor "Admin" as Admin
 actor "Investigador" as Inv
 actor "Project Manager" as PM
-actor "???" as Unknown
+actor "Admin" as Admin
 
 '* Gestão de Investigadores e Recursos Humanos
 usecase "Criar investigadores" as CreateInv
@@ -36,7 +36,7 @@ Inv --> LisCon
 PM --> MTRBP
 Admin --> MTRBI 
 'TODO confirmar com o prof
-Unknown --> MTREB
+Admin --> MTREB
 
 '* Gestão de Projetos
 usecase "Criar projetos" as CreateProj
@@ -63,10 +63,10 @@ usecase "Visualizar carga de trabalho" as VCT
 PM --> CreateAct
 PM --> EditAct
 PM --> ExcAct
-Unknown --> AAE
-Unknown --> GAE
-Unknown --> AAO
-Unknown --> GAO
+Admin --> AAE
+Admin --> GAE
+Admin --> AAO
+Admin --> GAO
 PM --> MPST
 PM --> VCT
 
@@ -78,11 +78,10 @@ usecase "Solicitar emição de relatórios financeiros detalhados" as SERFD
 usecase "Visualizar dados financeiros" as VDF
 
 '? quem faz isto?
-Unknown --> RDR
-Unknown --> CDR 
-Unknown --> GRODA
-Unknown --> SERFD
-Unknown --> VDF
+
+Admin --> GRODA
+Admin --> SERFD
+Admin --> VDF
 
 '* Gestão de Cronogramas
 usecase "Criar Cronogramas" as CC
