@@ -9,7 +9,14 @@ import { Input } from "@/components/ui/input"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -87,7 +94,12 @@ export function ManageContractDialog({ pessoa, open, onOpenChange, onContractUpd
   // Reset forms when dialog opens
   useEffect(() => {
     if (open && pessoa) {
-      createForm.reset()
+      createForm.reset({
+        tipo: "",
+        salario: 0,
+        dataInicio: new Date(),
+        dataFim: new Date(),
+      })
 
       if (pessoa.contrato) {
         // Set renew form with current contract data
@@ -112,7 +124,7 @@ export function ManageContractDialog({ pessoa, open, onOpenChange, onContractUpd
         setActiveTab("create")
       }
     }
-  }, [open, pessoa, createForm, renewForm, editForm])
+  }, [open, pessoa])
 
   const handleRemoveContract = async () => {
     if (!pessoa) return
@@ -155,11 +167,6 @@ export function ManageContractDialog({ pessoa, open, onOpenChange, onContractUpd
       }
 
       const newContract = await createContrato(newContractData)
-
-      // If person already has a contract, remove it first
-      if (pessoa.contrato) {
-        await removerContrato(pessoa.id)
-      }
 
       // Associate with person
       await associarContrato(pessoa.id, newContract.id)
@@ -264,7 +271,7 @@ export function ManageContractDialog({ pessoa, open, onOpenChange, onContractUpd
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+        <DialogHeader className="mb-6">
           <DialogTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />
             Manage Contract - {pessoa.nome}
@@ -272,9 +279,9 @@ export function ManageContractDialog({ pessoa, open, onOpenChange, onContractUpd
           <DialogDescription>Create, renew, edit, or remove a contract for this person.</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5">
+        <div className="space-y-6">
           {/* Current Contract */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="text-sm font-medium">Current Contract</div>
             {hasContract ? (
               <div className="p-4 bg-muted/50 rounded-lg space-y-3">
@@ -303,358 +310,231 @@ export function ManageContractDialog({ pessoa, open, onOpenChange, onContractUpd
           </div>
 
           {/* Contract Management Tabs */}
-          <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)} className="space-y-5">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="create">Create New</TabsTrigger>
-              <TabsTrigger value="renew" disabled={!hasContract}>
-                Renew
-              </TabsTrigger>
-              <TabsTrigger value="edit" disabled={!hasContract}>
-                Edit Current
-              </TabsTrigger>
+          <Tabs value={activeTab} onValueChange={(value: any) => setActiveTab(value)} className="space-y-6">
+            <TabsList className={cn("grid w-full", hasContract ? "grid-cols-2" : "grid-cols-1")}>
+              {!hasContract && <TabsTrigger value="create">Create New</TabsTrigger>}
+              {hasContract && (
+                <>
+                  <TabsTrigger value="renew">Renew</TabsTrigger>
+                  <TabsTrigger value="edit">Edit Current</TabsTrigger>
+                </>
+              )}
             </TabsList>
 
-            <TabsContent value="create" className="space-y-5">
-              <Form {...createForm}>
-                <form onSubmit={createForm.handleSubmit(handleCreateAndAssociate)} className="space-y-5">
-                  <FormField
-                    control={createForm.control}
-                    name="tipo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contract Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select contract type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {TIPOS_CONTRATO.map((tipo) => (
-                              <SelectItem key={tipo} value={tipo}>
-                                {tipo}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={createForm.control}
-                    name="salario"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Salary (€)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="50000"
-                            value={field.value}
-                            onChange={(e) => {
-                              // Permitir apenas números e ponto decimal
-                              const value = e.target.value.replace(/[^0-9.]/g, "")
-                              field.onChange(value === "" ? 0 : Number.parseFloat(value))
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-2 gap-4">
+            {!hasContract && (
+              <TabsContent value="create" className="space-y-6">
+                <Form {...createForm}>
+                  <form onSubmit={createForm.handleSubmit(handleCreateAndAssociate)} className="space-y-6">
                     <FormField
                       control={createForm.control}
-                      name="dataInicio"
+                      name="tipo"
                       render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Start Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground",
-                                  )}
-                                >
-                                  {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) => date < new Date("1900-01-01")}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={createForm.control}
-                      name="dataFim"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>End Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground",
-                                  )}
-                                >
-                                  {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) => date < new Date("1900-01-01")}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <Button type="submit" disabled={submitting} className="w-full">
-                    {submitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Create & Associate Contract
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </TabsContent>
-
-            <TabsContent value="renew" className="space-y-5">
-              <Form {...renewForm}>
-                <form onSubmit={renewForm.handleSubmit(handleRenewContract)} className="space-y-5">
-                  <FormField
-                    control={renewForm.control}
-                    name="tipo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contract Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select contract type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {TIPOS_CONTRATO.map((tipo) => (
-                              <SelectItem key={tipo} value={tipo}>
-                                {tipo}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={renewForm.control}
-                    name="salario"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Salary (€)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="50000"
-                            value={field.value}
-                            onChange={(e) => {
-                              // Permitir apenas números e ponto decimal
-                              const value = e.target.value.replace(/[^0-9.]/g, "")
-                              field.onChange(value === "" ? 0 : Number.parseFloat(value))
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={renewForm.control}
-                    name="dataFim"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>New End Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
+                        <FormItem>
+                          <FormLabel>Contract Type</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
                             <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "w-full pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground",
-                                )}
-                              >
-                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select contract type" />
+                              </SelectTrigger>
                             </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) => date < new Date("1900-01-01")}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Button type="submit" disabled={submitting} className="w-full">
-                    {submitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Renewing...
-                      </>
-                    ) : (
-                      <>
-                        <RotateCcw className="h-4 w-4 mr-2" />
-                        Renew Contract
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </TabsContent>
-
-            <TabsContent value="edit" className="space-y-5">
-              <Form {...editForm}>
-                <form onSubmit={editForm.handleSubmit(handleEditContract)} className="space-y-5">
-                  <FormField
-                    control={editForm.control}
-                    name="tipo"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contract Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select contract type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {TIPOS_CONTRATO.map((tipo) => (
-                              <SelectItem key={tipo} value={tipo}>
-                                {tipo}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={editForm.control}
-                    name="salario"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Salary (€)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="50000"
-                            value={field.value}
-                            onChange={(e) => {
-                              // Permitir apenas números e ponto decimal
-                              const value = e.target.value.replace(/[^0-9.]/g, "")
-                              field.onChange(value === "" ? 0 : Number.parseFloat(value))
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="dataInicio"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Start Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground",
-                                  )}
-                                >
-                                  {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) => date < new Date("1900-01-01")}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
+                            <SelectContent className="z-[100]">
+                              {TIPOS_CONTRATO.map((tipo) => (
+                                <SelectItem key={tipo} value={tipo}>
+                                  {tipo}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
 
                     <FormField
-                      control={editForm.control}
+                      control={createForm.control}
+                      name="salario"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Salary (€)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="50000"
+                              value={field.value || ""}
+                              onChange={(e) => {
+                                // Permitir apenas números e ponto decimal
+                                const value = e.target.value.replace(/[^0-9.]/g, "")
+                                field.onChange(value === "" ? 0 : Number.parseFloat(value))
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={createForm.control}
+                        name="dataInicio"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Start Date</FormLabel>
+                            <Popover modal={false}>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "w-full pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground",
+                                    )}
+                                  >
+                                    {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0 z-[100]" align="start" side="bottom">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date) => date < new Date("1900-01-01")}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={createForm.control}
+                        name="dataFim"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>End Date</FormLabel>
+                            <Popover modal={false}>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "w-full pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground",
+                                    )}
+                                  >
+                                    {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0 z-[100]" align="start" side="bottom">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date) => date < new Date("1900-01-01")}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <DialogFooter className="mt-6 flex justify-between gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => onOpenChange(false)}
+                        disabled={submitting}
+                        className="flex-1"
+                      >
+                        Close
+                      </Button>
+                      <Button type="submit" disabled={submitting} className="flex-1">
+                        {submitting ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Creating...
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="h-4 w-4 mr-2" />
+                            Create Contract
+                          </>
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </TabsContent>
+            )}
+
+            {hasContract && (
+              <TabsContent value="renew" className="space-y-6">
+                <Form {...renewForm}>
+                  <form onSubmit={renewForm.handleSubmit(handleRenewContract)} className="space-y-6">
+                    <FormField
+                      control={renewForm.control}
+                      name="tipo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Contract Type</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select contract type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="z-[100]">
+                              {TIPOS_CONTRATO.map((tipo) => (
+                                <SelectItem key={tipo} value={tipo}>
+                                  {tipo}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={renewForm.control}
+                      name="salario"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Salary (€)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="50000"
+                              value={field.value || ""}
+                              onChange={(e) => {
+                                // Permitir apenas números e ponto decimal
+                                const value = e.target.value.replace(/[^0-9.]/g, "")
+                                field.onChange(value === "" ? 0 : Number.parseFloat(value))
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={renewForm.control}
                       name="dataFim"
                       render={({ field }) => (
                         <FormItem className="flex flex-col">
-                          <FormLabel>End Date</FormLabel>
-                          <Popover>
+                          <FormLabel>New End Date</FormLabel>
+                          <Popover modal={false}>
                             <PopoverTrigger asChild>
                               <FormControl>
                                 <Button
@@ -669,51 +549,214 @@ export function ManageContractDialog({ pessoa, open, onOpenChange, onContractUpd
                                 </Button>
                               </FormControl>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0" align="start">
+                            <PopoverContent className="w-auto p-0 z-[100]" align="start" side="bottom">
                               <Calendar
                                 mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}
-                                disabled={(date) => date < new Date("1900-01-01")}
+                                disabled={(date) => {
+                                  const currentEndDate = pessoa?.contrato
+                                    ? new Date(pessoa.contrato.dataFim)
+                                    : new Date()
+                                  return date < currentEndDate || date < new Date("1900-01-01")
+                                }}
                                 initialFocus
                               />
                             </PopoverContent>
                           </Popover>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Current contract ends:{" "}
+                            {pessoa?.contrato ? new Date(pessoa.contrato.dataFim).toLocaleDateString() : "N/A"}
+                          </div>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                  </div>
 
-                  <Button type="submit" disabled={submitting} className="w-full">
-                    {submitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Updating...
-                      </>
-                    ) : (
-                      <>
-                        <Edit className="h-4 w-4 mr-2" />
-                        Update Contract
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </TabsContent>
+                    <DialogFooter className="mt-6 flex justify-between gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => onOpenChange(false)}
+                        disabled={submitting}
+                        className="flex-1"
+                      >
+                        Close
+                      </Button>
+                      <Button type="submit" disabled={submitting} className="flex-1">
+                        {submitting ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Renewing...
+                          </>
+                        ) : (
+                          <>
+                            <RotateCcw className="h-4 w-4 mr-2" />
+                            Renew Contract
+                          </>
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </TabsContent>
+            )}
+
+            {hasContract && (
+              <TabsContent value="edit" className="space-y-6">
+                <Form {...editForm}>
+                  <form onSubmit={editForm.handleSubmit(handleEditContract)} className="space-y-6">
+                    <FormField
+                      control={editForm.control}
+                      name="tipo"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Contract Type</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select contract type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="z-[100]">
+                              {TIPOS_CONTRATO.map((tipo) => (
+                                <SelectItem key={tipo} value={tipo}>
+                                  {tipo}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={editForm.control}
+                      name="salario"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Salary (€)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder="50000"
+                              value={field.value || ""}
+                              onChange={(e) => {
+                                // Permitir apenas números e ponto decimal
+                                const value = e.target.value.replace(/[^0-9.]/g, "")
+                                field.onChange(value === "" ? 0 : Number.parseFloat(value))
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={editForm.control}
+                        name="dataInicio"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Start Date</FormLabel>
+                            <Popover modal={false}>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "w-full pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground",
+                                    )}
+                                  >
+                                    {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0 z-[100]" align="start" side="bottom">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date) => date < new Date("1900-01-01")}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={editForm.control}
+                        name="dataFim"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>End Date</FormLabel>
+                            <Popover modal={false}>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                      "w-full pl-3 text-left font-normal",
+                                      !field.value && "text-muted-foreground",
+                                    )}
+                                  >
+                                    {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0 z-[100]" align="start" side="bottom">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  disabled={(date) => date < new Date("1900-01-01")}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <DialogFooter className="mt-6 flex justify-between gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => onOpenChange(false)}
+                        disabled={submitting}
+                        className="flex-1"
+                      >
+                        Close
+                      </Button>
+                      <Button type="submit" disabled={submitting} className="flex-1">
+                        {submitting ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Updating...
+                          </>
+                        ) : (
+                          <>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Update Contract
+                          </>
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </TabsContent>
+            )}
           </Tabs>
-        </div>
-
-        <div className="flex gap-3 pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={submitting}
-            className="flex-1"
-          >
-            Close
-          </Button>
         </div>
       </DialogContent>
     </Dialog>

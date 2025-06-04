@@ -107,5 +107,34 @@ namespace DDDSample1.Controllers
                 return BadRequest(new { Message = ex.Message });
             }
         }
+
+
+        // POST: api/contratos/{id}/ativar
+        [HttpPost("{id}/ativar")]
+        public async Task<IActionResult> AtivarContrato(string id)
+        {
+            var contratoId = new ContratoId(id);
+            var contratoDto = await _service.ActivateAsync(contratoId);
+
+            if (contratoDto == null)
+                return NotFound();
+
+            return Ok(contratoDto);
+        }
+
+
+[HttpDelete("{id}/desativar")]
+public async Task<IActionResult> DesativarContrato(string id)
+{
+    var contratoId = new ContratoId(id);
+    var contratoDto = await _service.InactivateAsync(contratoId);
+
+    if (contratoDto == null)
+        return NotFound();
+
+    return Ok(contratoDto);
+}
+
+
     }
 }

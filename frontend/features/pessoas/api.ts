@@ -5,8 +5,8 @@ import type {
   ContratoDto,
   EditingPessoaDto,
   EditingContratoDto,
-  Projeto,
 } from "./types"
+
 const PESSOAS_URL = "http://localhost:5225/api/pessoas"
 
 // Função para buscar todas as pessoas
@@ -18,7 +18,8 @@ export async function fetchPessoas(): Promise<Pessoa[]> {
     }
     const data = await response.json()
     console.log("Fetched pessoas data:", data) // Debug log
-    return data  } catch (error) {
+    return data
+  } catch (error) {
     console.error("Erro ao buscar pessoas:", error)
     throw error
   }
@@ -32,8 +33,9 @@ export async function fetchPessoa(id: string): Promise<Pessoa> {
       throw new Error(`Erro ao buscar pessoa: ${response.status}`)
     }
     const data = await response.json()
-    console.log("Fetched pessoas data:", data) // Debug log
-    return data  } catch (error) {
+    console.log("Fetched pessoa data:", data) // Debug log
+    return data
+  } catch (error) {
     console.error(`Erro ao buscar pessoa ${id}:`, error)
     throw error
   }
@@ -87,6 +89,31 @@ export async function updateContrato(contratoData: EditingContratoDto): Promise<
   }
 }
 
+// Função para ativar/desativar contrato
+export async function toggleContratoStatus(contratoId: string, ativar: boolean): Promise<ContratoDto> {
+  try {
+    const endpoint = ativar
+      ? `http://localhost:5225/api/contratos/${contratoId}/ativar`
+      : `http://localhost:5225/api/contratos/${contratoId}/desativar`
+    const method = ativar ? "POST" : "DELETE"
+
+    const response = await fetch(endpoint, {
+      method: method,
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error("Resposta da API de contratos:", errorText)
+      throw new Error(`Erro ao ${ativar ? "ativar" : "desativar"} contrato: ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error(`Erro ao ${ativar ? "ativar" : "desativar"} contrato:`, error)
+    throw error
+  }
+}
+
 // Função para criar uma nova pessoa (SEM o campo ativo)
 export async function createPessoa(pessoaData: CreatingPessoaDto): Promise<Pessoa> {
   try {
@@ -107,6 +134,30 @@ export async function createPessoa(pessoaData: CreatingPessoaDto): Promise<Pesso
     return await response.json()
   } catch (error) {
     console.error("Erro ao criar pessoa:", error)
+    throw error
+  }
+}
+
+// Função para editar uma pessoa
+export async function updatePessoa(pessoaData: EditingPessoaDto): Promise<Pessoa> {
+  try {
+    const response = await fetch(`${PESSOAS_URL}/${pessoaData.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(pessoaData),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error("Resposta da API:", errorText)
+      throw new Error(`Erro ao editar pessoa: ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error("Erro ao editar pessoa:", error)
     throw error
   }
 }
@@ -145,9 +196,17 @@ export async function associarContrato(pessoaId: string, contratoId: string): Pr
   }
 }
 
-// Função para remover contrato de uma pessoa
+// Função para remover contrato de uma pessoa (agora desativa o contrato para histórico)
 export async function removerContrato(pessoaId: string): Promise<Pessoa> {
   try {
+    // Primeiro buscar a pessoa para obter o ID do contrato
+    const pessoa = await fetchPessoa(pessoaId)
+
+    // Se tem contrato, desativá-lo primeiro
+    if (pessoa.contrato?.id) {
+      await toggleContratoStatus(pessoa.contrato.id, false)
+    }
+
     const response = await fetch(`${PESSOAS_URL}/${pessoaId}/desassociarContrato`, {
       method: "PUT",
     })
@@ -163,33 +222,17 @@ export async function removerContrato(pessoaId: string): Promise<Pessoa> {
   }
 }
 
-// Função para editar uma pessoa
-export async function updatePessoa(pessoaData: EditingPessoaDto): Promise<Pessoa> {
-  try {
-    const response = await fetch(`${PESSOAS_URL}/${pessoaData.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(pessoaData),
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error("Resposta da API:", errorText)
-      throw new Error(`Erro ao editar pessoa: ${response.status}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error("Erro ao editar pessoa:", error)
-    throw error
-  }
-}
-
-// Função para deletar uma pessoa
+// Função para deletar uma pessoa (agora desativa o contrato se existir)
 export async function deletePessoa(id: string): Promise<boolean> {
   try {
+    // Primeiro buscar a pessoa para ver se tem contrato
+    const pessoa = await fetchPessoa(id)
+
+    // Se a pessoa tem contrato, desativar o contrato primeiro (para histórico)
+    if (pessoa.contrato?.id) {
+      await toggleContratoStatus(pessoa.contrato.id, false)
+    }
+
     const response = await fetch(`${PESSOAS_URL}/${id}`, {
       method: "DELETE",
     })
@@ -209,6 +252,20 @@ export async function deletePessoa(id: string): Promise<boolean> {
 // Função para ativar/desativar pessoa
 export async function togglePessoaStatus(id: string, ativar: boolean): Promise<Pessoa> {
   try {
+    // Primeiro buscar a pessoa para obter o contrato
+    const pessoa = await fetchPessoa(id)
+
+    // Se a pessoa tem contrato, alterar o status do contrato primeiro
+    if (pessoa.contrato?.id) {
+      try {
+        await toggleContratoStatus(pessoa.contrato.id, ativar)
+      } catch (error) {
+        console.warn("Erro ao alterar status do contrato:", error)
+        // Não falhar a operação se o contrato não conseguir ser alterado
+      }
+    }
+
+    // Agora alterar o status da pessoa
     const endpoint = ativar ? `${PESSOAS_URL}/${id}/reativar` : `${PESSOAS_URL}/${id}/desativar`
     const method = ativar ? "PUT" : "DELETE"
 
@@ -284,4 +341,3 @@ export async function fetchProjetos(): Promise<any[]> {
     throw error
   }
 }
-

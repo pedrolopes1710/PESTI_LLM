@@ -55,6 +55,11 @@ export function ToggleStatusDialog({ pessoa, open, onOpenChange, onStatusToggled
           <DialogTitle>{isActivating ? "Activate" : "Deactivate"} Person</DialogTitle>
           <DialogDescription>
             Are you sure you want to {isActivating ? "activate" : "deactivate"} <strong>{pessoa.nome}</strong>?
+            {pessoa.contrato && (
+              <span className="block mt-2 text-sm">
+                The associated contract will also be {isActivating ? "activated" : "deactivated"}.
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
 

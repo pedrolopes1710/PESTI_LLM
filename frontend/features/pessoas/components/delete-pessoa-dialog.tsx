@@ -27,7 +27,7 @@ export function DeletePessoaDialog({ pessoa, open, onOpenChange, onPessoaDeleted
 
       toast({
         title: "Person deleted successfully",
-        description: `${pessoa.nome} has been removed from the system.`,
+        description: `${pessoa.nome} has been removed from the system. Any associated contract has been deactivated for historical purposes.`,
       })
 
       onPessoaDeleted()
@@ -54,7 +54,8 @@ export function DeletePessoaDialog({ pessoa, open, onOpenChange, onPessoaDeleted
           </DialogTitle>
           <DialogDescription>
             Are you sure you want to delete <strong>{pessoa?.nome}</strong>? This action cannot be undone and will
-            permanently remove the person and all associated data from the system.
+            permanently remove the person from the system. Any associated contract will be deactivated for historical
+            purposes.
           </DialogDescription>
         </DialogHeader>
 

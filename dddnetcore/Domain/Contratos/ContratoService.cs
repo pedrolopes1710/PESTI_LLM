@@ -120,6 +120,29 @@ namespace dddnetcore.Domain.Contratos
             };
         }
 
+
+public async Task<ContratoDto> ActivateAsync(ContratoId id)
+{
+    var contrato = await this._repo.GetByIdAsync(id);
+
+    if (contrato == null)
+        return null;
+
+    contrato.Ativar();
+    await this._unitOfWork.CommitAsync();
+
+    return new ContratoDto
+    {
+        Id = contrato.Id.AsString(),
+        Tipo = contrato.Tipo.ToString(),
+        Salario = contrato.Salario.Valor,
+        DataInicio = contrato.DataInicio.InicioContrato,
+        DataFim = contrato.DataFim?.FimContrato,
+        Ativo = contrato.Ativo
+    };
+}
+
+
         public async Task<ContratoDto> DeleteAsync(ContratoId id)
         {
             var contrato = await this._repo.GetByIdAsync(id);

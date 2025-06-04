@@ -399,7 +399,7 @@ export default function PessoasPage() {
 
           <div className="flex items-center justify-between text-sm">
             <span className="text-muted-foreground">Projects:</span>
-            <span className="font-medium">{Array.isArray(pessoa.projetos) ? pessoa.projetos.length : 0}</span>
+            <span className="font-medium">{pessoa.projetos?.length || 0}</span>
           </div>
 
           <div className="flex items-center justify-between text-sm">
@@ -461,9 +461,7 @@ export default function PessoasPage() {
               </div>
 
               <div className="text-sm">
-                <div className="font-medium">
-                  {Array.isArray(pessoa.projetos) ? pessoa.projetos.length : 0} projects
-                </div>
+                <div className="font-medium">{pessoa.projetos?.length || 0} projects</div>
                 <div className="text-muted-foreground">Associated</div>
               </div>
 
