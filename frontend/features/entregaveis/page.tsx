@@ -5,22 +5,29 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Plus, Trash2, Edit2, Save, X } from "lucide-react"
+import { Plus, Trash2, Edit2 } from "lucide-react"
 
 import {
   fetchEntregaveis,
   createEntregavel,
   updateEntregavel,
   deleteEntregavel,
-} from "./entregaveisAPI" // vou supor que você tenha algo assim
+} from "./entregaveisAPI"
 
-import { fetchTiposEntregavel } from "@/features/tiposEntregaveis/tiposEntregaveisAPI" // vou supor que você tenha algo assim
+import {
+  fetchTiposEntregavel,
+  createTipoEntregavel,
+  deleteTipoEntregavel,
+} from "@/features/tiposEntregaveis/tiposEntregaveisAPI"
+
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 
 export default function EntregaveisPage() {
   const [entregaveis, setEntregaveis] = useState<any[]>([])
@@ -35,12 +42,13 @@ export default function EntregaveisPage() {
   const [tipoId, setTipoId] = useState("")
   const [atividadeId, setAtividadeId] = useState("")
 
+  const [novoTipoNome, setNovoTipoNome] = useState("")
+  const [criarTipo, setTipo] = useState(false)
+  const [tipoError, setTipoError] = useState<string | null>(null)
+  const [tipoDeleteErro, setTipoDeleteErro] = useState<string | null>(null)
+
   const [formErrors, setFormErrors] = useState<any>({})
-
   const [editingId, setEditingId] = useState<string | null>(null)
-
-  // Para editar, vamos manter os campos do formulário
-  // reutilizamos os mesmos states nome, descricao, data, tipoId, atividadeId
 
   useEffect(() => {
     async function load() {
@@ -55,7 +63,7 @@ export default function EntregaveisPage() {
         const tipos = await fetchTiposEntregavel()
         setTipoEntregaveis(tipos)
       } catch {
-        // Pode ignorar ou tratar erro
+        // pode ignorar
       }
 
       setLoading(false)
@@ -80,6 +88,9 @@ export default function EntregaveisPage() {
     setTipoId("")
     setAtividadeId("")
     setFormErrors({})
+    setNovoTipoNome("")
+    setTipo(false)
+    setTipoError(null)
   }
 
   async function handleCreate() {
@@ -105,11 +116,11 @@ export default function EntregaveisPage() {
     setEditingId(entregavel.id)
     setNome(entregavel.nome)
     setDescricao(entregavel.descricao)
-    setData(entregavel.data.slice(0, 10)) // corta para yyyy-mm-dd
+    setData(entregavel.data.slice(0, 10))
     setTipoId(entregavel.tipoEntregavel?.id || "")
     setAtividadeId(entregavel.atividadeId || "")
     setFormErrors({})
-    setShowForm(false) // Fecha form novo, abre edição inline
+    setShowForm(false)
   }
 
   async function handleSaveEdit() {
@@ -146,6 +157,24 @@ export default function EntregaveisPage() {
     }
   }
 
+  async function handleCriarNovoTipo() {
+    if (!novoTipoNome.trim()) {
+      setTipoError("Nome do tipo é obrigatório")
+      return
+    }
+    setTipoError(null)
+    try {
+      const novoTipo = await createTipoEntregavel({ nome: novoTipoNome })
+      setTipoEntregaveis((prev) => [...prev, novoTipo])
+      setTipoId(novoTipo.id)
+      setNovoTipoNome("")
+      setTipo(false)
+    } catch (err) {
+      setTipoError("Erro ao criar tipo de entregável")
+      console.error(err)
+    }
+  }
+
   if (loading) return <p>🔄 Carregando entregáveis...</p>
   if (error) return <p className="text-red-500">{error}</p>
 
@@ -153,7 +182,6 @@ export default function EntregaveisPage() {
     <div className="max-w-4xl mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold">📦 Entregáveis</h1>
 
-      {/* Botão para abrir formulário novo */}
       {!editingId && (
         <Button
           onClick={() => {
@@ -166,32 +194,17 @@ export default function EntregaveisPage() {
         </Button>
       )}
 
-      {/* Formulário novo entregável */}
-      {showForm && !editingId && (
+      {(showForm || editingId) && (
         <div className="border border-gray-300 rounded-xl p-4 bg-white shadow space-y-4">
-          <Input
-            placeholder="Nome"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-          />
+          <Input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
           {formErrors.nome && <p className="text-red-500 text-sm">{formErrors.nome}</p>}
 
-          <Textarea
-            placeholder="Descrição"
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-          />
-          {formErrors.descricao && (
-            <p className="text-red-500 text-sm">{formErrors.descricao}</p>
-          )}
+          <Textarea placeholder="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
+          {formErrors.descricao && <p className="text-red-500 text-sm">{formErrors.descricao}</p>}
 
           <label className="block">
             Data
-            <Input
-              type="date"
-              value={data}
-              onChange={(e) => setData(e.target.value)}
-            />
+            <Input type="date" value={data} onChange={(e) => setData(e.target.value)} />
           </label>
           {formErrors.data && <p className="text-red-500 text-sm">{formErrors.data}</p>}
 
@@ -212,68 +225,83 @@ export default function EntregaveisPage() {
           </label>
           {formErrors.tipoId && <p className="text-red-500 text-sm">{formErrors.tipoId}</p>}
 
-          <Input
-            placeholder="Atividade (opcional)"
-            value={atividadeId}
-            onChange={(e) => setAtividadeId(e.target.value)}
-          />
+          {!criarTipo && (
+            <>
+              <button
+                type="button"
+                onClick={() => setTipo(true)}
+                className="text-sm text-blue-600 mt-1 hover:underline"
+              >
+                + Criar novo tipo de entregável
+              </button>
 
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setShowForm(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleCreate}>Criar</Button>
-          </div>
-        </div>
-      )}
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button
+                    type="button"
+                    className="text-sm text-black-600 mt-1 hover:underline"
+                  >
+                    🗑️ Apagar tipo de entregável
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Apagar Tipo de Entregável</DialogTitle>
+                    <DialogDescription>Selecione um tipo para apagar. Essa ação é irreversível.</DialogDescription>
+                  </DialogHeader>
 
-      {/* Edição inline */}
-      {editingId && (
-        <div className="border border-gray-300 rounded-xl p-4 bg-yellow-50 shadow space-y-4">
-          <h2 className="font-semibold text-lg">✏️ Editar Entregável</h2>
+                  {tipoDeleteErro && <p className="text-red-500 text-sm">{tipoDeleteErro}</p>}
 
-          <Input
-            placeholder="Nome"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-          />
-          {formErrors.nome && <p className="text-red-500 text-sm">{formErrors.nome}</p>}
-
-          <Textarea
-            placeholder="Descrição"
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-          />
-          {formErrors.descricao && (
-            <p className="text-red-500 text-sm">{formErrors.descricao}</p>
+                  <ul className="space-y-2 max-h-64 overflow-auto mt-2">
+                    {tipoEntregaveis.map((tipo) => (
+                      <li key={tipo.id} className="flex justify-between items-center border rounded p-2">
+                        <span>{tipo.nome}</span>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={async () => {
+                            if (!confirm(`Deseja apagar o tipo "${tipo.nome}"?`)) return
+                            try {
+                              await deleteTipoEntregavel(tipo.id)
+                              setTipoEntregaveis((prev) =>
+                                prev.filter((t) => t.id !== tipo.id)
+                              )
+                            } catch (err) {
+                              setTipoDeleteErro("Erro ao apagar tipo. Verifique se está em uso.")
+                              console.error(err)
+                            }
+                          }}
+                        >
+                          Apagar
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </DialogContent>
+              </Dialog>
+            </>
           )}
 
-          <label className="block">
-            Data
-            <Input
-              type="date"
-              value={data}
-              onChange={(e) => setData(e.target.value)}
-            />
-          </label>
-          {formErrors.data && <p className="text-red-500 text-sm">{formErrors.data}</p>}
-
-          <label className="block">
-            Tipo de Entregável
-            <select
-              className="w-full border rounded-md p-2 mt-1"
-              value={tipoId}
-              onChange={(e) => setTipoId(e.target.value)}
-            >
-              <option value="">Selecione o tipo</option>
-              {tipoEntregaveis.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>
-                  {tipo.nome}
-                </option>
-              ))}
-            </select>
-          </label>
-          {formErrors.tipoId && <p className="text-red-500 text-sm">{formErrors.tipoId}</p>}
+          {criarTipo && (
+            <div className="space-y-2">
+              <Input
+                placeholder="Nome do novo tipo"
+                value={novoTipoNome}
+                onChange={(e) => setNovoTipoNome(e.target.value)}
+              />
+              {tipoError && <p className="text-red-500 text-sm">{tipoError}</p>}
+              <div className="flex gap-2">
+                <Button variant="outline" type="button" onClick={() => {
+                  setTipo(false)
+                  setNovoTipoNome("")
+                  setTipoError(null)
+                }}>
+                  Cancelar
+                </Button>
+                <Button type="button" onClick={handleCriarNovoTipo}>Criar Tipo</Button>
+              </div>
+            </div>
+          )}
 
           <Input
             placeholder="Atividade (opcional)"
@@ -282,15 +310,22 @@ export default function EntregaveisPage() {
           />
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setEditingId(null)}>
+            <Button variant="outline" onClick={() => {
+              if (editingId) {
+                setEditingId(null)
+              } else {
+                setShowForm(false)
+              }
+            }}>
               Cancelar
             </Button>
-            <Button onClick={handleSaveEdit}>Salvar</Button>
+            <Button onClick={editingId ? handleSaveEdit : handleCreate}>
+              {editingId ? "Salvar" : "Criar"}
+            </Button>
           </div>
         </div>
       )}
 
-      {/* Lista de entregáveis */}
       <div className="space-y-4">
         {entregaveis.map((entregavel) => (
           <Card key={entregavel.id} className="shadow-md hover:shadow-lg transition-all duration-200">
