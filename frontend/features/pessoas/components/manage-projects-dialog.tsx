@@ -6,8 +6,9 @@ import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { toast } from "@/components/ui/use-toast"
-import { Loader2, FolderOpen, Plus, Minus, Users } from "lucide-react"
+import { Loader2, FolderOpen, Plus, Minus, Users, AlertTriangle } from "lucide-react"
 import { fetchProjetos, associarProjetos, desassociarProjetos, fetchPessoa } from "../api"
 import type { Pessoa, Projeto } from "../types"
 
@@ -51,6 +52,12 @@ export function ManageProjectsDialog({ pessoa, open, onOpenChange, onProjectsUpd
       // Load both projects and fresh pessoa data
       const [projects, freshPessoaData] = await Promise.all([fetchProjetos(), fetchPessoa(pessoa.id)])
 
+      console.log("=== DEBUG CONTADOR PROJETOS ===")
+      console.log("Fresh pessoa data:", freshPessoaData)
+      console.log("Projetos da pessoa:", freshPessoaData.projetos)
+      console.log("Número de projetos:", freshPessoaData.projetos?.length)
+      console.log("================================")
+
       setAllProjects(projects)
       setCurrentPessoa(freshPessoaData)
 
@@ -69,6 +76,19 @@ export function ManageProjectsDialog({ pessoa, open, onOpenChange, onProjectsUpd
   }
 
   const handleProjectToggle = (projectId: string) => {
+    const isCurrentlySelected = selectedProjects.includes(projectId)
+    const isBolseiro = currentPessoa?.contrato?.tipo?.toLowerCase() === "bolseiro"
+
+    // Se é bolseiro e está tentando adicionar um segundo projeto
+    if (isBolseiro && !isCurrentlySelected && selectedProjects.length >= 1) {
+      toast({
+        variant: "destructive",
+        title: "Limite de projetos atingido",
+        description: "Bolseiros podem estar associados a apenas 1 projeto.",
+      })
+      return
+    }
+
     setSelectedProjects((prev) =>
       prev.includes(projectId) ? prev.filter((id) => id !== projectId) : [...prev, projectId],
     )
@@ -124,25 +144,44 @@ export function ManageProjectsDialog({ pessoa, open, onOpenChange, onProjectsUpd
   if (!pessoa || !currentPessoa) return null
 
   const currentProjectIds = currentPessoa.projetos?.map((p) => p.id) || []
+  const currentProjectsCount = Array.isArray(currentPessoa?.projetos) ? currentPessoa.projetos.length : 0
   const toAssociate = selectedProjects.filter((id) => !currentProjectIds.includes(id))
   const toDisassociate = currentProjectIds.filter((id) => !selectedProjects.includes(id))
   const hasChanges = toAssociate.length > 0 || toDisassociate.length > 0
+  const isBolseiro = currentPessoa?.contrato?.tipo?.toLowerCase() === "bolseiro"
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FolderOpen className="h-5 w-5" />
             Manage Projects - {currentPessoa.nome}
           </DialogTitle>
-          <DialogDescription>Select which projects this person should be associated with.</DialogDescription>
+          <DialogDescription>
+            Select which projects this person should be associated with.
+            {isBolseiro && (
+              <span className="block mt-1 text-amber-600 font-medium">
+                ⚠️ Bolseiros podem estar associados a apenas 1 projeto.
+              </span>
+            )}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Contract Type Info */}
+          <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg">
+            <Badge variant={isBolseiro ? "destructive" : "secondary"}>
+              {currentPessoa.contrato?.tipo || "Sem contrato"}
+            </Badge>
+            <span className="text-sm text-muted-foreground">
+              {isBolseiro ? "Máximo 1 projeto" : "Projetos ilimitados"}
+            </span>
+          </div>
+
           {/* Current Projects Summary */}
           <div className="space-y-2">
-            <div className="text-sm font-medium">Current Projects ({currentPessoa.projetos?.length || 0})</div>
+            <div className="text-sm font-medium">Current Projects ({currentProjectsCount})</div>
             {currentPessoa.projetos && currentPessoa.projetos.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {currentPessoa.projetos.map((project) => (
@@ -155,6 +194,17 @@ export function ManageProjectsDialog({ pessoa, open, onOpenChange, onProjectsUpd
               <div className="text-sm text-muted-foreground italic">No projects associated</div>
             )}
           </div>
+
+          {/* Bolseiro Warning */}
+          {isBolseiro && selectedProjects.length >= 1 && (
+            <Alert>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                Como bolseiro, esta pessoa só pode estar associada a 1 projeto. Selecione apenas o projeto mais
+                relevante.
+              </AlertDescription>
+            </Alert>
+          )}
 
           {/* Changes Preview */}
           {hasChanges && (
@@ -183,22 +233,26 @@ export function ManageProjectsDialog({ pessoa, open, onOpenChange, onProjectsUpd
                 <Loader2 className="h-6 w-6 animate-spin" />
               </div>
             ) : allProjects.length > 0 ? (
-              <ScrollArea className="h-64 border rounded-md p-3">
+              <ScrollArea className="h-48 border rounded-md p-3">
                 <div className="space-y-3">
                   {allProjects.map((project) => {
                     const isSelected = selectedProjects.includes(project.id)
                     const isCurrentlyAssociated = currentProjectIds.includes(project.id)
+                    const shouldDisable = isBolseiro && !isSelected && selectedProjects.length >= 1
 
                     return (
                       <div key={project.id} className="flex items-center space-x-3">
                         <Checkbox
                           id={project.id}
                           checked={isSelected}
+                          disabled={shouldDisable}
                           onCheckedChange={() => handleProjectToggle(project.id)}
                         />
                         <label
                           htmlFor={project.id}
-                          className="flex-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          className={`flex-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer ${
+                            shouldDisable ? "opacity-50" : ""
+                          }`}
                         >
                           <div className="flex items-center gap-2">
                             {project.nome}

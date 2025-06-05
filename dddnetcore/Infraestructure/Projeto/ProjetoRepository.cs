@@ -24,5 +24,7 @@ namespace dddnetcore.Infrastructure.Projetos
                 .Where(p => ids.Contains(p.Id))
                 .ToListAsync();
         }
+
+        
     }
 }

@@ -38,6 +38,9 @@ namespace dddnetcore.Domain.Pessoas
             var cargas = await _cargaMensalRepo.GetByPessoaIdAsync(id); // método no CargaMensalRepository
             var contrato = await _contratoRepo.GetByPessoaIdAsync(id); // método no ContratoRepository
 
+            var projetos = await _repo.GetProjetosByPessoaIdAsync(id);
+
+
             // Retornar o DTO completo
             return new PessoaDto
             {
@@ -65,7 +68,7 @@ namespace dddnetcore.Domain.Pessoas
                     SalarioBase = c.SalarioBase.Valor,
                     TaxaSocialUnica = c.TSU.Valor
                 }).ToList(),
-                Projetos = pessoa.Projetos.Select(p => new ProjetoDTO
+                Projetos = projetos.Select(p => new ProjetoDTO
                 {
                     Id = p.Id.AsGuid(),
                     Nome = p.NomeProjeto.Valor,

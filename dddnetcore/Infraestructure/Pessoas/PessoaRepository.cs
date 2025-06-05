@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using dddnetcore.Domain.Pessoas;
 using dddnetcore.Domain.Contratos;
+using dddnetcore.Domain.Projetos;
 using DDDSample1.Infrastructure;
 using DDDSample1.Infrastructure.Shared;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,14 @@ namespace dddnetcore.Infraestructure.Pessoas
             _context = context;
         }
 
+public async Task<List<Pessoa>> GetAllAsync()
+{
+    return await _context.Pessoas
+        .Include(p => p.Projetos) // <- isto é essencial
+        .ToListAsync();
+}
+
+
         public new async Task<Pessoa> GetByIdAsync(PessoaId id)
         {
             return await _context.Pessoas
@@ -32,6 +41,15 @@ namespace dddnetcore.Infraestructure.Pessoas
         {
             return await _context.Pessoas
                 .FirstOrDefaultAsync(p => p.ContratoId == contratoId);
-        }   
+        }
+
+public async Task<List<Projeto>> GetProjetosByPessoaIdAsync(PessoaId pessoaId)
+{
+    var pessoa = await _context.Pessoas
+        .Include(p => p.Projetos)
+        .FirstOrDefaultAsync(p => p.Id == pessoaId);
+
+    return pessoa?.Projetos.ToList();
+}   
     }
 }
