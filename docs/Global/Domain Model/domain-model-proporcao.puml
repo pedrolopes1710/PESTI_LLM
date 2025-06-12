@@ -1,0 +1,208 @@
+@startuml domain-model
+'https://plantuml.com/class-diagram
+skinparam classAttributeIconSize 0
+
+skinparam packageStyle rectangle
+'left to right direction
+
+package "<<Aggregate>> AfetacaoMensal" #C93C20 {
+    entity AfetacaoMensal <<entity>> <<root>>
+    class PMs <<Value Object>>
+}
+
+package "<<Aggregate>> AfetacaoPerfil" #E63244 {
+    entity AfetacaoPerfil <<entity>> <<root>>
+    class PMsAprovados <<Value Object>>
+    class DuracaoMes <<Value Object>>
+    '* PMs Previstos = soma dos PMs de todos os meses da afetacao mensal
+}
+
+package "<<Aggregate>> Atividade" #C2B078 {
+    entity Atividade <<entity>> <<root>>
+    class NomeAtividade <<Value Object>>
+    class DescricaoAtividade <<Value Object>>
+    class DataInicioAtividade <<Value Object>>
+    class DataFimAtividade <<Value Object>>
+}
+
+package "<<Aggregate>> Contrato" #5D9B9B {
+    entity Contrato <<entity>> <<root>>
+    class DataInicioContrato <<Value Object>>
+    class DataFimContrato <<Value Object>>
+    enum TipoContrato <<Value Object>> {
+        Docente
+        Investigador
+        Bolseiro
+    }
+    class SalarioMensal <<Value Object>>
+}
+
+package "<<Aggregate>> Despesa" #F2C94C {
+    entity Despesa <<entity>> <<root>>
+    class DescricaoDespesa <<Value Object>>
+    class ValorDespesa <<Value Object>>
+    class Automatico <<Value Object>>
+}
+
+package "<<Aggregate>> Entregavel" #3E5F8A {
+    entity Entregavel <<entity>> <<root>>
+    class NomeEntregavel <<Value Object>>
+    class DescricaoEntregavel <<Value Object>>
+    class DataEntrega <<Value Object>>
+}
+
+package "<<Aggregate>> CargaMensal" #6C6874 {
+    entity CargaMensal <<entity>> <<root>>
+    class JornadaDiaria <<Value Object>>
+    class DiasUteisTrabalhaveis <<Value Object>>
+    '* Horas potencias trabalháveis = jornada * dias
+    class DiasFeriasBaixasLiencasFaltas <<Value Object>>
+    class SalarioBase <<Value Object>>
+    '* horas de férias/baixas/etc é dias de férias/coiso * jornada
+    class TaxaSocialUnica <<Value Object>>
+    class MesAno <<Value Object>> {
+        DateTime
+    }
+}
+
+package "<<Aggregate>> Indicador" #EAE6CA {
+    entity Indicador <<entity>> <<root>>
+    class NomeIndicador <<Value Object>>
+    class ValorAtual <<Value Object>>
+    class ValorMaximo <<Value Object>>
+}
+
+package "<<Aggregate>> Perfil" #78858B {
+    entity Perfil <<entity>> <<root>>
+    class DescricaoPerfil <<Value Object>>
+    class PMsTotais <<Value Object>>
+}  
+
+package "<<Aggregate>> Pessoa" #999950 {
+    entity Pessoa <<entity>> <<root>>
+    class NomePessoa <<Value Object>>
+    class Email <<Value Object>>
+    class CienciaID <<Value Object>>
+    class UltimoPedidoPagamento <<Value Object>> {
+        DateTime
+    }
+}
+
+package "<<Aggregate>> Projeto" #00BB2D {
+    entity Projeto <<entity>> <<root>>
+    class Titulo <<Value Object>>
+    class Numero <<Value Object>>
+}
+
+
+package "<<Aggregate>> Orcamento" #FF7514 {
+    entity Orcamento <<entity>> <<root>>
+    class GastoPlaneado <<Value Object>>
+}
+
+
+package "<<Aggregate>> Rubrica" #6C3B2A {
+    entity Rubrica <<entity>> <<root>>
+    class NomeRubrica <<Value Object>>
+}
+
+package "<<Aggregate>> Tarefa" #EDFF21 {
+    entity Tarefa <<entity>> <<root>>
+    class NomeTarefa <<Value Object>>
+    class DescricaoTarefa <<Value Object>>
+    enum Status <<Value Object>> {
+        Por_Comecar
+        A_Decorrer
+        Terminado
+    }
+}
+
+
+package "<<Aggregate>> TipoEntregavel" #57A639 {
+    entity TipoEntregavel <<entity>> <<root>>
+    class NomeTipoEntregavel <<Value Object>>
+}
+
+
+package "<<Aggregate>> TipoVinculo" #CDA434 {
+    entity TipoVinculo <<entity>> <<root>>
+    class NomeVinculo <<Value Object>>
+}
+
+AfetacaoMensal --> PMs
+AfetacaoMensal "*" ---> "1" CargaMensal
+AfetacaoMensal "*" -> "1" AfetacaoPerfil
+
+AfetacaoPerfil --> PMsAprovados
+AfetacaoPerfil --> DuracaoMes
+AfetacaoPerfil "*" ---> "1" Perfil
+AfetacaoPerfil "*" ---> "1" Pessoa
+
+Atividade --> NomeAtividade
+Atividade --> DescricaoAtividade
+Atividade --> DataInicioAtividade
+Atividade --> DataFimAtividade
+Atividade "1" ---> "*" Tarefa
+Atividade "*" ---> "*" Perfil
+Atividade "1" ---> "*" Entregavel
+Atividade "1" -----> "*" Orcamento
+
+JornadaDiaria <- CargaMensal
+CargaMensal --> DiasUteisTrabalhaveis
+CargaMensal --> DiasFeriasBaixasLiencasFaltas
+CargaMensal --> SalarioBase
+CargaMensal --> TaxaSocialUnica
+CargaMensal "*" --> MesAno
+
+Contrato --> DataInicioContrato
+Contrato --> DataFimContrato
+Contrato --> TipoContrato
+Contrato --> SalarioMensal
+
+Despesa --> DescricaoDespesa
+Despesa --> ValorDespesa
+Despesa --> Automatico
+Despesa "0..1" -> "0..1" CargaMensal
+
+Entregavel --> NomeEntregavel
+Entregavel --> DescricaoEntregavel
+Entregavel --> DataEntrega
+Entregavel "*" ---> "1" TipoEntregavel
+
+Indicador --> NomeIndicador
+Indicador --> ValorAtual
+Indicador --> ValorMaximo
+
+Perfil --> DescricaoPerfil
+Perfil --> PMsTotais
+Perfil "*" ---> "*" TipoVinculo
+
+Pessoa --> NomePessoa
+Pessoa --> Email
+Pessoa --> CienciaID 
+Pessoa "1" ---> "1" Contrato
+Pessoa "1" ---> "*" CargaMensal
+Pessoa -->  UltimoPedidoPagamento
+
+Projeto --> Titulo
+Projeto --> Numero
+Indicador "*" <--- "1" Projeto
+Projeto "1" -> "*" Atividade
+Projeto "1" ---> "*" Perfil
+Projeto "*" ---> "*" Pessoa
+
+Orcamento --> GastoPlaneado
+Orcamento "*" ---> "1" Rubrica
+Orcamento "1" ---> "*" Despesa
+
+Rubrica --> NomeRubrica
+
+Tarefa --> NomeTarefa
+Tarefa --> DescricaoTarefa
+Tarefa --> Status
+
+TipoEntregavel --> NomeTipoEntregavel
+
+TipoVinculo --> NomeVinculo
+
+@enduml
