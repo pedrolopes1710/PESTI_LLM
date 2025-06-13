@@ -12,8 +12,8 @@ namespace dddnetcore.Domain.Despesas
 
         public ValorDespesa(double valor)
         {
-            if (valor < 0)
-                throw new BusinessRuleValidationException("The expense value cannot be negative!");
+            if (valor <= 0)
+                throw new BusinessRuleValidationException("The expense value cannot be 0 or negative!");
             this.Valor = valor;
         }
 

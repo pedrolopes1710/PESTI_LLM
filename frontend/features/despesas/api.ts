@@ -1,4 +1,4 @@
-import type { Despesa, CreatingDespesaDto, DeleteDespesaResponse } from "./types"
+import type { Despesa, CreatingDespesaDto, DeleteDespesaResponse, EditingDespesaDto } from "./types"
 
 // Base URL for the API
 const API_BASE_URL = "http://localhost:5225/api"
@@ -21,6 +21,28 @@ export async function createDespesa(data: CreatingDespesaDto): Promise<Despesa> 
     return await response.json()
   } catch (error) {
     console.error("Error creating despesa:", error)
+    throw error
+  }
+}
+
+// Update an existing despesa
+export async function updateDespesa(id: string, data: EditingDespesaDto): Promise<Despesa> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/Despesas/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Error updating despesa: ${response.status}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error(`Error updating despesa ${id}:`, error)
     throw error
   }
 }

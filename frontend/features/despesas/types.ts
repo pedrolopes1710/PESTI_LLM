@@ -11,7 +11,13 @@ export interface CreatingDespesaDto {
   orcamentoId: string
 }
 
-// Adicionar interface para resposta da API após exclusão
+// Interface para edição de despesas, correspondente ao DTO do backend
+export interface EditingDespesaDto {
+  descricao?: string
+  valor?: number
+}
+
+// Interface para resposta da API após exclusão
 export interface DeleteDespesaResponse {
   success: boolean
   message?: string

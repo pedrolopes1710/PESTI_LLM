@@ -112,7 +112,13 @@ namespace dddnetcore.Domain.Despesas
 
         public async Task<DespesaDto> EditAsync(DespesaId id, EditingDespesaDto dto) {
             Despesa despesa = await this._repo.GetByIdAsync(id) ?? throw new NullReferenceException("Not Found Expense: " + id);
-            if (dto.Descricao != null) {
+
+            if (despesa.Automatico.Auto) {
+                throw new BusinessRuleValidationException("Cannot edit an automatic expense!");
+            }
+            
+            if (dto.Descricao != null)
+            {
                 despesa.EditDescricao(new DescricaoDespesa(dto.Descricao));
             }
             if (dto.Valor != null) {

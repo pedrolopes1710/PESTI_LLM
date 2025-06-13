@@ -19,6 +19,8 @@ import { EditOrcamentoDialog } from "./components/edit-orcamento-dialog"
 import { CreateDespesaDialog } from "./components/create-despesa-dialog"
 import { cn } from "@/lib/utils"
 import { DeleteDespesaDialog } from "../despesas/components/delete-despesa-dialog"
+// Import the EditDespesaDialog component at the top of the file
+import { EditDespesaDialog } from "../despesas/components/edit-despesa-dialog"
 
 export default function OrcamentosPage() {
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([])
@@ -282,16 +284,18 @@ export default function OrcamentosPage() {
                               </div>
                               {orcamento.despesas && orcamento.despesas.length > 0 ? (
                                 <div className="space-y-2">
-                                  <div className="grid grid-cols-4 text-xs font-medium text-muted-foreground mb-1">
+                                  {/* Update the grid columns from grid-cols-4 to grid-cols-5 in the expenses header */}
+                                  <div className="grid grid-cols-5 text-xs font-medium text-muted-foreground mb-1">
                                     <div>Description</div>
                                     <div>Value</div>
                                     <div>% of Budget</div>
-                                    <div className="text-right">Actions</div>
+                                    <div className="text-right col-span-2">Actions</div>
                                   </div>
+                                  {/* Update the grid columns from grid-cols-4 to grid-cols-5 in the expense rows and add the edit button */}
                                   {orcamento.despesas.map((despesa) => (
                                     <div
                                       key={despesa.id}
-                                      className="grid grid-cols-4 text-sm py-1 border-b border-muted"
+                                      className="grid grid-cols-5 text-sm py-1 border-b border-muted"
                                     >
                                       <div>{despesa.descricao}</div>
                                       <div>
@@ -301,15 +305,22 @@ export default function OrcamentosPage() {
                                         })}
                                       </div>
                                       <div>{((despesa.valor / orcamento.gastoPlaneado) * 100).toFixed(1)}%</div>
-                                      <div className="text-right">
-                                        <DeleteDespesaDialog
-                                          despesa={{ ...despesa, orcamentoId: orcamento.id }}
-                                          onDespesaDeleted={handleRefresh}
-                                        />
+                                      <div className="text-right col-span-2">
+                                        <div className="flex justify-end gap-2">
+                                          <EditDespesaDialog
+                                            despesa={{ ...despesa, orcamentoId: orcamento.id }}
+                                            onDespesaUpdated={handleRefresh}
+                                          />
+                                          <DeleteDespesaDialog
+                                            despesa={{ ...despesa, orcamentoId: orcamento.id }}
+                                            onDespesaDeleted={handleRefresh}
+                                          />
+                                        </div>
                                       </div>
                                     </div>
                                   ))}
-                                  <div className="grid grid-cols-4 text-sm font-medium pt-2">
+                                  {/* Update the grid columns from grid-cols-4 to grid-cols-5 in the total row */}
+                                  <div className="grid grid-cols-5 text-sm font-medium pt-2">
                                     <div>Total Expenses</div>
                                     <div>
                                       {calculateTotalExpenses(orcamento.despesas).toLocaleString("pt-PT", {
@@ -324,7 +335,7 @@ export default function OrcamentosPage() {
                                       ).toFixed(1)}
                                       %
                                     </div>
-                                    <div></div>
+                                    <div className="col-span-2"></div>
                                   </div>
                                 </div>
                               ) : (
