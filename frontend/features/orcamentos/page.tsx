@@ -18,6 +18,7 @@ import type { Atividade } from "@/features/atividades/types"
 import { EditOrcamentoDialog } from "./components/edit-orcamento-dialog"
 import { CreateDespesaDialog } from "./components/create-despesa-dialog"
 import { cn } from "@/lib/utils"
+import { DeleteDespesaDialog } from "../despesas/components/delete-despesa-dialog"
 
 export default function OrcamentosPage() {
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([])
@@ -281,15 +282,16 @@ export default function OrcamentosPage() {
                               </div>
                               {orcamento.despesas && orcamento.despesas.length > 0 ? (
                                 <div className="space-y-2">
-                                  <div className="grid grid-cols-3 text-xs font-medium text-muted-foreground mb-1">
+                                  <div className="grid grid-cols-4 text-xs font-medium text-muted-foreground mb-1">
                                     <div>Description</div>
                                     <div>Value</div>
-                                    <div className="text-right">% of Budget</div>
+                                    <div>% of Budget</div>
+                                    <div className="text-right">Actions</div>
                                   </div>
                                   {orcamento.despesas.map((despesa) => (
                                     <div
                                       key={despesa.id}
-                                      className="grid grid-cols-3 text-sm py-1 border-b border-muted"
+                                      className="grid grid-cols-4 text-sm py-1 border-b border-muted"
                                     >
                                       <div>{despesa.descricao}</div>
                                       <div>
@@ -298,12 +300,16 @@ export default function OrcamentosPage() {
                                           currency: "EUR",
                                         })}
                                       </div>
+                                      <div>{((despesa.valor / orcamento.gastoPlaneado) * 100).toFixed(1)}%</div>
                                       <div className="text-right">
-                                        {((despesa.valor / orcamento.gastoPlaneado) * 100).toFixed(1)}%
+                                        <DeleteDespesaDialog
+                                          despesa={{ ...despesa, orcamentoId: orcamento.id }}
+                                          onDespesaDeleted={handleRefresh}
+                                        />
                                       </div>
                                     </div>
                                   ))}
-                                  <div className="grid grid-cols-3 text-sm font-medium pt-2">
+                                  <div className="grid grid-cols-4 text-sm font-medium pt-2">
                                     <div>Total Expenses</div>
                                     <div>
                                       {calculateTotalExpenses(orcamento.despesas).toLocaleString("pt-PT", {
@@ -311,13 +317,14 @@ export default function OrcamentosPage() {
                                         currency: "EUR",
                                       })}
                                     </div>
-                                    <div className="text-right">
+                                    <div>
                                       {(
                                         (calculateTotalExpenses(orcamento.despesas) / orcamento.gastoPlaneado) *
                                         100
                                       ).toFixed(1)}
                                       %
                                     </div>
+                                    <div></div>
                                   </div>
                                 </div>
                               ) : (
