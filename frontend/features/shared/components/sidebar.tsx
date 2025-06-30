@@ -76,7 +76,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
       icon: UserCheck,
     },
     {
-      name: "Entregáveis",
+      name: "Deliverables",
       path: "/entregaveis",
       icon: ClipboardList,
     },

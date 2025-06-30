@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DDDSample1.Domain.Shared;
 using dddnetcore.Domain.TiposEntregavel;
+using dddnetcore.Domain.Atividades;
 
 
 namespace dddnetcore.Domain.Entregaveis
@@ -21,6 +22,7 @@ namespace dddnetcore.Domain.Entregaveis
         }
 
         public async Task<List<EntregavelDto>> GetAllAsync() {
+
             return (await this._repo.GetAllAsync()).ConvertAll(entregavel => new EntregavelDto(entregavel));
         }
         
@@ -42,6 +44,8 @@ namespace dddnetcore.Domain.Entregaveis
 
             var entregavel = new Entregavel(dto.Nome, dto.Descricao,dto.Data, tipoEntregavel);
 
+            entregavel.SetAtividadeId(new AtividadeId(dto.AtividadeId));
+
             await this._repo.AddAsync(entregavel);
 
             await this._unitOfWork.CommitAsync();
@@ -60,6 +64,8 @@ namespace dddnetcore.Domain.Entregaveis
 
             // Atualiza os campos
             entregavel.AlterarAtributos(dto.Nome, dto.Descricao, dto.Data, tipo);
+
+            entregavel.SetAtividadeId(new AtividadeId(dto.AtividadeId));
 
             await _unitOfWork.CommitAsync();
             return new EntregavelDto(entregavel);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using dddnetcore.Domain.Entregaveis;
 using DDDSample1.Domain.Shared;
@@ -37,7 +38,8 @@ namespace dddnetcore.Controllers
 
         [HttpPost]
         public async Task<ActionResult<EntregavelDto>> Create([FromBody] CreatingEntregavelDto dto) {
-            if (dto == null) {
+            if (dto == null)
+            {
                 return BadRequest("Dados de tipo de entregável inválidos.");
             }
             try{

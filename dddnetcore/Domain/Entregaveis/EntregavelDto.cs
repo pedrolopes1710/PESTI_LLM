@@ -14,6 +14,8 @@ namespace dddnetcore.Domain.Entregaveis
 
         public TipoEntregavelDto TipoEntregavel { get; set; }
 
+        public Guid AtividadeId { get; set; }
+
         public EntregavelDto() { }
 
         public EntregavelDto(Entregavel entregavel)
@@ -23,6 +25,7 @@ namespace dddnetcore.Domain.Entregaveis
             this.Descricao = entregavel.Descricao.Descricao;
             this.Data = entregavel.Data.Data;
             this.TipoEntregavel = new TipoEntregavelDto(entregavel.TipoEntregavel);
+            this.AtividadeId = entregavel.AtividadeId.AsGuid();
         }
     }
 }

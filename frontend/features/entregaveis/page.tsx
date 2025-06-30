@@ -20,6 +20,8 @@ import {
   deleteTipoEntregavel,
 } from "@/features/tiposEntregaveis/tiposEntregaveisAPI"
 
+import { fetchActivities } from "@/features/tasks/api" // Ajuste esse caminho se necessário
+
 import {
   Dialog,
   DialogTrigger,
@@ -32,6 +34,8 @@ import {
 export default function EntregaveisPage() {
   const [entregaveis, setEntregaveis] = useState<any[]>([])
   const [tipoEntregaveis, setTipoEntregaveis] = useState<any[]>([])
+  const [atividades, setAtividades] = useState<any[]>([]) // ⬅ Novo estado
+
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -56,14 +60,19 @@ export default function EntregaveisPage() {
         const data = await fetchEntregaveis()
         setEntregaveis(data)
       } catch {
-        setError("Erro ao carregar entregáveis")
+        setError("Error loading deliverables")
       }
 
       try {
         const tipos = await fetchTiposEntregavel()
         setTipoEntregaveis(tipos)
+      } catch { }
+
+      try {
+        const atividades = await fetchActivities() // ⬅ Buscar atividades
+        setAtividades(atividades)
       } catch {
-        // pode ignorar
+        console.error("Error loading activities")
       }
 
       setLoading(false)
@@ -73,13 +82,30 @@ export default function EntregaveisPage() {
 
   function validarFormulario() {
     const errors: any = {}
-    if (!nome.trim()) errors.nome = "Nome é obrigatório"
-    if (!descricao.trim()) errors.descricao = "Descrição é obrigatória"
-    if (!data) errors.data = "Data é obrigatória"
-    if (!tipoId) errors.tipoId = "Selecione o tipo de entregável"
+    if (!nome.trim()) errors.nome = "Name is required"
+    if (!descricao.trim()) errors.descricao = "Description is required"
+    if (!data) {
+      errors.data = "Date is required"
+    } else {
+      const atividade = atividades.find((a) => a.id === atividadeId)
+
+
+      if (atividade) {
+        const dataEntregavel = new Date(data)
+        const dataInicio = new Date(atividade.dataInicioAtividade)
+        const dataFim = new Date(atividade.dataFimAtividade)
+
+        if (dataEntregavel < dataInicio || dataEntregavel > dataFim) {
+          errors.data = `The date must be between ${new Date(atividade.dataInicioAtividade).toLocaleDateString()} and ${new Date(atividade.dataFimAtividade).toLocaleDateString()}`
+        }
+      }
+    }
+    if (!tipoId) errors.tipoId = "Select deliverable type"
+    if (!atividadeId) errors.atividadeId = "Select activity"
     setFormErrors(errors)
     return Object.keys(errors).length === 0
   }
+
 
   function resetForm() {
     setNome("")
@@ -107,7 +133,7 @@ export default function EntregaveisPage() {
       resetForm()
       setShowForm(false)
     } catch (err) {
-      alert("Erro ao criar entregável")
+      alert("Error creating deliverable")
       console.error(err)
     }
   }
@@ -140,26 +166,26 @@ export default function EntregaveisPage() {
       resetForm()
       setEditingId(null)
     } catch (err) {
-      alert("Erro ao atualizar entregável")
+      alert("Error updating deliverable")
       console.error(err)
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Quer mesmo apagar este entregável?")) return
+    if (!confirm("Are you sure you want to delete this deliverable?")) return
     try {
       const ok = await deleteEntregavel(id)
       if (ok) {
         setEntregaveis((prev) => prev.filter((e) => e.id !== id))
       }
     } catch {
-      alert("Erro ao apagar entregável")
+      alert("Error deleting deliverable")
     }
   }
 
   async function handleCriarNovoTipo() {
     if (!novoTipoNome.trim()) {
-      setTipoError("Nome do tipo é obrigatório")
+      setTipoError("Name is required")
       return
     }
     setTipoError(null)
@@ -170,17 +196,17 @@ export default function EntregaveisPage() {
       setNovoTipoNome("")
       setTipo(false)
     } catch (err) {
-      setTipoError("Erro ao criar tipo de entregável")
+      setTipoError("Error creating deliverable type")
       console.error(err)
     }
   }
 
-  if (loading) return <p>🔄 Carregando entregáveis...</p>
+  if (loading) return <p>🔄 Loading deliverables...</p>
   if (error) return <p className="text-red-500">{error}</p>
 
   return (
     <div className="max-w-4xl mx-auto p-4 space-y-6">
-      <h1 className="text-2xl font-bold">📦 Entregáveis</h1>
+      <h1 className="text-2xl font-bold">📦 Deliverables</h1>
 
       {!editingId && (
         <Button
@@ -190,32 +216,32 @@ export default function EntregaveisPage() {
           }}
           className="flex items-center gap-2 bg-blue-600 text-white hover:bg-blue-700"
         >
-          <Plus className="w-4 h-4" /> {showForm ? "Fechar Formulário" : "Novo Entregável"}
+          <Plus className="w-4 h-4" /> {showForm ? "Close Form" : "New Deliverable"}
         </Button>
       )}
 
       {(showForm || editingId) && (
         <div className="border border-gray-300 rounded-xl p-4 bg-white shadow space-y-4">
-          <Input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+          <Input placeholder="Name" value={nome} onChange={(e) => setNome(e.target.value)} />
           {formErrors.nome && <p className="text-red-500 text-sm">{formErrors.nome}</p>}
 
-          <Textarea placeholder="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
+          <Textarea placeholder="Description" value={descricao} onChange={(e) => setDescricao(e.target.value)} />
           {formErrors.descricao && <p className="text-red-500 text-sm">{formErrors.descricao}</p>}
 
           <label className="block">
-            Data
+            Date
             <Input type="date" value={data} onChange={(e) => setData(e.target.value)} />
           </label>
           {formErrors.data && <p className="text-red-500 text-sm">{formErrors.data}</p>}
 
           <label className="block">
-            Tipo de Entregável
+            Deliverable Type
             <select
               className="w-full border rounded-md p-2 mt-1"
               value={tipoId}
               onChange={(e) => setTipoId(e.target.value)}
             >
-              <option value="">Selecione o tipo</option>
+              <option value="">Select type</option>
               {tipoEntregaveis.map((tipo) => (
                 <option key={tipo.id} value={tipo.id}>
                   {tipo.nome}
@@ -232,7 +258,7 @@ export default function EntregaveisPage() {
                 onClick={() => setTipo(true)}
                 className="text-sm text-blue-600 mt-1 hover:underline"
               >
-                + Criar novo tipo de entregável
+                + Create new deliverable type
               </button>
 
               <Dialog>
@@ -241,13 +267,13 @@ export default function EntregaveisPage() {
                     type="button"
                     className="text-sm text-black-600 mt-1 hover:underline"
                   >
-                    🗑️ Apagar tipo de entregável
+                    🗑️ Delete deliverable type
                   </button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Apagar Tipo de Entregável</DialogTitle>
-                    <DialogDescription>Selecione um tipo para apagar. Essa ação é irreversível.</DialogDescription>
+                    <DialogTitle>Delete Deliverable Type</DialogTitle>
+                    <DialogDescription>Select a type to delete. This action is irreversible.</DialogDescription>
                   </DialogHeader>
 
                   {tipoDeleteErro && <p className="text-red-500 text-sm">{tipoDeleteErro}</p>}
@@ -260,19 +286,27 @@ export default function EntregaveisPage() {
                           variant="destructive"
                           size="sm"
                           onClick={async () => {
-                            if (!confirm(`Deseja apagar o tipo "${tipo.nome}"?`)) return
+                            const emUso = entregaveis.some(
+                              (ent) => ent.tipoEntregavel?.id === tipo.id
+                            )
+                            if (emUso) {
+                              setTipoDeleteErro(`Cannot delete: there are deliverables using the type: "${tipo.nome}".`)
+                              return
+                            }
+                            if (!confirm(`Do you want to delete the following deliverable type: "${tipo.nome}"?`)) return
                             try {
                               await deleteTipoEntregavel(tipo.id)
                               setTipoEntregaveis((prev) =>
                                 prev.filter((t) => t.id !== tipo.id)
                               )
+                              setTipoDeleteErro(null);
                             } catch (err) {
-                              setTipoDeleteErro("Erro ao apagar tipo. Verifique se está em uso.")
+                              setTipoDeleteErro("Error deleting type. Please try again.");
                               console.error(err)
                             }
                           }}
                         >
-                          Apagar
+                          Delete
                         </Button>
                       </li>
                     ))}
@@ -285,7 +319,7 @@ export default function EntregaveisPage() {
           {criarTipo && (
             <div className="space-y-2">
               <Input
-                placeholder="Nome do novo tipo"
+                placeholder="New deliverable type name"
                 value={novoTipoNome}
                 onChange={(e) => setNovoTipoNome(e.target.value)}
               />
@@ -296,18 +330,30 @@ export default function EntregaveisPage() {
                   setNovoTipoNome("")
                   setTipoError(null)
                 }}>
-                  Cancelar
+                  Cancel
                 </Button>
-                <Button type="button" onClick={handleCriarNovoTipo}>Criar Tipo</Button>
+                <Button type="button" onClick={handleCriarNovoTipo}>Create Type</Button>
               </div>
             </div>
           )}
 
-          <Input
-            placeholder="Atividade (opcional)"
-            value={atividadeId}
-            onChange={(e) => setAtividadeId(e.target.value)}
-          />
+          <label className="block">
+            Activity
+            <select
+              className="w-full border rounded-md p-2 mt-1"
+              value={atividadeId}
+              onChange={(e) => setAtividadeId(e.target.value)}
+            >
+              <option value="">Select activity</option>
+              {atividades.map((atividade) => (
+                <option key={atividade.id} value={atividade.id}>
+                  {atividade.nomeAtividade}
+                </option>
+              ))}
+            </select>
+          </label>
+          {formErrors.atividadeId && <p className="text-red-500 text-sm">{formErrors.atividadeId}</p>}
+
 
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => {
@@ -317,10 +363,10 @@ export default function EntregaveisPage() {
                 setShowForm(false)
               }
             }}>
-              Cancelar
+              Cancel
             </Button>
             <Button onClick={editingId ? handleSaveEdit : handleCreate}>
-              {editingId ? "Salvar" : "Criar"}
+              {editingId ? "Save" : "Create"}
             </Button>
           </div>
         </div>
