@@ -142,17 +142,41 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
   - Tabela de despesas (i guess) - Rafael Ferraz
 
 - **ciencia id precisa de algum tipo de validação, tipo x numeros, x letras, etc?**
-  - sim, seguir sites que professor forneceu e tentar encontrar regex   
+  - sim, seguir sites que professor forneceu e tentar encontrar regex
+
+
+### Dia 02/07
+
+- **tabelas se passarem de página temos de pôr cabeçalho? e mesmo outras coisas texto corrido numerações e assim?**
+  - convem pôr cabeçalho e convem ter tudo bem formatado.
+
+- **título de relatorio como tem de ser?**
+  - Exemplo--> Desenvolvimento de Sistema de Gestão de Projetos de I&D: Módulo de Gestão de Projetos e Indicadores
+
+- **informações sobre referencias e assim que estão no final do template temos que tirar?**
+  - sim
+
+- **é normal no estado da arte ter bastante citações no identific?**
+  - sim se usarmos referências e assim
+
+- **as referencias têm de ser automaticas? têm de ser por ordem alfabetica ou por ordem de aparecimento no texto?**
+  - temos de pôr automático o word depois põe no sitio
+
+- **relativamente às quebras de página, como fazemos isso?**
+  - se acabar o capítulo numa ímpar pôr quebra entre capítulos, basta dar enter.
+
+- **relativamente à vista logica, nos colocamos na mesma SQLserver?**
+  - sim
+
+- **design alternativo o que pôr**
+  - vista de implementação e lógica explorar outros niveis e de forma diferente
+
+- **testes**
+  - fazer testes end2end, testes de integração e testes unitários.
 
 
 ## 📌 Perguntas Futuras
 
-- **tabelas se passarem de página temos de pôr titulo? e mesmo outras coisas texto corrido numerações e assim?**
 
-- **título de relatorio como tem de ser?**
 
-- **informações sobre referencias e assim que estão no final do template temos que tirar?**
 
-- **é normal no estado da arte ter bastante citações no identific?**
-
-- **as referencias têm de ser automaticas?**
