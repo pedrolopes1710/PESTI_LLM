@@ -147,5 +147,12 @@ Uma rubrica é uma categoria de despesa dentro do orçamento, incluindo:
 
 ## 📌 Perguntas Futuras
 
-- **relatório: pode ter coisas iguais (ex.: estado da arte)?**
-  - Professor ainda vai analisar e disse que depois dava resposta.
+- **tabelas se passarem de página temos de pôr titulo? e mesmo outras coisas texto corrido numerações e assim?**
+
+- **título de relatorio como tem de ser?**
+
+- **informações sobre referencias e assim que estão no final do template temos que tirar?**
+
+- **é normal no estado da arte ter bastante citações no identific?**
+
+- **as referencias têm de ser automaticas?**
