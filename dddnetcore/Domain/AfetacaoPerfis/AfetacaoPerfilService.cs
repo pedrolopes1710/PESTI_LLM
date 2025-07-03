@@ -53,7 +53,7 @@ namespace DDDSample1.Domain.AfetacaoPerfis
             return new AfetacaoPerfilDto(afetacaoPerfil);
         }
 
-        public async Task<AfetacaoPerfilDto> UpdateAsync(AfetacaoPerfilDto dto)
+        public async Task<AfetacaoPerfilDto> UpdateAsync(EditingAfetacaoPerfilDto dto)
         {
             var afetacaoPerfil = await this._repo.GetByIdAsync(new AfetacaoPerfilId(dto.Id)); 
 
@@ -63,7 +63,7 @@ namespace DDDSample1.Domain.AfetacaoPerfis
             // change all fields
             afetacaoPerfil.ChangeDuracaoMes(new DuracaoMes(dto.DuracaoMes));
             afetacaoPerfil.ChangePMsAprovados(new PMsAprovados(dto.PMsAprovados));
-            
+            afetacaoPerfil.ChangePerfilId(new PerfilId(dto.PerfilId));
     
             await this._unitOfWork.CommitAsync();
 

@@ -44,7 +44,8 @@ namespace dddnetcore.Infraestructure.Atividades
 
             builder.HasMany(p => p.Tarefas)
                 .WithOne()
-                .HasForeignKey("AtividadeId");
+                .HasForeignKey("AtividadeId")
+                .OnDelete(DeleteBehavior.Cascade);
                 
             builder.HasMany(p => p.Orcamentos)
                 .WithOne()

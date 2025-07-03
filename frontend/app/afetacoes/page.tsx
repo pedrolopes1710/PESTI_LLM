@@ -38,7 +38,7 @@ export default function AfetacoesPage() {
     setError(null)
     try {
       // Buscar dados completos das pessoas (incluindo contratos)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "https://localhost:7284"}/api/pessoas`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5225"}/api/pessoas`)
       if (!response.ok) {
         throw new Error(`Failed to fetch pessoas: ${response.status} ${response.statusText}`)
       }

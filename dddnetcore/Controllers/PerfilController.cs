@@ -44,9 +44,19 @@ namespace DDDSample1.Controllers
         [HttpPost]
         public async Task<ActionResult<PerfilDto>> Create(CreatingPerfilDto dto)
         {
-            var perfil = await _service.AddAsync(dto);
-
-            return CreatedAtAction(nameof(GetGetById), new { id = perfil.Id }, perfil);
+            try {
+                PerfilDto perfil = await _service.AddAsync(dto);
+                
+                return CreatedAtAction(nameof(GetGetById), new { id = perfil.Id }, perfil);
+            } catch (BusinessRuleValidationException e) {
+                return BadRequest(new {e.Message});
+            } catch (NullReferenceException e) {
+                return NotFound(new {e.Message});
+            } catch (ArgumentNullException e) {
+                return BadRequest(new {e.Message});
+            } catch (Exception) {
+                return StatusCode(500, new { message = "An unexpected error occurred." });
+            }
         }
 
         

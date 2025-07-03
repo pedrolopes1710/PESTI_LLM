@@ -12,7 +12,7 @@ namespace dddnetcore.Domain.Atividades
 {
     public class Atividade : Entity<AtividadeId>, IAggregateRoot
     {
-        public DataFimAtividade DataFimAtividade {get; private set;}
+        public DataFimAtividade DataFimAtividade { get; private set; }
         public DataInicioAtividade DataInicioAtividade {get; private set;}
         public DescricaoAtividade DescricaoAtividade {get; private set;}
         public NomeAtividade NomeAtividade {get; private set;}
@@ -25,7 +25,8 @@ namespace dddnetcore.Domain.Atividades
 
         public List<Orcamento> Orcamentos {get;private set;}
         
-        private Atividade() {}
+        
+        private Atividade() { }
 
         public Atividade(
             DataFimAtividade dataFimAtividade,
@@ -34,6 +35,24 @@ namespace dddnetcore.Domain.Atividades
             NomeAtividade nomeAtividade
             )
         {
+            if (dataInicioAtividade == null)
+                throw new BusinessRuleValidationException("DataInicioAtividade cannot be null.");
+
+            if (dataFimAtividade == null)
+                throw new BusinessRuleValidationException("DataFimAtividade cannot be null.");
+
+            if (dataInicioAtividade.InicioAtividade == DateTime.MinValue)
+                throw new BusinessRuleValidationException("DataInicioAtividade is invalid.");
+
+            if (dataFimAtividade.FimAtividade < dataInicioAtividade.InicioAtividade)
+                throw new BusinessRuleValidationException("DataFimAtividade cannot be earlier than DataInicioAtividade.");
+
+            if (descricaoAtividade == null)
+                throw new BusinessRuleValidationException("DescricaoAtividade cannot be null.");
+
+            if (nomeAtividade == null)
+                throw new BusinessRuleValidationException("NomeAtividade cannot be null.");
+
             this.Id = new AtividadeId(Guid.NewGuid());
             this.DataFimAtividade = dataFimAtividade;
             this.DataInicioAtividade = dataInicioAtividade;
@@ -61,12 +80,17 @@ namespace dddnetcore.Domain.Atividades
         {
             if (dataInicioAtividade == null)
             {
-            throw new BusinessRuleValidationException("DataInicioAtividade cannot be null.");
+                throw new BusinessRuleValidationException("DataInicioAtividade cannot be null.");
+            }
+
+            if (dataInicioAtividade.InicioAtividade == DateTime.MinValue)
+            {
+                throw new BusinessRuleValidationException("DataInicioAtividade cannot be DateTime.MinValue.");
             }
 
             if (this.DataFimAtividade != null && dataInicioAtividade.InicioAtividade > this.DataFimAtividade.FimAtividade)
             {
-            throw new BusinessRuleValidationException("DataInicioAtividade cannot be later than DataFimAtividade.");
+                throw new BusinessRuleValidationException("DataInicioAtividade cannot be later than DataFimAtividade.");
             }
 
             this.DataInicioAtividade = dataInicioAtividade;

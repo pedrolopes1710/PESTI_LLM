@@ -1,7 +1,6 @@
 "use client"
 
 import { DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu"
-
 import { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -32,6 +31,7 @@ import {
   Trash,
   CheckCircle,
   Play,
+  MoreHorizontal,
 } from "lucide-react"
 import type { Activity } from "./types"
 import { fetchTasksGroupedByActivity, fetchTasks, updateTaskStatus } from "./api"
@@ -46,7 +46,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
-import { createActivity } from "../activities/api"
+import { createActivity, deleteActivity } from "../activities/api"
 import type { CreateActivityDto } from "../activities/types"
 import { fetchEntregaveis } from "../deliverables/api"
 import { fetchProfiles } from "../profiles/api"
@@ -54,7 +54,14 @@ import type { ApiTask } from "../tasks/api"
 import type { Entregavel } from "../deliverables/types"
 import type { Profile } from "../profiles/types"
 import { toast } from "@/components/ui/use-toast"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { EditTaskDialog } from "./components/edit-task-dialog"
 import { DeleteTaskDialog } from "./components/delete-task-dialog"
 import { useRouter } from "next/navigation"
@@ -62,6 +69,7 @@ import { CreateTarefaInline } from "../activities/components/create-tarefa-inlin
 import { CreateEntregavelInline } from "../activities/components/create-entregavel-inline"
 import { CreateProfileInline } from "../activities/components/create-profile-inline"
 import { CreateOrcamentoDialog } from "../orcamentos/components/create-orcamento-dialog"
+import { EditActivityDialog } from "../activities/components/edit-activity-dialog"
 
 export default function TasksPage() {
   const router = useRouter()
@@ -73,13 +81,18 @@ export default function TasksPage() {
   const [showTaskForm, setShowTaskForm] = useState(false)
   const [isCreatingActivity, setIsCreatingActivity] = useState(false)
   const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null)
-  const [showCreateOrcamento, setShowCreateOrcamento] = useState(false)
 
   // Estados para edição e exclusão de tarefas
   const [editingTask, setEditingTask] = useState<ApiTask | null>(null)
   const [showEditTaskDialog, setShowEditTaskDialog] = useState(false)
   const [deletingTask, setDeletingTask] = useState<{ id: string; name: string } | null>(null)
   const [showDeleteTaskDialog, setShowDeleteTaskDialog] = useState(false)
+
+  // Estados para edição e exclusão de atividades
+  const [editingActivity, setEditingActivity] = useState<Activity | null>(null)
+  const [showEditActivityDialog, setShowEditActivityDialog] = useState(false)
+  const [showDeleteActivityDialog, setShowDeleteActivityDialog] = useState(false)
+  const [deletingActivity, setDeletingActivity] = useState<{ id: string; name: string } | null>(null)
 
   // Estados para o formulário de criação de atividade
   const [nomeAtividade, setNomeAtividade] = useState("")
@@ -89,27 +102,27 @@ export default function TasksPage() {
   const [orcamentoIds, setOrcamentoIds] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Estados para as listas de seleção múltipla
+  // Estados para as listas de seleção múltipla (apenas para criação)
   const [tarefasIds, setTarefasIds] = useState<string[]>([])
   const [entregaveisIds, setEntregaveisIds] = useState<string[]>([])
   const [perfisIds, setPerfisIds] = useState<string[]>([])
 
-  // Estados para os dados das listas
+  // Estados para os dados das listas (apenas para criação)
   const [activityTarefas, setActivityTarefas] = useState<ApiTask[]>([])
   const [entregaveis, setEntregaveis] = useState<Entregavel[]>([])
   const [perfis, setPerfis] = useState<Profile[]>([])
 
-  // Estados para busca
+  // Estados para busca (apenas para criação)
   const [tarefasSearch, setTarefasSearch] = useState("")
   const [entregaveisSearch, setEntregaveisSearch] = useState("")
   const [perfisSearch, setPerfisSearch] = useState("")
 
-  // Estados para indicar carregamento
+  // Estados para indicar carregamento (apenas para criação)
   const [loadingTarefas, setLoadingTarefas] = useState(false)
   const [loadingEntregaveis, setLoadingEntregaveis] = useState(false)
   const [loadingPerfis, setLoadingPerfis] = useState(false)
 
-  // Estados para controlar a criação inline
+  // Estados para controlar a criação inline (apenas para criação)
   const [showCreateTarefa, setShowCreateTarefa] = useState(false)
   const [showCreateEntregavel, setShowCreateEntregavel] = useState(false)
   const [showCreatePerfil, setShowCreatePerfil] = useState(false)
@@ -170,7 +183,7 @@ export default function TasksPage() {
           setEntregaveis(entregaveisData)
         } catch (error) {
           console.error("Erro ao carregar entregáveis:", error)
-          setEntregaveis([]) // Definir array vazio em caso de erro
+          setEntregaveis([])
         }
         setLoadingEntregaveis(false)
 
@@ -181,7 +194,7 @@ export default function TasksPage() {
           setPerfis(perfisData)
         } catch (error) {
           console.error("Erro ao carregar perfis:", error)
-          setPerfis([]) // Definir array vazio em caso de erro
+          setPerfis([])
         }
         setLoadingPerfis(false)
       } catch (error) {
@@ -254,14 +267,12 @@ export default function TasksPage() {
 
   // Função para lidar com a criação de uma nova tarefa
   const handleTaskCreated = () => {
-    // Recarregar os dados após a criação de uma nova tarefa
     fetchData()
     setShowTaskForm(false)
   }
 
   // Função para lidar com a atualização de uma tarefa
   const handleTaskUpdated = () => {
-    // Recarregar os dados após a atualização de uma tarefa
     fetchData()
     setShowEditTaskDialog(false)
     setEditingTask(null)
@@ -269,7 +280,6 @@ export default function TasksPage() {
 
   // Função para lidar com a exclusão de uma tarefa
   const handleTaskDeleted = () => {
-    // Recarregar os dados após a exclusão de uma tarefa
     fetchData()
     setShowDeleteTaskDialog(false)
     setDeletingTask(null)
@@ -280,15 +290,11 @@ export default function TasksPage() {
     try {
       setUpdatingTaskId(taskId)
       console.log(`Atualizando status da tarefa ${taskId} para ${newStatus}`)
-
       await updateTaskStatus(taskId, newStatus)
-
       toast({
         title: "Status atualizado",
         description: `Status da tarefa alterado para ${newStatus.replace(/_/g, " ")}.`,
       })
-
-      // Recarregar os dados após a atualização de status
       fetchData()
     } catch (error) {
       console.error("Erro ao atualizar status:", error)
@@ -302,7 +308,51 @@ export default function TasksPage() {
     }
   }
 
-  // Funções para selecionar/desselecionar todos
+  // Funções para edição de atividades
+  const handleEditActivity = async (activity: Activity) => {
+    setEditingActivity(activity)
+    setShowEditActivityDialog(true)
+  }
+
+  const handleEditActivityClose = () => {
+    setShowEditActivityDialog(false)
+    setEditingActivity(null)
+  }
+
+  const handleActivityUpdated = () => {
+    fetchData()
+    handleEditActivityClose()
+  }
+
+  const handleDeleteActivity = (activity: Activity) => {
+    setDeletingActivity({ id: activity.id, name: activity.name })
+    setShowDeleteActivityDialog(true)
+  }
+
+  const confirmDeleteActivity = async () => {
+    if (!deletingActivity) return
+
+    try {
+      await deleteActivity(deletingActivity.id)
+      toast({
+        title: "Atividade excluída",
+        description: `A atividade "${deletingActivity.name}" foi excluída com sucesso.`,
+      })
+
+      fetchData()
+      setShowDeleteActivityDialog(false)
+      setDeletingActivity(null)
+    } catch (error) {
+      console.error("Erro ao excluir atividade:", error)
+      toast({
+        variant: "destructive",
+        title: "Erro ao excluir atividade",
+        description: "Não foi possível excluir a atividade.",
+      })
+    }
+  }
+
+  // Funções para selecionar/desselecionar todos (apenas para criação)
   const selectAllTarefas = () => {
     const filteredTarefas = activityTarefas
       .filter((tarefa) => tarefa.nome?.toLowerCase().includes(tarefasSearch.toLowerCase()))
@@ -336,7 +386,7 @@ export default function TasksPage() {
     setPerfisIds([])
   }
 
-  // Filtrar itens com base na busca
+  // Filtrar itens com base na busca (apenas para criação)
   const filteredTarefas = activityTarefas.filter((tarefa) =>
     tarefa.nome?.toLowerCase().includes(tarefasSearch.toLowerCase()),
   )
@@ -347,70 +397,53 @@ export default function TasksPage() {
 
   const filteredPerfis = perfis.filter((perfil) => perfil.descricao?.toLowerCase().includes(perfisSearch.toLowerCase()))
 
-  // Função para lidar com a criação de tarefa inline
+  // Função para lidar com a criação de tarefa inline (apenas para criação)
   const handleTarefaCreatedInline = async (tarefaId: string) => {
-    // Adicionar a nova tarefa à lista de selecionados
     setTarefasIds([...tarefasIds, tarefaId])
-
-    // Recarregar a lista de tarefas
     try {
       const tarefasData = await fetchTasks()
       setActivityTarefas(tarefasData)
     } catch (error) {
       console.error("Erro ao recarregar tarefas:", error)
     }
-
-    // Esconder o formulário
     setShowCreateTarefa(false)
   }
 
-  // Função para lidar com a criação de entregável inline
+  // Função para lidar com a criação de entregável inline (apenas para criação)
   const handleEntregavelCreatedInline = async (entregavelId: string) => {
-    // Adicionar o novo entregável à lista de selecionados
     setEntregaveisIds([...entregaveisIds, entregavelId])
-
-    // Recarregar a lista de entregáveis
     try {
       const entregaveisData = await fetchEntregaveis()
       setEntregaveis(entregaveisData)
     } catch (error) {
       console.error("Erro ao recarregar entregáveis:", error)
     }
-
-    // Esconder o formulário
     setShowCreateEntregavel(false)
   }
 
-  // Função para lidar com a criação de perfil inline
+  // Função para lidar com a criação de perfil inline (apenas para criação)
   const handlePerfilCreatedInline = async (perfilId: string) => {
-    // Adicionar o novo perfil à lista de selecionados
     setPerfisIds([...perfisIds, perfilId])
-
-    // Recarregar a lista de perfis
     try {
       const perfisData = await fetchProfiles()
       setPerfis(perfisData)
     } catch (error) {
       console.error("Erro ao recarregar perfis:", error)
     }
-
-    // Esconder o formulário
     setShowCreatePerfil(false)
   }
 
-  // Função para lidar com a criação de orçamento
+  // Função para lidar com a criação de orçamento (apenas para criação)
   const handleOrcamentoCriado = (orcamentoId: string) => {
-    // Adicionar o novo orçamento à lista
     setOrcamentoIds([...orcamentoIds, orcamentoId])
-
     toast({
       title: "Orçamento criado com sucesso!",
       description: "O orçamento foi criado e adicionado à atividade.",
     })
   }
 
-  // Função para lidar com o envio do formulário de atividade
-  async function handleCreateActivity() {
+  // Função para lidar com o envio do formulário de atividade (apenas para criação)
+  async function handleSubmitActivity() {
     // Validar campos obrigatórios
     if (!nomeAtividade.trim()) {
       toast({
@@ -448,7 +481,6 @@ export default function TasksPage() {
       return
     }
 
-    // Verificar se a data de fim é posterior à data de início
     if (dataFim < dataInicio) {
       toast({
         variant: "destructive",
@@ -458,22 +490,47 @@ export default function TasksPage() {
       return
     }
 
+    // Validar campos obrigatórios de seleção múltipla
+    if (orcamentoIds.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Campo obrigatório",
+        description: "Por favor, preencha pelo menos um ID de orçamento.",
+      })
+      return
+    }
+
+    if (tarefasIds.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Campo obrigatório",
+        description: "Por favor, selecione pelo menos uma tarefa.",
+      })
+      return
+    }
+
+    if (entregaveisIds.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Campo obrigatório",
+        description: "Por favor, selecione pelo menos um entregável.",
+      })
+      return
+    }
+
+    if (perfisIds.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Campo obrigatório",
+        description: "Por favor, selecione pelo menos um perfil.",
+      })
+      return
+    }
+
     try {
       setIsSubmitting(true)
 
-      // Log dos dados antes de enviar
-      console.log("Dados da atividade:", {
-        nomeAtividade,
-        descricaoAtividade,
-        dataInicio: dataInicio.toISOString(),
-        dataFim: dataFim.toISOString(),
-        orcamentoIds,
-        tarefasIds,
-        entregaveisIds,
-        perfisIds,
-      })
-
-      // Preparar os dados para envio
+      // Criar nova atividade
       const activityData: CreateActivityDto = {
         nomeAtividade,
         descricaoAtividade,
@@ -484,15 +541,11 @@ export default function TasksPage() {
         tarefasIds: tarefasIds.length > 0 ? tarefasIds : [],
       }
 
-      // Adicionar orcamentoId se fornecido
       if (orcamentoIds.length > 0) {
         activityData.orcamentoIds = orcamentoIds
       }
 
-      console.log("Dados finais para envio:", activityData)
-
-      // Criar a atividade
-      const newActivity = await createActivity(activityData)
+      await createActivity(activityData)
 
       toast({
         title: "Atividade criada com sucesso!",
@@ -506,7 +559,6 @@ export default function TasksPage() {
       // Recarregar os dados
       fetchData()
 
-      // Navegar para a página de atividades
       router.push("/tasks")
     } catch (error) {
       console.error("Erro ao criar atividade:", error)
@@ -520,7 +572,7 @@ export default function TasksPage() {
     }
   }
 
-  // Função para limpar o formulário
+  // Função para limpar o formulário (apenas para criação)
   function resetForm() {
     setNomeAtividade("")
     setDescricaoAtividade("")
@@ -536,6 +588,12 @@ export default function TasksPage() {
     setShowCreateTarefa(false)
     setShowCreateEntregavel(false)
     setShowCreatePerfil(false)
+  }
+
+  // Função para cancelar criação
+  const handleCancelForm = () => {
+    resetForm()
+    setIsCreatingActivity(false)
   }
 
   // Função para abrir o diálogo de edição de tarefa
@@ -563,16 +621,16 @@ export default function TasksPage() {
         <Toaster />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={() => setIsCreatingActivity(false)}>
+            <Button variant="outline" size="icon" onClick={handleCancelForm}>
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <h1 className="text-3xl font-bold tracking-tight">Nova Atividade</h1>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setIsCreatingActivity(false)} disabled={isSubmitting}>
+            <Button variant="outline" onClick={handleCancelForm} disabled={isSubmitting}>
               Cancelar
             </Button>
-            <Button onClick={handleCreateActivity} disabled={isSubmitting}>
+            <Button onClick={handleSubmitActivity} disabled={isSubmitting}>
               {isSubmitting ? "Criando..." : "Criar Atividade"}
             </Button>
           </div>
@@ -661,11 +719,11 @@ export default function TasksPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <label htmlFor="orcamentoIds" className="text-sm font-medium">
-                      IDs dos Orçamentos (opcional)
+                      IDs dos Orçamentos *
                     </label>
                     <CreateOrcamentoDialog onOrcamentoCriado={handleOrcamentoCriado} />
                   </div>
-                   <Input
+                  <Input
                     id="orcamentoId"
                     placeholder="Digite os IDs dos orçamentos separados por vírgula"
                     value={orcamentoIds.join(", ")}
@@ -673,7 +731,7 @@ export default function TasksPage() {
                       const ids = e.target.value
                         .split(",")
                         .map((id) => id.trim())
-                        .filter((id) => id.length > 0)    
+                        .filter((id) => id.length > 0)
                       setOrcamentoIds(ids)
                     }}
                   />
@@ -688,7 +746,7 @@ export default function TasksPage() {
             <Card className="h-full">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
-                  <CardTitle>Entregáveis</CardTitle>
+                  <CardTitle>Entregáveis *</CardTitle>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">{entregaveisIds.length} selecionados</Badge>
                     <Button
@@ -710,7 +768,7 @@ export default function TasksPage() {
                     size="sm"
                     onClick={selectAllEntregaveis}
                     disabled={loadingEntregaveis || filteredEntregaveis.length === 0}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs bg-transparent"
                   >
                     Selecionar Todos
                   </Button>
@@ -720,19 +778,17 @@ export default function TasksPage() {
                     size="sm"
                     onClick={deselectAllEntregaveis}
                     disabled={entregaveisIds.length === 0}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs bg-transparent"
                   >
                     Limpar
                   </Button>
                 </div>
-
                 {showCreateEntregavel && (
                   <CreateEntregavelInline
                     onEntregavelCreated={handleEntregavelCreatedInline}
                     onCancel={() => setShowCreateEntregavel(false)}
                   />
                 )}
-
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -791,7 +847,7 @@ export default function TasksPage() {
             <Card className="h-full">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
-                  <CardTitle>Tarefas</CardTitle>
+                  <CardTitle>Tarefas *</CardTitle>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">{tarefasIds.length} selecionadas</Badge>
                     <Button
@@ -813,7 +869,7 @@ export default function TasksPage() {
                     size="sm"
                     onClick={selectAllTarefas}
                     disabled={loadingTarefas || filteredTarefas.length === 0}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs bg-transparent"
                   >
                     Selecionar Todos
                   </Button>
@@ -823,19 +879,17 @@ export default function TasksPage() {
                     size="sm"
                     onClick={deselectAllTarefas}
                     disabled={tarefasIds.length === 0}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs bg-transparent"
                   >
                     Limpar
                   </Button>
                 </div>
-
                 {showCreateTarefa && (
                   <CreateTarefaInline
                     onTarefaCreated={handleTarefaCreatedInline}
                     onCancel={() => setShowCreateTarefa(false)}
                   />
                 )}
-
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -891,7 +945,7 @@ export default function TasksPage() {
             <Card className="h-full">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-center">
-                  <CardTitle>Perfis</CardTitle>
+                  <CardTitle>Perfis *</CardTitle>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">{perfisIds.length} selecionados</Badge>
                     <Button
@@ -913,7 +967,7 @@ export default function TasksPage() {
                     size="sm"
                     onClick={selectAllPerfis}
                     disabled={loadingPerfis || filteredPerfis.length === 0}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs bg-transparent"
                   >
                     Selecionar Todos
                   </Button>
@@ -923,19 +977,17 @@ export default function TasksPage() {
                     size="sm"
                     onClick={deselectAllPerfis}
                     disabled={perfisIds.length === 0}
-                    className="h-8 text-xs"
+                    className="h-8 text-xs bg-transparent"
                   >
                     Limpar
                   </Button>
                 </div>
-
                 {showCreatePerfil && (
                   <CreateProfileInline
                     onProfileCreated={handlePerfilCreatedInline}
                     onCancel={() => setShowCreatePerfil(false)}
                   />
                 )}
-
                 <div className="relative">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -1008,6 +1060,7 @@ export default function TasksPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -1048,7 +1101,6 @@ export default function TasksPage() {
               <DropdownMenuItem>Project</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
           <Button
             onClick={() => setIsCreatingActivity(true)}
             className="flex items-center gap-1 bg-green-600 text-white hover:bg-green-700"
@@ -1089,13 +1141,41 @@ export default function TasksPage() {
         />
       )}
 
+      {/* Diálogo de edição de atividade */}
+      <EditActivityDialog
+        activityId={editingActivity?.id || null}
+        open={showEditActivityDialog}
+        onOpenChange={setShowEditActivityDialog}
+        onActivityUpdated={handleActivityUpdated}
+      />
+
+      {/* Diálogo de confirmação de exclusão de atividade */}
+      <Dialog open={showDeleteActivityDialog} onOpenChange={setShowDeleteActivityDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar Exclusão</DialogTitle>
+            <DialogDescription>
+              Tem certeza de que deseja excluir a atividade "{deletingActivity?.name}"? Esta ação não pode ser desfeita.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteActivityDialog(false)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={confirmDeleteActivity}>
+              Excluir
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Erro</AlertTitle>
           <AlertDescription className="flex justify-between items-center">
             {error}
-            <Button variant="outline" size="sm" onClick={fetchData} className="ml-2">
+            <Button variant="outline" size="sm" onClick={fetchData} className="ml-2 bg-transparent">
               <RefreshCw className="h-4 w-4 mr-2" />
               Tentar novamente
             </Button>
@@ -1129,6 +1209,27 @@ export default function TasksPage() {
                         >
                           {activity.name}
                         </span>
+                        {/* Dropdown menu para ações da atividade */}
+                        {activity.id !== "no-activity" && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Abrir menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleEditActivity(activity)}>
+                                <Pencil className="mr-2 h-4 w-4" />
+                                Editar
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleDeleteActivity(activity)} className="text-red-600">
+                                <Trash className="mr-2 h-4 w-4" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
                     </div>
@@ -1209,7 +1310,6 @@ export default function TasksPage() {
                                   Terminado
                                 </Button>
                               )}
-
                               {task.status !== "In Progress" && (
                                 <Button
                                   size="sm"
@@ -1221,7 +1321,6 @@ export default function TasksPage() {
                                   <Play className="h-4 w-4 mr-1" />A Decorrer
                                 </Button>
                               )}
-
                               {/* Botões de Ação */}
                               <Button
                                 variant="outline"
@@ -1240,7 +1339,7 @@ export default function TasksPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="text-red-600 hover:bg-red-50 border-red-300"
+                                className="text-red-600 hover:bg-red-50 border-red-300 bg-transparent"
                                 onClick={() => handleDeleteTask(task.id.toString(), task.title)}
                               >
                                 <Trash className="h-4 w-4 mr-1" />

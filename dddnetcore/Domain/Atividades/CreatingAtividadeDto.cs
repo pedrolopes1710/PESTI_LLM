@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace dddnetcore.Domain.Orcamentos
+namespace dddnetcore.Domain.Atividades
 {
     public class CreatingAtividadeDto
     {

@@ -8,7 +8,7 @@ import type {
 } from "./types"
 
 // Configuração da base URL da API
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://localhost:7284"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5225"
 
 // Função para buscar a lista de pessoas (simplificada)
 export async function getPessoas(): Promise<PessoaDto[]> {

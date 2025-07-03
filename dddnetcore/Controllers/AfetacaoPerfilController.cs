@@ -48,15 +48,25 @@ namespace DDDSample1.Controllers
         [HttpPost]
         public async Task<ActionResult<AfetacaoPerfilDto>> Create(CreatingAfetacaoPerfilDto dto)
         {
-            var afetacaoPerfil = await _service.AddAsync(dto);
-
-            return CreatedAtAction(nameof(GetById), new { id = afetacaoPerfil.Id }, afetacaoPerfil);
+            try {
+                AfetacaoPerfilDto afetacaoPerfil = await _service.AddAsync(dto);
+                
+                return CreatedAtAction(nameof(GetById), new { id = afetacaoPerfil.Id }, afetacaoPerfil);
+            } catch (BusinessRuleValidationException e) {
+                return BadRequest(new {e.Message});
+            } catch (NullReferenceException e) {
+                return NotFound(new {e.Message});
+            } catch (ArgumentNullException e) {
+                return BadRequest(new {e.Message});
+            } catch (Exception) {
+                return StatusCode(500, new { message = "An unexpected error occurred." });
+            }
         }
 
         
         // PUT: api/AfetacaoPerfil/5
         [HttpPut("{id}")]
-        public async Task<ActionResult<AfetacaoPerfilDto>> Update(Guid id, AfetacaoPerfilDto dto)
+        public async Task<ActionResult<AfetacaoPerfilDto>> Update(Guid id, EditingAfetacaoPerfilDto dto)
         {
             if (id != dto.Id)
             {

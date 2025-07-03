@@ -1,115 +1,129 @@
-import type { CreateActivityDto, Activity } from "./types"
+const API_BASE_URL = "http://localhost:5225/api"
 
-const ATIVIDADES_URL = "http://localhost:5225/api/Atividades"
+export interface CreateActivityDto {
+  nomeAtividade: string
+  descricaoAtividade: string
+  dataInicioAtividade: string
+  dataFimAtividade: string
+  orcamentoIds?: string[]
+  tarefasIds?: string[]
+  entregaveisIds?: string[]
+  perfisIds?: string[]
+}
 
-// Função para criar uma nova atividade
-export async function createActivity(activityData: CreateActivityDto): Promise<Activity> {
+export interface UpdateActivityDto {
+  id: string
+  nomeAtividade: string
+  descricaoAtividade: string
+  dataInicioAtividade: string
+  dataFimAtividade: string
+  orcamentoIds?: string[]
+  tarefasIds?: string[]
+  entregaveisIds?: string[]
+  perfisIds?: string[]
+}
+
+export async function createActivity(data: CreateActivityDto) {
   try {
-    // Validar campos obrigatórios
-    if (!activityData.nomeAtividade || activityData.nomeAtividade.trim() === "") {
-      throw new Error("O nome da atividade não pode estar vazio")
-    }
+    console.log("Enviando dados para criar atividade:", data)
 
-    if (!activityData.descricaoAtividade || activityData.descricaoAtividade.trim() === "") {
-      throw new Error("A descrição da atividade não pode estar vazia")
-    }
-
-    if (!activityData.dataInicioAtividade) {
-      throw new Error("A data de início é obrigatória")
-    }
-
-    if (!activityData.dataFimAtividade) {
-      throw new Error("A data de fim é obrigatória")
-    }
-
-    console.log("Enviando dados para API:", activityData)
-
-    const response = await fetch(ATIVIDADES_URL, {
+    const response = await fetch(`${API_BASE_URL}/Atividades`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(activityData),
+      body: JSON.stringify(data),
     })
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error("Resposta da API:", errorText)
-      throw new Error(`Erro ao criar atividade: ${response.status}`)
+      console.error("Erro na resposta da API:", errorText)
+      throw new Error(`Erro ao criar atividade: ${response.status} - ${errorText}`)
     }
 
-    return await response.json()
+    const result = await response.json()
+    console.log("Atividade criada com sucesso:", result)
+    return result
   } catch (error) {
     console.error("Erro ao criar atividade:", error)
     throw error
   }
 }
 
-// Função para buscar todas as atividades
-export async function fetchActivities(): Promise<Activity[]> {
+export async function updateActivity(data: UpdateActivityDto) {
   try {
-    const response = await fetch(ATIVIDADES_URL)
-    if (!response.ok) {
-      throw new Error(`Erro ao buscar atividades: ${response.status}`)
-    }
-    return await response.json()
-  } catch (error) {
-    console.error("Erro ao buscar atividades:", error)
-    throw error
-  }
-}
+    console.log("Enviando dados para atualizar atividade:", data)
 
-// Função para buscar uma atividade específica
-export async function fetchActivity(id: string): Promise<Activity> {
-  try {
-    const response = await fetch(`${ATIVIDADES_URL}/${id}`)
-    if (!response.ok) {
-      throw new Error(`Erro ao buscar atividade: ${response.status}`)
-    }
-    return await response.json()
-  } catch (error) {
-    console.error(`Erro ao buscar atividade ${id}:`, error)
-    throw error
-  }
-}
-
-// Função para atualizar uma atividade
-export async function updateActivity(id: string, activityData: Partial<CreateActivityDto>): Promise<Activity> {
-  try {
-    const response = await fetch(`${ATIVIDADES_URL}/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/Atividades/${data.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(activityData),
+      body: JSON.stringify(data),
     })
 
     if (!response.ok) {
-      throw new Error(`Erro ao atualizar atividade: ${response.status}`)
+      const errorText = await response.text()
+      console.error("Erro na resposta da API:", errorText)
+      throw new Error(`Erro ao atualizar atividade: ${response.status} - ${errorText}`)
     }
 
-    return await response.json()
+    const result = await response.json()
+    console.log("Atividade atualizada com sucesso:", result)
+    return result
   } catch (error) {
     console.error("Erro ao atualizar atividade:", error)
     throw error
   }
 }
 
-// Função para deletar uma atividade
-export async function deleteActivity(id: string): Promise<boolean> {
+export async function deleteActivity(id: string) {
   try {
-    const response = await fetch(`${ATIVIDADES_URL}/${id}`, {
+    console.log("Excluindo atividade:", id)
+
+    const response = await fetch(`${API_BASE_URL}/Atividades/${id}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
     })
 
-    if (response.status === 404) return false
     if (!response.ok) {
-      throw new Error(`Erro ao deletar atividade: ${response.status}`)
+      const errorText = await response.text()
+      console.error("Erro na resposta da API:", errorText)
+      throw new Error(`Erro ao excluir atividade: ${response.status} - ${errorText}`)
     }
 
+    console.log("Atividade excluída com sucesso")
     return true
   } catch (error) {
-    console.error("Erro ao deletar atividade:", error)
+    console.error("Erro ao excluir atividade:", error)
+    throw error
+  }
+}
+
+export async function fetchActivityById(id: string) {
+  try {
+    console.log("Buscando atividade por ID:", id)
+
+    const response = await fetch(`${API_BASE_URL}/Atividades/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error("Erro na resposta da API:", errorText)
+      throw new Error(`Erro ao buscar atividade: ${response.status} - ${errorText}`)
+    }
+
+    const result = await response.json()
+    console.log("Atividade encontrada:", result)
+    return result
+  } catch (error) {
+    console.error("Erro ao buscar atividade:", error)
     throw error
   }
 }

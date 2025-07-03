@@ -21,7 +21,6 @@ import * as z from "zod"
 import { toast } from "@/components/ui/use-toast"
 import { createOrcamento } from "../api"
 import { fetchRubricas } from "@/features/rubricas/api"
-import { fetchActivities } from "@/features/activities/api"
 import type { Rubrica } from "@/features/rubricas/types"
 import type { Activity } from "@/features/activities/types"
 import { CreateRubricaDialog } from "@/features/rubricas/components/create-rubrica-dialog"
@@ -79,9 +78,6 @@ export function CreateOrcamentoDialog({ onOrcamentoCriado }: CreateOrcamentoDial
           const rubricasData = await fetchRubricas()
           setRubricas(rubricasData)
 
-          // Load atividades
-          const atividadesData = await fetchActivities()
-          setAtividades(atividadesData)
         } catch (error) {
           console.error("Error loading data:", error)
           toast({
@@ -238,33 +234,6 @@ export function CreateOrcamentoDialog({ onOrcamentoCriado }: CreateOrcamentoDial
                   </Button>
                 </div>
               </div>
-              <FormField
-                control={form.control}
-                name="atividadeId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Activity (Optional)</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue
-                            placeholder={loadingAtividades ? "Loading activities..." : "Select an activity (optional)"}
-                          />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="none">No activity</SelectItem>
-                        {atividades.map((atividade) => (
-                          <SelectItem key={atividade.id} value={atividade.id}>
-                            {atividade.nomeAtividade}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setIsOpen(false)} disabled={isSubmitting}>
                   Cancel

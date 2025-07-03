@@ -46,9 +46,19 @@ namespace DDDSample1.Controllers
         [HttpPost]
         public async Task<ActionResult<AtividadeDto>> Create(CreatingAtividadeDto dto)
         {
-            var atividade = await _service.AddAsync(dto);
-
-            return CreatedAtAction(nameof(GetById), new { id = atividade.Id }, atividade);
+           try {
+                AtividadeDto atividade = await _service.AddAsync(dto);
+                
+                return CreatedAtAction(nameof(GetById), new { id = atividade.Id }, atividade);
+            } catch (BusinessRuleValidationException e) {
+                return BadRequest(new {e.Message});
+            } catch (NullReferenceException e) {
+                return NotFound(new {e.Message});
+            } catch (ArgumentNullException e) {
+                return BadRequest(new {e.Message});
+            } catch (Exception) {
+                return StatusCode(500, new { message = "An unexpected error occurred." });
+            }
         }
 
         
