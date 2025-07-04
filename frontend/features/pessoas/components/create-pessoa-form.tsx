@@ -285,7 +285,7 @@ export function CreatePessoaForm({ onPessoaCreated, onCancel }: CreatePessoaForm
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione o tipo de contrato" />
+                            <SelectValue placeholder="Select contract type" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>

@@ -760,7 +760,8 @@ namespace DDDNetCore.Migrations
                 {
                     b.HasOne("dddnetcore.Domain.Atividades.Atividade", null)
                         .WithMany("Tarefas")
-                        .HasForeignKey("AtividadeId");
+                        .HasForeignKey("AtividadeId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Atividades.Atividade", b =>

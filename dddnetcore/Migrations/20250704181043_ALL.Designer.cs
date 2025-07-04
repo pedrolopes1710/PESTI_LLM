@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DDDNetCore.Migrations
 {
     [DbContext(typeof(DDDSample1DbContext))]
-    [Migration("20250603210738_AddPessoaIdToProjeto")]
-    partial class AddPessoaIdToProjeto
+    [Migration("20250704181043_ALL")]
+    partial class ALL
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -763,7 +763,8 @@ namespace DDDNetCore.Migrations
                 {
                     b.HasOne("dddnetcore.Domain.Atividades.Atividade", null)
                         .WithMany("Tarefas")
-                        .HasForeignKey("AtividadeId");
+                        .HasForeignKey("AtividadeId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("dddnetcore.Domain.Atividades.Atividade", b =>
