@@ -83,8 +83,8 @@ export function ManageProjectsDialog({ pessoa, open, onOpenChange, onProjectsUpd
     if (isBolseiro && !isCurrentlySelected && selectedProjects.length >= 1) {
       toast({
         variant: "destructive",
-        title: "Limite de projetos atingido",
-        description: "Bolseiros podem estar associados a apenas 1 projeto.",
+        title: "Project limit reached",
+        description: "Bolseiros can only be associated with 1 project.",
       })
       return
     }
@@ -162,7 +162,7 @@ export function ManageProjectsDialog({ pessoa, open, onOpenChange, onProjectsUpd
             Select which projects this person should be associated with.
             {isBolseiro && (
               <span className="block mt-1 text-amber-600 font-medium">
-                ⚠️ Bolseiros podem estar associados a apenas 1 projeto.
+                ⚠️ Bolseiros can only be associated with 1 project.
               </span>
             )}
           </DialogDescription>
@@ -175,7 +175,7 @@ export function ManageProjectsDialog({ pessoa, open, onOpenChange, onProjectsUpd
               {currentPessoa.contrato?.tipo || "Sem contrato"}
             </Badge>
             <span className="text-sm text-muted-foreground">
-              {isBolseiro ? "Máximo 1 projeto" : "Projetos ilimitados"}
+              {isBolseiro ? "Maximum 1 project" : "Unlimited projects"}
             </span>
           </div>
 
@@ -200,8 +200,8 @@ export function ManageProjectsDialog({ pessoa, open, onOpenChange, onProjectsUpd
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Como bolseiro, esta pessoa só pode estar associada a 1 projeto. Selecione apenas o projeto mais
-                relevante.
+                As a Bolseiro, this person can only be associated with 1 project. Select only the most
+                relevant project.
               </AlertDescription>
             </Alert>
           )}

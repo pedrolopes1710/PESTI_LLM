@@ -61,6 +61,10 @@ namespace dddnetcore.Controllers
             {
                 return NotFound(new { ex.Message });
             }
+                catch (ArgumentException ex)
+            {
+                return BadRequest(new { ex.Message });  // Captura erro do PessoaCienciaId inválido
+            }
             catch (Exception)
             {
                 return StatusCode(500, new { Message = "An unexpected error occurred." });

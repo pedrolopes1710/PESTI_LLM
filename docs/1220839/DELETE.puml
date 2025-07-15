@@ -1,0 +1,46 @@
+@startuml DesativarPessoa
+autonumber
+skinparam DefaultTextAlignment center
+actor Admin as "Admin"
+participant ComponentUI as "UI Component" <<component (C4)>>
+participant Component as "Component" <<component (C4)>>
+participant Service as "Service" <<component (C4)>>
+participant HTTP as "HTTP" <<component (C4)>>
+
+participant BackendDataManagement as "Backend Data Management" <<component (C4)>>
+
+activate Admin
+
+    Admin -> ComponentUI : solicita a inativação de uma pessoa
+    activate ComponentUI
+
+        ComponentUI -> Component : pede para inativar a pessoa
+        activate Component
+
+            Component -> Service : DesativarPessoaAsync(id)
+            activate Service
+
+                Service -> HTTP : DELETE api/pessoas/{id}
+                activate HTTP
+
+                    HTTP -> BackendDataManagement : DELETE api/pessoas/{id}
+                    activate BackendDataManagement
+
+                    BackendDataManagement --> HTTP : 200 OK
+                    deactivate BackendDataManagement
+                    
+                HTTP --> Service : dto
+                deactivate HTTP
+
+            Service --> Component : dto
+            deactivate Service
+
+            Component --> ComponentUI : mensagem de sucesso/insucesso
+        deactivate Component
+
+    Admin <-- ComponentUI : mostra a mensagem de sucesso/insucesso
+    deactivate ComponentUI
+
+deactivate Admin
+
+@enduml

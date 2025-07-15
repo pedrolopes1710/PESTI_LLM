@@ -1,0 +1,67 @@
+@startuml RegistarPessoa
+autonumber
+skinparam DefaultTextAlignment center
+actor Admin as "Admin"
+participant ComponentUI as "UI Component" <<component (C4)>>
+participant Model as "Model" <<component (C4)>>
+participant Service as "Service" <<component (C4)>>
+participant HTTP as "HTTP" <<component (C4)>>
+participant PessoasController as "PessoasController" <<component (C4)>>
+participant PessoaService as "PessoaService" <<component (C4)>>
+participant Pessoa as "Pessoa" <<domain>>
+participant PessoaRepo as "PessoaRepository" <<persistence>>
+
+activate Admin
+
+    Admin -> ComponentUI : solicita o registo de uma pessoa
+    activate ComponentUI
+
+        ComponentUI --> Admin : solicita os dados
+    deactivate ComponentUI
+
+    Admin -> ComponentUI : insere os dados necessários
+    activate ComponentUI
+    
+            ComponentUI -> Model** : create
+            
+            ComponentUI -> Service : POST api/pessoas 
+            activate Service
+
+                Service -> HTTP : POST api/pessoas 
+                activate HTTP
+
+                    HTTP -> PessoasController : POST /pessoas
+                    activate PessoasController
+
+                    PessoasController -> PessoaService : AddAsync(dto)
+                    activate PessoaService 
+
+                    PessoaService -> Pessoa : create(dto)
+
+                    PessoaService -> PessoaRepo : grava pessoa
+                    activate PessoaRepo
+
+                    PessoaRepo --> PessoaService : pessoa
+                    deactivate PessoaRepo
+
+                    PessoaService -> PessoaService : toDto(pessoa)
+
+                    PessoaService --> PessoasController : pessoaDto
+                    deactivate PessoaService
+
+                    PessoasController --> HTTP : 201 Created
+
+                    deactivate PessoasController
+
+                    HTTP --> Service : pessoa
+                deactivate HTTP
+
+                Service --> ComponentUI : pessoa
+            deactivate Service
+
+    Admin <-- ComponentUI : mostra a mensagem de sucesso/insucesso 
+    deactivate ComponentUI
+
+deactivate Admin
+
+@enduml

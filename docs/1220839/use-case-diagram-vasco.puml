@@ -1,0 +1,67 @@
+@startuml Use Case Diagram Vasco
+
+skinparam packageStyle rectangle
+skinparam usecase {
+  BackgroundColor #F9F9F9
+  BorderColor Black
+  ArrowColor Black
+}
+
+title Diagrama de Casos de Uso
+
+left to right direction
+
+actor "Admin" as Admin
+/'actor "Investigador" as Investigador'/
+
+
+'* Gestão de Recursos Humanos
+usecase "Registar Pessoa" as RegistarPessoa
+usecase "Editar informações da Pessoa" as EditarPessoa
+usecase "Desativar Pessoa" as DesativarPessoa
+usecase "Reativar Pessoa" as ReativarPessoa
+usecase "Associar Projetos a Pessoa" as AssociarProjetos
+usecase "Desassociar Projetos da Pessoa" as DesassociarProjetos
+usecase "Remover o Contrato da Pessoa" as RemoverContratodaPessoa
+usecase "Associar um Contrato a Pessoa" as AssociarContratoaPessoa
+usecase "Listar Pessoas" as ListarPessoas
+usecase "Gerir permissões de acesso via integração LDAP" as GerAcesso
+usecase "Registar Contrato" as RegistarContrato
+usecase "Editar informações do Contrato" as EditarContrato
+usecase "Renovar Contrato" as RenovarContrato
+usecase "Ativar Contrato" as AtivarContrato 
+usecase "Desativar Contrato" as DesativarContrato 
+usecase "Listar Contratos" as ListarContratos
+
+/'usecase "Registar Carga Mensal" as RegistarCarga
+usecase "Editar Carga Mensal" as EditarCarga
+usecase "Monitorizar tempo restante e evolução das bolsas" as MTREB'/
+
+
+
+
+
+
+Admin --> RegistarPessoa
+Admin --> EditarPessoa
+Admin --> DesativarPessoa
+Admin --> ReativarPessoa
+Admin --> AssociarProjetos
+Admin --> DesassociarProjetos
+Admin --> RemoverContratodaPessoa
+Admin --> AssociarContratoaPessoa
+Admin --> ListarPessoas
+Admin --> GerAcesso
+Admin --> RegistarContrato
+Admin --> EditarContrato
+Admin --> RenovarContrato
+Admin --> AtivarContrato
+Admin --> DesativarContrato
+Admin --> ListarContratos
+
+/'Investigador --> RegistarCarga
+Investigador --> EditarCarga
+Investigador --> MTREB'/
+
+
+@enduml

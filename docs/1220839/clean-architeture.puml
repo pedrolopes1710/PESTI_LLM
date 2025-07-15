@@ -1,0 +1,139 @@
+@startuml Clean
+
+/'skinparam componentStyle rectangle
+
+skinparam nodesep 100
+skinparam ranksep 100
+
+top to bottom direction
+
+
+package "Clean Architecture" {
+    
+    [Presentation Layer] --> [Controllers]
+
+    [Controllers] --> [Use Cases\n(Application Layer)]
+    [Use Cases\n(Application Layer)] --> [Entities\n(Domain Layer)]
+    [Use Cases\n(Application Layer)] --> [Interfaces\n(Repository Interfaces)]
+
+    [Interfaces\n(Repository Interfaces)] --> [Repositories\n(Infra Layer)]
+    [Repositories\n(Infra Layer)] --> [SQLite DB]
+
+    [Controllers] ..> [DTOs] : utiliza
+    [Repositories\n(Infra Layer)] ..> [ORM/.NET] : depende
+}'/
+
+skinparam componentStyle rectangle
+top to bottom direction
+
+' Interfaces externas
+interface "React + Next.js\n(Presentation Layer)" as UI
+database "SQLite" as SQLiteDB
+component "ORM (.NET)" as ORM
+
+' Camadas da arquitetura
+component "Controllers" <<component>> {
+    portin "HTTP Input" as PI_HTTP
+    portout "Calls Use Cases" as PO_USECASES
+    portout "Uses DTOs" as PO_DTO
+}
+
+component "Use Cases\n(Application Layer)" <<component>> {
+    portin "From Controllers" as PI_USECASES
+    portout "To Domain Entities" as PO_DOMAIN
+    portout "To Repositories" as PO_REPO_IF
+}
+
+component "Entities\n(Domain Layer)" <<component>> {
+    portin "Used by Use Cases" as PI_DOMAIN
+}
+
+component "Repository Interfaces" <<component>> {
+    portin "Used by Use Cases" as PI_REPO_IF
+    portout "Implemented by Infraestructure" as PO_INFRA
+}
+
+component "Repositories\n(Infrastructure Layer)" <<component>> {
+    portin "Repository Interfaces" as PI_REPO
+    portout "To ORM" as PO_ORM
+    portout "To SQLite DB" as PO_DB
+}
+
+' DTOs apenas como estrutura auxiliar
+component "DTOs" <<component>>
+
+' Ligações externas
+UI -- PI_HTTP
+PO_DTO ..> DTOs
+PO_USECASES -- PI_USECASES
+PO_DOMAIN -- PI_DOMAIN
+PO_REPO_IF -- PI_REPO_IF
+PO_INFRA -- PI_REPO
+PO_ORM ..> ORM
+PO_DB --> SQLiteDB
+
+
+
+@enduml
+ 
+
+/'interface "API" as API
+interface "Auth0" as AUTH0
+interface "SMTP Microsoft 365" as SMTP
+interface "UI" as UI
+
+ 
+component "Heallthcare System" <<component>> {
+ 
+  portin " " as PIAPI
+  portout " " as POAUTH0
+  portout " " as POSMTP
+  portout " " as POUI
+ 
+ interface "Backend API" as BEAPI
+ interface "Planning API" as PAPI
+ interface "NodeBackendAPI" as NBEAPI
+
+  component "Planning" <<component>> {
+    portout " " as POPLANNING
+  }
+
+  component "Frontend" <<component>> {
+    portout " " as POFE
+  }
+
+  component "Hospital Model" <<component>> {
+    portout " " as POHM
+  }
+
+  component "Backend" <<component>> {
+    portin " " as BEPI
+    portout " " as BEPOAUTH0
+    portout " " as BEPOSMTP
+  }
+
+  component "NodeBackend" <<component>> {
+    portin " " as NBEPI
+    portout " " as NBEPOAUTH0
+  }
+ 
+ POPLANNING -( BEAPI
+  POFE --( BEAPI
+  BEPI -- BEAPI
+  POHM --( BEAPI
+  BEPI -( PAPI
+  POPLANNING -- PAPI
+  NBEPI -- NBEAPI
+  NBEPOAUTH0 --( AUTH0
+ 
+}
+ 
+POUI -- UI
+API -- PIAPI
+POAUTH0 -l-( AUTH0
+BEPOAUTH0 -- POAUTH0
+BEPI -- PIAPI
+POSMTP --( SMTP
+BEPOSMTP -- POSMTP'/
+
+ 

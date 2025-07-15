@@ -1,0 +1,48 @@
+@startuml ListarPessoas
+
+autonumber
+skinparam DefaultTextAlignment center
+actor Admin as "Admin"
+
+participant ComponentUI as "UI Component" <<component (C4)>>
+participant Component as "Component" <<component (C4)>>
+participant SRV as "Service" <<component (C4)>>
+participant HTTP as "HTTP" <<component (C4)>>
+
+participant BackendManagement as "BackendManagement" <<component (C4)>>
+
+activate Admin
+
+    Admin -> ComponentUI : solicita a listagem de pessoas
+    activate ComponentUI
+
+        ComponentUI -> Component : listar pessoas
+        activate Component
+
+            Component -> SRV : fetchPessoas()
+            activate SRV
+
+                SRV -> HTTP : GET api/pessoas
+                activate HTTP
+
+                    HTTP -> BackendManagement : GET /pessoas
+                    activate BackendManagement
+
+                    BackendManagement --> HTTP : 200 (pessoas)
+                    deactivate BackendManagement
+                    
+                HTTP --> SRV : pessoas
+                deactivate HTTP
+
+            SRV --> Component : pessoas
+            deactivate SRV
+
+        Component --> ComponentUI : pessoas
+        deactivate Component
+
+    Admin <-- ComponentUI : mostra a listagem das pessoas existentes no sistema
+    deactivate ComponentUI
+
+deactivate Admin
+
+@enduml

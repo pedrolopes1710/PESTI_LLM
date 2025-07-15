@@ -1,0 +1,74 @@
+@startuml EditarPessoa
+autonumber
+skinparam DefaultTextAlignment center
+
+actor Admin as "Admin"
+participant ComponentUI as "UI Component" <<component (C4)>>
+participant Model as "Model" <<component (C4)>>
+participant Service as "Service" <<component (C4)>>
+participant HTTP as "HTTP" <<component (C4)>>
+
+participant CTRL as "PessoasController" <<component (C4)>>
+participant PessoaService as "PessoaService" <<component (C4)>>
+participant PessoaRepo as "PessoaRepository" <<persistence>>
+participant Pessoa as "Pessoa" <<domain>>
+activate Admin
+
+    Admin -> ComponentUI : solicita a alteração das informações de uma pessoa
+    activate ComponentUI
+
+        ComponentUI --> Admin : solicita os dados para atualização
+    deactivate ComponentUI
+
+    Admin -> ComponentUI : insere os novos dados
+    activate ComponentUI
+
+            ComponentUI -> Model** : create
+
+            ComponentUI -> Service : updatePessoa(pessoaData)
+            activate Service
+
+                Service -> HTTP : PUT api/pessoas/{id}
+                activate HTTP
+
+                    HTTP -> CTRL : PUT /pessoas/{id}
+                    activate CTRL
+
+                    CTRL -> PessoaService : UpdateAsync(dto)
+                    activate PessoaService 
+
+                    PessoaService -> PessoaRepo : getByIdAsync(dto.id)
+                    activate PessoaRepo 
+
+                    PessoaRepo --> PessoaService : pessoa
+                    deactivate PessoaRepo
+
+                    PessoaService -> Pessoa : AlterarNome(dto.Nome)
+                    PessoaService -> Pessoa : AlterarEmail(dto.Email)
+
+                    PessoaService -> PessoaRepo : grava pessoa
+                    activate PessoaRepo 
+
+                    PessoaRepo --> PessoaService : pessoa
+                    deactivate PessoaRepo
+
+                    PessoaService -> PessoaService : toDto(pessoa)
+
+                    PessoaService --> CTRL : pessoaDto
+                    deactivate PessoaService
+
+                    CTRL --> HTTP : 200 OK
+                    deactivate CTRL
+                                        
+                HTTP --> Service : pessoaDto
+                deactivate HTTP
+
+                Service --> ComponentUI : pessoaDto
+            deactivate Service
+
+    Admin <-- ComponentUI : mostra a mensagem de sucesso/insucesso 
+    deactivate ComponentUI
+
+deactivate Admin
+
+@enduml
